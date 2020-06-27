@@ -1,104 +1,75 @@
 <form
   class="form-horizontal"
   autocomplete="off"
-  #createMetalTypeForm="ngForm"
-  (ngSubmit)="save()"
+  [formGroup]="orderForm"
 >
-  <abp-modal-header
+<abp-modal-header
     [title]="'CreateOrder' | localize"
     (onCloseClick)="bsModalRef.hide()"
-  ></abp-modal-header>
-  <div class="modal-body">
+>
+</abp-modal-header>
+<div class="modal-body">
+ 
+<!--   begin of form  -->
 
-    <div class="form-group row required">
-      <label class="col-md-3 col-form-label" for="customer">
-        {{ "customer" | localize }}
-      </label>
-      <div class="col-md-9">
-        <input
-          type="text"
-          class="form-control"
-          name="customer"
-          id="customer"
-          required
-          minlength="2"
-          maxlength="32"
-          [(ngModel)]="order.customerId"
-          #customerModel="ngModel"
-          #customerEl
-        />
-        <abp-validation-summary
-          [control]="customerModel"
-          [controlEl]="customerEl"
-        ></abp-validation-summary>
-      </div> 
+<div class="col-md-9">
+ 
+  <input
+    type="text"
+    class="form-control"
+    formControlName="customerId"
+  />  
 
-      </div>
-      <div class="form-group row required">
-        <label class="col-md-3 col-form-label" for="requiredDate">
-          {{ "requiredDate" | localize }}
-        </label>
-        <div class="col-md-9">
-          <input
-            type="datetime-local"
-            class="form-control"
-            name="requiredDate"
-            id="requiredDate"
-            required
-            minlength="2"
-            maxlength="32"
-            [(ngModel)]="order.requiredDate"
-            #requiredDateModel="ngModel"
-            #requiredDateEl
-          />
-          <abp-validation-summary
-            [control]="requiredDateModel"
-            [controlEl]="requiredDateEl"
-          ></abp-validation-summary>
-        </div>
-      </div>
+  <input
+  type="datetime-local"
+  class="form-control"
+  formControlName="requiredDate"
+/>
+
 <br/>
-<div>
-    <button type="button" (click)="addOrderDetail($event)" class="btn btn-primary">Add Detail</button>
+<button (click)="createOderDetail()" class="btn btn-primary">Add</button>
 
-    <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Product</th>
-            <th scope="col">Metal Type</th>
-            <th scope="col">Metal Price(Today)</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Weight</th>
-            <th scope="col">Wastage</th>
-            <th scope="col">Total Weight</th>
-            <th scope="col">Making Charge</th>
-            <th scope="col">Total Price</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let orderDetail of order.orderDetails; let i = index" >
-            <th scope="row">{{i}}</th>
-            <td><input [(ngModel)]="orderDetail.product" placeholder="product"/></td>
-            <td><input [(ngModel)]="orderDetail.metalType" placeholder="metalType"/></td>
-            <td><input [(ngModel)]="orderDetail.metalCostThisDay" placeholder="metalCostThisDay"/></td>
-            <td><input [(ngModel)]="orderDetail.quantity" placeholder="quantity"/></td>
-            <td><input [(ngModel)]="orderDetail.weight" placeholder="weight"/></td>
-            <td><input [(ngModel)]="orderDetail.wastage" placeholder="wastage"/></td>
-            <td><input [(ngModel)]="orderDetail.weight" placeholder="weight"/></td>
-            <td><input [(ngModel)]="orderDetail.makingCharge" placeholder="makingCharge"/></td>
-            <td><input [(ngModel)]="orderDetail.totalPrice" placeholder="totalPrice"/></td>
-            <td><button (click)="removeOrderDetail(orderDetail)" class="btn btn-primary">Delete</button><button/td>
-          </tr>
-        </tbody>
-      </table>
+<ul>
+
+
+<li 
+formArrayName="orderDetails"
+*ngFor="let item of orderForm.controls['orderDetails']; let i = index;"
+>  
+    <div [formGroupName]="i">
+      <div>
+        <input placeholder="productId" type="text" formControlName="weight" />
+        <input placeholder="quantity" type="text" formControlName="weight" />
+        <input placeholder="makingCharge" type="text" formControlName="weight" />
+        <input placeholder="wastage" type="text" formControlName="weight" />
+        <input placeholder="metalType" type="text" formControlName="weight" />
+        <input placeholder="metalCostThisDay" type="text" formControlName="weight" />
+        <input placeholder="unitPrice" type="text" formControlName="weight" />
+        <input placeholder="totalPrice" type="text" formControlName="weight" />
+      </div>
+    </div>
+
+
+  </li>
+</ul>
+
+
+
+
+
+
+
+</div> 
+
+
+
+
+<!--   end of body  -->
 </div>
 
-  </div>
-  <abp-modal-footer
+<abp-modal-footer
     [cancelDisabled]="saving"
-    [saveDisabled]="!createMetalTypeForm.form.valid || saving"
+    [saveDisabled]="!orderForm.valid || saving"
     (onCancelClick)="bsModalRef.hide()"
   ></abp-modal-footer>
 </form>
