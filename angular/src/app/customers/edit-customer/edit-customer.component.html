@@ -1,0 +1,88 @@
+<form
+  class="form-horizontal"
+  autocomplete="off"
+  #UpdateCustomerForm="ngForm"
+  (ngSubmit)="save()"
+>
+  <abp-modal-header
+    [title]="'UpdateCustomer' | localize"
+    (onCloseClick)="bsModalRef.hide()"
+  ></abp-modal-header>
+  <div class="modal-body">
+    <div class="form-group row required">
+        <label class="col-md-3 col-form-label" for="customerName">
+          {{ "customerName" | localize }}
+        </label>
+        <div class="col-md-9">
+          <input
+            type="text"
+            class="form-control"
+            name="customerName"
+            id="customerName"
+            required
+            minlength="2"
+            maxlength="32"
+            [(ngModel)]="customer.customerName"
+            #customerNameModel="ngModel"
+            #customerNameEl
+          />
+          <abp-validation-summary
+            [control]="customerNameModel"
+            [controlEl]="customerNameEl"
+          ></abp-validation-summary>
+        </div>
+      </div>
+      <div class="form-group row required">
+        <label class="col-md-3 col-form-label" for="address">
+          {{ "address" | localize }}
+        </label>
+        <div class="col-md-9">
+          <input
+            type="text"
+            class="form-control"
+            name="address"
+            id="address"
+            required
+            minlength="2"
+            maxlength="32"
+            [(ngModel)]="customer.address"
+            #addressModel="ngModel"
+            #addressEl
+          />
+          <abp-validation-summary
+            [control]="addressModel"
+            [controlEl]="addressEl"
+          ></abp-validation-summary>
+        </div>
+      </div>
+
+      <div class="form-group row required">
+        <label class="col-md-3 col-form-label" for="phoneNmber">
+          {{ "phoneNmber" | localize }}
+        </label>
+        <div class="col-md-9">
+          <input
+            type="text"
+            class="form-control"
+            name="phoneNmber"
+            id="phoneNmber"
+            required
+            minlength="2"
+            maxlength="32"
+            [(ngModel)]="customer.phoneNumber"
+            #phoneNmberModel="ngModel"
+            #phoneNmberEl
+          />
+          <abp-validation-summary
+            [control]="phoneNmberModel"
+            [controlEl]="phoneNmberEl"
+          ></abp-validation-summary>
+        </div>
+      </div>
+  </div>
+  <abp-modal-footer
+    [cancelDisabled]="saving"
+    [saveDisabled]="!UpdateCustomerForm.form.valid || saving"
+    (onCancelClick)="bsModalRef.hide()"
+  ></abp-modal-footer>
+</form>
