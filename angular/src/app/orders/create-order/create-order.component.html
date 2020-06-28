@@ -1,75 +1,142 @@
-<form
-  class="form-horizontal"
-  autocomplete="off"
-  [formGroup]="orderForm"
->
-<abp-modal-header
-    [title]="'CreateOrder' | localize"
-    (onCloseClick)="bsModalRef.hide()"
->
-</abp-modal-header>
-<div class="modal-body">
- 
-<!--   begin of form  -->
+<form (ngSubmit)="save()" class="form-horizontal" autocomplete="off" [formGroup]="form">
+  <abp-modal-header [title]="'CreateOrder' | localize" (onCloseClick)="bsModalRef.hide()">
+  </abp-modal-header>
+  <div class="modal-body">
 
-<div class="col-md-9">
- 
-  <input
-    type="text"
-    class="form-control"
-    formControlName="customerId"
-  />  
+    <!--   begin of form  -->
 
-  <input
-  type="datetime-local"
-  class="form-control"
-  formControlName="requiredDate"
-/>
+    <div class="form-group row required">
 
-<br/>
-<button (click)="createOderDetail()" class="btn btn-primary">Add</button>
-
-<ul>
+      <label class="col-md-3 col-form-label" for="customerId">
+        {{ "customerId" | localize }}
+      </label>
 
 
-<li 
-formArrayName="orderDetails"
-*ngFor="let item of orderForm.controls['orderDetails']; let i = index;"
->  
-    <div [formGroupName]="i">
-      <div>
-        <input placeholder="productId" type="text" formControlName="weight" />
-        <input placeholder="quantity" type="text" formControlName="weight" />
-        <input placeholder="makingCharge" type="text" formControlName="weight" />
-        <input placeholder="wastage" type="text" formControlName="weight" />
-        <input placeholder="metalType" type="text" formControlName="weight" />
-        <input placeholder="metalCostThisDay" type="text" formControlName="weight" />
-        <input placeholder="unitPrice" type="text" formControlName="weight" />
-        <input placeholder="totalPrice" type="text" formControlName="weight" />
+      <input formControlName="customerName" [typeahead]="Customers" (typeaheadOnSelect)="selectedCustomer($event)"
+        typeaheadOptionField="customerName" [typeaheadItemTemplate]="customItemTemplate" class="form-control">
+
+      <ng-template #customItemTemplate let-model="item">
+        <span><strong>{{model.customerName}}</strong> - {{model.address}}</span>
+      </ng-template>
+
+    </div>
+
+    <div class="form-group row">
+
+      <label class="col-md-3 col-form-label" for="requiredDate">
+        {{ "requiredDate" | localize }}
+      </label>
+
+      <div class="col-md-9">
+        <input type="datetime-local" class="form-control" formControlName="requiredDate" />
+
+        <span class="text-danger"
+          *ngIf="(orderFormControl.requiredDate.touched || save) && orderFormControl.requiredDate.errors?.requiredDate">
+          requiredDate is required
+        </span>
+        <span class="text-danger"
+          *ngIf="orderFormControl.requiredDate.touched && orderFormControl.requiredDate.errors?.requiredDate">
+          Enter a valid requiredDate
+        </span>
+
       </div>
+
     </div>
 
 
-  </li>
-</ul>
+    <button (click)="createOderDetail($event)" class="btn btn-primary">Add</button>
 
+    <div class="table-responsive">
 
+      <table class="table table-bordered" width="50%">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">productName</th>
+            <th scope="col">quantity</th>
+            <th scope="col">metalType</th>
+            <th scope="col">metalCostThisDay</th>
+            <th scope="col">makingCharge</th>
+            <th scope="col">weight</th>
+            <th scope="col">wastage</th>
+            <th scope="col">totalWeight</th>
+            <th scope="col">totalPrice</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of orderDetailsFormArray.controls; let i = index;" [formGroup]="item">
+            <th scope="row">{{i}}</th>
+            <td>
 
+              <input formControlName="productName" [typeahead]="Products"
+                (typeaheadOnSelect)="selectedProduct($event,i)" typeaheadOptionField="productName"
+                [typeaheadItemTemplate]="customItemTemplate" class="form-control">
 
+              <ng-template #customItemTemplate let-model="item">
+                <span><strong>{{model.productName}}</strong> - {{model.metalType.name}} -
+                  Rs.{{model.estimatedCost}}</span>
+              </ng-template>
+            </td>
+            <td> <input placeholder="quantity" type="text" formControlName="quantity" /></td>
+            <td> <input placeholder="metalType" type="text" formControlName="metalType" /></td>
+            <td> <input placeholder="metalCostThisDay" type="text" formControlName="metalCostThisDay" /></td>
+          
+            <td> <input placeholder="makingCharge" type="text" formControlName="makingCharge"   /></td>
+            <td> <input placeholder="weight" type="text" formControlName="weight" (change)="metalWeightChanged($event,i)" /></td>
+          
+            <td> <input placeholder="wastage" type="text" formControlName="wastage" (change)="metalWeightChanged($event,i)" /></td>
+            <td> <input placeholder="totalWeight" type="text" formControlName="totalWeight" /></td>
+            <td> <input placeholder="totalPrice" type="text" formControlName="totalPrice" (change)="calculateTotalAmount()" /></td>
+            <td><button (click)="DeleteOrderDetail(i)" class="btn btn-danger">Del</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
+    Total Price : {{totalPrice}}
 
+    <div class="row">
+      Advance Payment :<input placeholder="advancePaymentAmount" type="number" formControlName="advancePaymentAmount" />
+    </div>
 
-</div> 
+  </div>
+  <!--   end of body  -->
 
-
-
-
-<!--   end of body  -->
-</div>
-
-<abp-modal-footer
-    [cancelDisabled]="saving"
-    [saveDisabled]="!orderForm.valid || saving"
-    (onCancelClick)="bsModalRef.hide()"
-  ></abp-modal-footer>
+  <abp-modal-footer [cancelDisabled]="saving" [saveDisabled]="!form.valid || saving"
+    (onCancelClick)="bsModalRef.hide()"></abp-modal-footer>
 </form>
+
+
+<style>
+  .ta-results.list-group {
+    max-width: 400px;
+    overflow: auto;
+    max-height: 75vh;
+    border: 1px solid #ccc;
+  }
+
+  .typeahead-wrap .list-group-item {
+    width: 100%;
+    text-align: left;
+    position: relative;
+    display: block;
+    padding: 5px 10px;
+    margin-bottom: -1px;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, .125);
+  }
+
+  .typeahead-wrap .list-group-item {
+    width: 100%;
+    text-align: left;
+  }
+
+  .typeahead-wrap .list-group-item.active {
+    background-color: #ccc;
+  }
+
+  .typeahead-wrap .list-group-item .item-name {
+    font-weight: bold;
+  }
+</style>

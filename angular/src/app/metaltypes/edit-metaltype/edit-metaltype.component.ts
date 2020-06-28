@@ -24,7 +24,6 @@ export class EditMetaltypeComponent extends AppComponentBase
  
   id:string;
 
-
   @Output() onSave = new EventEmitter<any>();
 
   constructor(

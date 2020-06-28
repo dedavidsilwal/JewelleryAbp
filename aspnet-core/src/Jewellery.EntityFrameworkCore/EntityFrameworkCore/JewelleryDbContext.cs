@@ -1,4 +1,5 @@
-﻿using Abp.Zero.EntityFrameworkCore;
+﻿using System;
+using Abp.Zero.EntityFrameworkCore;
 using Jewellery.Authorization.Roles;
 using Jewellery.Authorization.Users;
 using Jewellery.Jewellery;
@@ -73,6 +74,12 @@ namespace Jewellery.EntityFrameworkCore
             modelBuilder.Entity<Product>()
              .Property(e => e.Photo);
 
+            //modelBuilder
+            //    .Entity<MetalType>()
+            //    .Property(e => e.WeightType)
+            //    .HasConversion(
+            //        v => v.ToString(),
+            //        v => (WeightType)Enum.Parse(typeof(WeightType), v));
 
             base.OnModelCreating(modelBuilder);
         }

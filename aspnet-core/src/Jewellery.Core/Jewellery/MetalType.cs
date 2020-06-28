@@ -13,19 +13,20 @@ namespace Jewellery.Jewellery
         public WeightType WeightType { get; set; }
 
     }
-
     public class Order : FullAuditedAggregateRoot<Guid>
     {
         public Order()
         {
             OrderDetails = new HashSet<OrderDetail>();
+            Status = OrderStatus.Active;
+            OrderDate = DateTime.Now;
         }
 
         public DateTime OrderDate { get; set; }
         public DateTime? RequiredDate { get; set; }
         public DateTime? ShippedDate { get; set; }
 
-        public int CustomerId { get; set; }
+        public Guid CustomerId { get; set; }
 
         public Customer Customer { get; set; }
 

@@ -4,11 +4,27 @@ using System.Collections.Generic;
 
 namespace Jewellery.Jewellery.Dto
 {
-    public class MetalTypeDto : EntityDto<Guid>
+    public class CreateEditMetalTypeDto : EntityDto<Guid>
     {
         public string Name { get; set; }
         public decimal Price { get; set; }
         public WeightType WeightType { get; set; }
+    }
+
+       public class MetalTypeDto : EntityDto<Guid>
+    {
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public WeightType WeightType { get; set; }
+
+
+        public string DisplayWeightType
+        {
+            get
+            {
+                return WeightType.ToString();
+            }
+        }
     }
 
     public class CreateOrderDto : EntityDto<Guid>
@@ -28,11 +44,34 @@ namespace Jewellery.Jewellery.Dto
 
     }
 
+    public class PaymentOrderDto 
+    {
+        public Guid OrderId { get; set; }
+        public decimal? AdvancePayment { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public decimal? PaidAmount { get; set; }
+    }
+
+    public class UpdatePaymentDto
+    {
+        public Guid OrderId { get; set; }
+        public decimal? PaidAmount { get; set; }
+
+
+    }
+
+    public class OrderStatusChangeDto
+    {
+        public Guid OrderId { get; set; }
+
+        public OrderStatus OrderStatus { get; set; }
+    }
+
     public class EditOrderDto : EntityDto<Guid>
     {
         public EditOrderDto()
         {
-            OrderDetails = new HashSet<OrderDetailDto>();
+            OrderDetails = new HashSet<CreateEditOrderDetailDto>();
         }
 
         public DateTime? RequiredDate { get; set; }
@@ -41,7 +80,7 @@ namespace Jewellery.Jewellery.Dto
 
         public OrderStatus Status { get; set; }
 
-        public ICollection<OrderDetailDto> OrderDetails { get; set; }
+        public ICollection<CreateEditOrderDetailDto> OrderDetails { get; set; }
 
         public decimal? AdvancePaymentAmount { get; set; }
 
@@ -54,18 +93,19 @@ namespace Jewellery.Jewellery.Dto
             OrderDetails = new HashSet<OrderDetailDto>();
         }
 
+        public DateTime OrderDate { get; set; }
+
         public DateTime? RequiredDate { get; set; }
 
         public Guid CustomerId { get; set; }
+        public Customer Customer { get; set; }
+
 
         public OrderStatus Status { get; set; }
 
-
         public ICollection<OrderDetailDto> OrderDetails { get; set; }
 
-
         public decimal? AdvancePaymentAmount { get; set; }
-
     }
 
     public class CustomerDto : EntityDto<Guid>
@@ -87,6 +127,27 @@ namespace Jewellery.Jewellery.Dto
 
         public Guid OrderId { get; set; }
         public OrderDto Order { get; set; }
+    }
+    public class CreateEditOrderDetailDto
+    {
+        public Guid OrderId { get; set; }
+        public Guid ProductId { get; set; }
+
+        public short Quantity { get; set; }
+
+
+        public decimal? Weight { get; set; }
+        public decimal? MakingCharge { get; set; }
+        public decimal? Wastage { get; set; }
+
+
+        public string MetalType { get; set; }
+        public decimal MetalCostThisDay { get; set; }
+
+
+        public decimal UnitPrice { get; set; }
+
+        public decimal TotalPrice { get; set; }
     }
 
 
@@ -121,18 +182,18 @@ namespace Jewellery.Jewellery.Dto
         //[NotMapped]
         //public decimal DiscountPercentage => Quantity != 0 ? Math.Round((decimal)Discount / (UnitPrice * Quantity) * 100, 3) : 0;
     }
-    public enum OrderStatus
+   
+
+    public class CreateEditProductDto : EntityDto<Guid>
     {
-        Active,
-        Canceled,
-        Invoiced,
-        PartialInvoiced
-    }
-    public enum PaymentStatus
-    {
-        Paid,
-        PartialPayment,
-        AdvancePayment
+
+        public string ProductName { get; set; }
+
+        public string Photo { get; set; }
+
+        public Guid MetalTypeId { get; set; }
+        public decimal? EstimatedWeight { get; set; }
+        public decimal? EstimatedCost { get; set; }
     }
 
     public class ProductDto : EntityDto<Guid>
@@ -148,6 +209,7 @@ namespace Jewellery.Jewellery.Dto
         public decimal? EstimatedWeight { get; set; }
         public decimal? EstimatedCost { get; set; }
     }
+
     public class SaleDto : EntityDto<Guid>
     {
         public SaleDto()
@@ -201,16 +263,5 @@ namespace Jewellery.Jewellery.Dto
         public decimal UnitPrice { get; set; }
 
         public decimal TotalPrice { get; set; }
-    }
-    public enum SaleStatus
-    {
-        Sold,
-        Canceled,
-        Returned
-    }
-    public enum WeightType
-    {
-        Gram = 0,
-        Tola = 1
-    }
+    } 
 }

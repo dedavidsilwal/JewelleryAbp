@@ -12,13 +12,19 @@ namespace Jewellery.Jewellery.Dto
         public MetalTypeMapProfile()
         {
             CreateMap<MetalTypeDto, MetalType>().ReverseMap();
+            CreateMap<CreateEditMetalTypeDto, MetalType>().ReverseMap();
 
             CreateMap<ProductDto, Product>().ReverseMap();
+            CreateMap<CreateEditProductDto, Product>().ReverseMap();
 
             CreateMap<CustomerDto, Customer>().ReverseMap();
                       
-            CreateMap<OrderDto, Order>().ReverseMap();
             CreateMap<CreateOrderDto, Order>().ReverseMap();
+            CreateMap<OrderDto, Order>().ReverseMap();
+
+            CreateMap<OrderDetailDto, OrderDetail>().ReverseMap();
+            CreateMap<CreateEditOrderDetailDto, OrderDetail>().ReverseMap();
+
             CreateMap<EditOrderDto, Order>().ReverseMap();
         }
     }

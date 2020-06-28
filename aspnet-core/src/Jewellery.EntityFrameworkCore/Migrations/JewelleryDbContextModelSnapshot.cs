@@ -1663,10 +1663,7 @@ namespace Jewellery.Migrations
                     b.Property<long?>("CreatorUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("CustomerId1")
+                    b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<long?>("DeleterUserId")
@@ -1698,7 +1695,7 @@ namespace Jewellery.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId1");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Orders");
                 });
@@ -2163,7 +2160,9 @@ namespace Jewellery.Migrations
                 {
                     b.HasOne("Jewellery.Jewellery.Customer", "Customer")
                         .WithMany("Orders")
-                        .HasForeignKey("CustomerId1");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Jewellery.Jewellery.OrderDetail", b =>

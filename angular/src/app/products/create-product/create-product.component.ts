@@ -12,6 +12,9 @@ import { AppComponentBase } from '@shared/app-component-base';
 import {
   ProductDto,
   ProductServiceProxy,
+  MetalTypeServiceProxy,
+  MetalTypeDto,
+  CreateEditProductDto,
 } from '@shared/service-proxies/service-proxies';
 
 @Component({
@@ -20,13 +23,17 @@ import {
 export class CreateProductComponent extends AppComponentBase
   implements OnInit {
   saving = false;
-  product = new ProductDto();
+
+  product = new CreateEditProductDto();
+
+  metalTypes = new Array<MetalTypeDto>();
 
   @Output() onSave = new EventEmitter<any>();
 
   constructor(
     injector: Injector,
     private _productService: ProductServiceProxy,
+    private _metalTypeService: MetalTypeServiceProxy,
     public bsModalRef: BsModalRef
   ) {
     super(injector);
@@ -34,14 +41,17 @@ export class CreateProductComponent extends AppComponentBase
 
   ngOnInit(): void {
 
+    this._metalTypeService
+      .fetchAllMetalTypes()
+          .subscribe((result: MetalTypeDto[]) => {
+            this.metalTypes = result;
+          });
   }
-
-  
 
   save(): void {
     this.saving = true;
 
-    const product = new ProductDto();
+    const product = new CreateEditProductDto();
     product.init(this.product);
 
     this._productService

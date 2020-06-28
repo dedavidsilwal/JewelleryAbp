@@ -55,6 +55,30 @@
           ></abp-validation-summary>
         </div>
       </div>
+
+      <!-- <div class="form-group row required">
+        <label class="col-md-3 col-form-label" for="weighttype">
+          {{ "WeightType" | localize }}
+        </label>
+        <div class="col-md-9">
+    
+          <select id="weighttype" [(ngModel)]="metaltype.weightType"
+           #weighttypeModel="ngModel"
+            #weighttypeEl>
+                <option value="0">Tola</option>
+                <option value="0">Gram</option>
+          </select>
+
+          <abp-validation-summary
+            [control]="weighttypeModel"
+            [controlEl]="weighttypeEl"
+          ></abp-validation-summary>
+
+
+        </div>
+      </div> -->
+
+
   </div>
   <abp-modal-footer
     [cancelDisabled]="saving"

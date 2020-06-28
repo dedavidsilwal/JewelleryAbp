@@ -8,6 +8,10 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ServiceProxyModule } from '@shared/service-proxies/service-proxy.module';
@@ -50,6 +54,10 @@ import { EditOrderComponent } from './orders/edit-order/edit-order.component';
 import { CustomersComponent } from './customers/customers.component';
 import { CreateCustomerComponent } from './customers/create-customer/create-customer.component';
 import { EditCustomerComponent } from './customers/edit-customer/edit-customer.component';
+
+import { NgxTypeaheadModule } from 'ngx-typeahead';
+import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
+
 
 @NgModule({
   declarations: [
@@ -107,6 +115,11 @@ import { EditCustomerComponent } from './customers/edit-customer/edit-customer.c
     ServiceProxyModule,
     SharedModule,
     NgxPaginationModule,
+    AutocompleteLibModule,
+    NgxTypeaheadModule,
+    TypeaheadModule.forRoot(),
+    BsDatepickerModule.forRoot(),
+
   ],
   providers: [],
   entryComponents: [
@@ -120,6 +133,8 @@ import { EditCustomerComponent } from './customers/edit-customer/edit-customer.c
     CreateUserDialogComponent,
     EditUserDialogComponent,
     ResetPasswordDialogComponent,
+
+
   ],
 })
 export class AppModule {}

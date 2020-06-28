@@ -78,8 +78,8 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
     this.showCreateOrEditOrderDialog();
   }
 
-  editOrder(product: OrderDto): void {
-    this.showCreateOrEditOrderDialog(product.id);
+  editOrder(order: OrderDto): void {
+    this.showCreateOrEditOrderDialog(order.id);
   }
 
   showCreateOrEditOrderDialog(id?: string): void {
@@ -88,7 +88,7 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
       createOrEditMetalTypeDialog = this._modalService.show(
         CreateOrderComponent,
         {
-          class: 'modal-lg',
+          class: 'modal-lg',        
         }
       );
     } else {

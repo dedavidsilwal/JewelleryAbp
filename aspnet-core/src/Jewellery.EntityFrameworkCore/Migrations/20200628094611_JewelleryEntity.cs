@@ -3,16 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Jewellery.Migrations
 {
-    public partial class addJewelleryEntities : Migration
+    public partial class JewelleryEntity : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "WeightType",
-                table: "MetalTypes",
-                nullable: false,
-                defaultValue: 0);
-
             migrationBuilder.CreateTable(
                 name: "Customers",
                 columns: table => new
@@ -27,7 +21,7 @@ namespace Jewellery.Migrations
                     DeletionTime = table.Column<DateTime>(nullable: true),
                     CustomerName = table.Column<string>(nullable: true),
                     Address = table.Column<string>(nullable: true),
-                    PhoneNmber = table.Column<string>(nullable: true)
+                    PhoneNumber = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -35,7 +29,7 @@ namespace Jewellery.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Products",
+                name: "MetalTypes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -46,22 +40,13 @@ namespace Jewellery.Migrations
                     IsDeleted = table.Column<bool>(nullable: false),
                     DeleterUserId = table.Column<long>(nullable: true),
                     DeletionTime = table.Column<DateTime>(nullable: true),
-                    ProductName = table.Column<string>(nullable: true),
-                    UnitsInStock = table.Column<short>(nullable: true),
-                    Photo = table.Column<string>(nullable: true),
-                    MetalTypeId = table.Column<Guid>(nullable: false),
-                    EstimatedWeight = table.Column<decimal>(nullable: true),
-                    EstimatedCost = table.Column<decimal>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    Price = table.Column<decimal>(nullable: false),
+                    WeightType = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Products_MetalTypes_MetalTypeId",
-                        column: x => x.MetalTypeId,
-                        principalTable: "MetalTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_MetalTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -79,8 +64,7 @@ namespace Jewellery.Migrations
                     OrderDate = table.Column<DateTime>(type: "DATETIME", nullable: false),
                     RequiredDate = table.Column<DateTime>(type: "DATETIME", nullable: true),
                     ShippedDate = table.Column<DateTime>(type: "DATETIME", nullable: true),
-                    CustomerId = table.Column<int>(nullable: false),
-                    CustomerId1 = table.Column<Guid>(nullable: true),
+                    CustomerId = table.Column<Guid>(nullable: false),
                     Status = table.Column<int>(nullable: false),
                     AdvancePaymentAmount = table.Column<decimal>(nullable: true)
                 },
@@ -88,11 +72,11 @@ namespace Jewellery.Migrations
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Orders_Customers_CustomerId1",
-                        column: x => x.CustomerId1,
+                        name: "FK_Orders_Customers_CustomerId",
+                        column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -125,35 +109,33 @@ namespace Jewellery.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderDetails",
+                name: "Products",
                 columns: table => new
                 {
-                    OrderId = table.Column<Guid>(nullable: false),
-                    ProductId = table.Column<Guid>(nullable: false),
-                    Quantity = table.Column<short>(nullable: false),
-                    Weight = table.Column<decimal>(nullable: true),
-                    MakingCharge = table.Column<decimal>(nullable: true),
-                    Wastage = table.Column<decimal>(nullable: true),
-                    MetalType = table.Column<string>(nullable: true),
-                    MetalCostThisDay = table.Column<decimal>(nullable: false),
-                    UnitPrice = table.Column<decimal>(nullable: false),
-                    TotalPrice = table.Column<decimal>(nullable: false)
+                    Id = table.Column<Guid>(nullable: false),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    CreatorUserId = table.Column<long>(nullable: true),
+                    LastModificationTime = table.Column<DateTime>(nullable: true),
+                    LastModifierUserId = table.Column<long>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeleterUserId = table.Column<long>(nullable: true),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    ProductName = table.Column<string>(nullable: true),
+                    UnitsInStock = table.Column<short>(nullable: true),
+                    Photo = table.Column<string>(nullable: true),
+                    MetalTypeId = table.Column<Guid>(nullable: false),
+                    EstimatedWeight = table.Column<decimal>(nullable: true),
+                    EstimatedCost = table.Column<decimal>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderDetails", x => new { x.OrderId, x.ProductId });
+                    table.PrimaryKey("PK_Products", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Order_Details_Orders",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
+                        name: "FK_Products_MetalTypes_MetalTypeId",
+                        column: x => x.MetalTypeId,
+                        principalTable: "MetalTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Order_Details_Products",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -188,6 +170,38 @@ namespace Jewellery.Migrations
                         name: "FK_Invoices_Sales_SaleId",
                         column: x => x.SaleId,
                         principalTable: "Sales",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderDetails",
+                columns: table => new
+                {
+                    OrderId = table.Column<Guid>(nullable: false),
+                    ProductId = table.Column<Guid>(nullable: false),
+                    Quantity = table.Column<short>(nullable: false),
+                    Weight = table.Column<decimal>(nullable: true),
+                    MakingCharge = table.Column<decimal>(nullable: true),
+                    Wastage = table.Column<decimal>(nullable: true),
+                    MetalType = table.Column<string>(nullable: true),
+                    MetalCostThisDay = table.Column<decimal>(nullable: false),
+                    UnitPrice = table.Column<decimal>(nullable: false),
+                    TotalPrice = table.Column<decimal>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderDetails", x => new { x.OrderId, x.ProductId });
+                    table.ForeignKey(
+                        name: "FK_Order_Details_Orders",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Order_Details_Products",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -241,9 +255,9 @@ namespace Jewellery.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_CustomerId1",
+                name: "IX_Orders_CustomerId",
                 table: "Orders",
-                column: "CustomerId1");
+                column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_MetalTypeId",
@@ -289,9 +303,8 @@ namespace Jewellery.Migrations
             migrationBuilder.DropTable(
                 name: "Customers");
 
-            migrationBuilder.DropColumn(
-                name: "WeightType",
-                table: "MetalTypes");
+            migrationBuilder.DropTable(
+                name: "MetalTypes");
         }
     }
 }

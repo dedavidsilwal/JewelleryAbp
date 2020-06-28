@@ -14,6 +14,9 @@ namespace Jewellery.EntityFrameworkCore
             var builder = new DbContextOptionsBuilder<JewelleryDbContext>();
             var configuration = AppConfigurations.Get(WebContentDirectoryFinder.CalculateContentRootFolder());
 
+            builder.EnableSensitiveDataLogging();
+            builder.EnableDetailedErrors();
+
             JewelleryDbContextConfigurer.Configure(builder, configuration.GetConnectionString(JewelleryConsts.ConnectionStringName));
 
             return new JewelleryDbContext(builder.Options);

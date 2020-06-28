@@ -56,7 +56,7 @@
         </div>
       </div>
 
-      <div class="form-group row required">
+      <!-- <div class="form-group row required">
         <label class="col-md-3 col-form-label" for="weighttype">
           {{ "WeightType" | localize }}
         </label>
@@ -65,7 +65,8 @@
           <select id="weighttype" [(ngModel)]="metaltype.weightType"
            #weighttypeModel="ngModel"
             #weighttypeEl>
-            <option *ngFor="let key of weightTypeKeys" [value]="key">{{weightType[key]}}</option>
+                <option value="0">Tola</option>
+                <option value="0">Gram</option>
           </select>
 
           <abp-validation-summary
@@ -75,7 +76,7 @@
 
 
         </div>
-      </div>
+      </div> -->
   </div>
   <abp-modal-footer
     [cancelDisabled]="saving"
