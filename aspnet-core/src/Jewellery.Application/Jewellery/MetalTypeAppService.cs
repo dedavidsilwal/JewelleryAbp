@@ -1,12 +1,15 @@
 ﻿using Abp.Application.Services;
+using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.ObjectMapping;
 using Jewellery.Authorization;
 using Jewellery.Jewellery.Dto;
 using Jewellery.Users.Dto;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Jewellery.Jewellery
@@ -15,6 +18,37 @@ namespace Jewellery.Jewellery
     public interface IJewelleryAppService
     {
 
+    }
+
+    public class InvoiceAppService : ApplicationService
+    {
+        private readonly IRepository<Invoice, Guid> _repository;
+        private readonly IObjectMapper _objectMapper;
+
+        public InvoiceAppService(IRepository<Invoice, Guid> repository, IObjectMapper objectMapper)
+        {
+            _repository = repository;
+            _objectMapper = objectMapper;
+        }
+
+
+        public async Task<PagedResultDto<InvoiceDto>> GetAllAsync(PagedUserResultRequestDto input)
+        {
+            var query = await _repository
+                .GetAll().Include(x => x.Order)
+                .Take(input.SkipCount)
+                .Take(input.MaxResultCount)
+                .Select(x => _objectMapper.Map<InvoiceDto>(x))
+                .ToListAsync();
+
+            var result = new PagedResultDto<InvoiceDto>
+            {
+                Items = query,
+                TotalCount = query.Count
+            };
+
+            return result;
+        }
     }
 
 
@@ -34,15 +68,11 @@ namespace Jewellery.Jewellery
 
     }
 
-    public interface ICustomerAppService
-    {
-
-    }
 
 
     [AbpAuthorize(PermissionNames.Pages_Customers)]
 
-    public class CustomerAppService : AsyncCrudAppService<Customer, CustomerDto, Guid, PagedUserResultRequestDto, CustomerDto, CustomerDto>, IJewelleryAppService
+    public class CustomerAppService : AsyncCrudAppService<Customer, CustomerDto, Guid, PagedUserResultRequestDto, CustomerDto, CustomerDto>
     {
         public CustomerAppService(IRepository<Customer, Guid> repository) : base(repository)
         {
@@ -92,6 +122,11 @@ namespace Jewellery.Jewellery
         public OrderAppService(IRepository<Order, Guid> repository) : base(repository)
         {
             _repository = repository;
+        }
+
+        public override Task<PagedResultDto<OrderDto>> GetAllAsync(PagedUserResultRequestDto input)
+        {
+            return base.GetAllAsync(input);
         }
 
         public async Task<EditOrderDto> FetchOrderWithDetails(Guid orderId) =>

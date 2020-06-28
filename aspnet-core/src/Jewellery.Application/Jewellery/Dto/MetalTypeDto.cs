@@ -11,7 +11,7 @@ namespace Jewellery.Jewellery.Dto
         public WeightType WeightType { get; set; }
     }
 
-       public class MetalTypeDto : EntityDto<Guid>
+    public class MetalTypeDto : EntityDto<Guid>
     {
         public string Name { get; set; }
         public decimal Price { get; set; }
@@ -44,12 +44,11 @@ namespace Jewellery.Jewellery.Dto
 
     }
 
-    public class PaymentOrderDto 
+    public class PaymentOrderDto
     {
         public Guid OrderId { get; set; }
         public decimal? AdvancePayment { get; set; }
         public decimal? TotalAmount { get; set; }
-        public decimal? PaidAmount { get; set; }
     }
 
     public class UpdatePaymentDto
@@ -118,6 +117,9 @@ namespace Jewellery.Jewellery.Dto
 
     public class InvoiceDto : EntityDto<Guid>
     {
+        public string ReceiptNumber { get; set; }
+        public string DocumentNumber { get; set; }
+
         public DateTime InvoiceDate { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
 
@@ -127,6 +129,22 @@ namespace Jewellery.Jewellery.Dto
 
         public Guid OrderId { get; set; }
         public OrderDto Order { get; set; }
+
+
+        public Guid SaleId { get; set; }
+        public SaleDto Sale { get; set; }
+
+
+        public BillType GetBillType()
+        {
+            return OrderId != default ? BillType.Order : BillType.Sale;
+        }
+    }
+
+    public enum BillType
+    {
+        Order = 0,
+        Sale = 1
     }
     public class CreateEditOrderDetailDto
     {
@@ -182,7 +200,7 @@ namespace Jewellery.Jewellery.Dto
         //[NotMapped]
         //public decimal DiscountPercentage => Quantity != 0 ? Math.Round((decimal)Discount / (UnitPrice * Quantity) * 100, 3) : 0;
     }
-   
+
 
     public class CreateEditProductDto : EntityDto<Guid>
     {
@@ -263,5 +281,5 @@ namespace Jewellery.Jewellery.Dto
         public decimal UnitPrice { get; set; }
 
         public decimal TotalPrice { get; set; }
-    } 
+    }
 }

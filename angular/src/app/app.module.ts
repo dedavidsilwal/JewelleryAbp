@@ -57,6 +57,9 @@ import { EditCustomerComponent } from './customers/edit-customer/edit-customer.c
 
 import { NgxTypeaheadModule } from 'ngx-typeahead';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
+import { PaymentProcessComponent } from './orders/payment-process/payment-process.component';
+import { OrderDetailComponent } from './orders/order-detail/order-detail.component';
+import { InvoicesComponent } from './invoices/invoices.component';
 
 
 @NgModule({
@@ -99,7 +102,10 @@ import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
     EditOrderComponent,
     CustomersComponent,
     CreateCustomerComponent,
-    EditCustomerComponent
+    EditCustomerComponent,
+    PaymentProcessComponent,
+    OrderDetailComponent,
+    InvoicesComponent
   ],
   imports: [
     CommonModule,

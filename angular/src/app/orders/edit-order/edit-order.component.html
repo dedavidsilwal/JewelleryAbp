@@ -96,8 +96,12 @@
             
               <td> <input placeholder="wastage" type="text" formControlName="wastage" (change)="metalWeightChanged($event,i)" /></td>
               <td> <input placeholder="totalWeight" type="text" formControlName="totalWeight" /></td>
-              <td> <input placeholder="totalPrice" type="text" formControlName="totalPrice" /></td>
-              <td><button (click)="DeleteOrderDetail(i)" class="btn btn-danger">Del</button></td>
+              <td> {{orderDetailsFormArray.controls[i].get('totalPrice').value}}</td>
+
+              <td>
+                  <button (click)="DeleteOrderDetail(i)" class="btn btn-danger">Del</button>
+            
+            </td>
             </tr>
           </tbody>
         </table>

@@ -3,14 +3,8 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-6">
-            <h1>{{ "Orders" | localize }}</h1>
-          </div>
-          <div class="col-6 text-right">
-            <a href="javascript:;" class="btn bg-blue" (click)="createOrder()">
-              <i class="fa fa-plus-square"></i>
-              {{ "Create" | localize }}
-            </a>
-          </div>
+            <h1>{{ "Invoices" | localize }}</h1>
+          </div>      
         </div>
       </div>
     </section>
@@ -42,67 +36,47 @@
             <table class="table table-hover text-nowrap" [busy]="isTableLoading">
               <thead class="bg-light">
                 <tr>
-                  <th>{{ "orderDate" | localize }}</th>
-                  <th>{{ "requiredDate" | localize }}</th>
-                  <th>{{ "customer" | localize }}</th>
-                  <th>{{ "status" | localize }}</th>
+                  <th>{{ "invoiceDate" | localize }}</th>
+                  <th>{{ "paymentStatus" | localize }}</th>
+                  <th>{{ "paidAmount" | localize }}</th>
+                  <th>{{ "totalPaymentAmount" | localize }}</th>
                   <th style="width: 200px;">{{ "Actions" | localize }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr
                   *ngFor="
-                    let order of orders
+                    let invoice of invoices
                       | paginate
                         : {
                             id: 'server',
                             itemsPerPage: pageSize,
                             currentPage: pageNumber,
                             totalItems: totalItems
-                          }order
+                          }customer
                   "
                 >
-                  <td>{{ order.orderDate }}</td>
-                  <td>{{ order.requiredDate }}</td>
-                  <td>{{ order.customer }}</td>
-                  <td>{{ order.status }}</td>
+                  <td>{{ invoice.invoiceDate }}</td>
+                  <td>{{ invoice.paymentStatus }}</td>
+                  <td>{{ invoice.paidAmount }}</td>
+                  <td>{{ invoice.totalPaymentAmount }}</td>
                   <td>
                     <button
                       type="button"
                       class="btn btn-sm bg-secondary"
-                      (click)="editOrder(order)"
+                      (click)="editCustomer(customer)"
                     >
                       <i class="fas fa-pencil-alt"></i>
-                      {{ "Edit" | localize }}
+                      {{ "Print" | localize }}
                     </button>
-                   
                     <button
                       type="button"
-                      class="btn btn-sm bg-danger mx-2"
-                      (click)="delete(order)"
+                      class="btn btn-sm bg-secondary mx-2"
+                      (click)="delete(customer)"
                     >
                       <i class="fas fa-trash"></i>
-                      {{ "Delete" | localize }}
+                      {{ "Detail" | localize }}
                     </button>
-
-                    <button  
-                    type="button"
-                    class="btn btn-sm bg-secondary mx-2"
-                    (click)="paymentProcess(order.id)"
-                  >
-                    <i class="fas fa-money-bill"></i>
-                    {{ "Pay" | localize }}
-                  </button>
-
-                  <button  
-                  type="button"
-                  class="btn btn-sm bg-secondary mx-2"
-                  (click)="DisplayOrderDetail(order.id)"
-                >
-                  <i class="fas fa-eye"></i>
-                  {{ "Detail" | localize }}
-                </button>
-
                   </td>
                 </tr>
               </tbody>

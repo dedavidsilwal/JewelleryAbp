@@ -12,6 +12,7 @@ import { MetaltypesComponent } from './metaltypes/metaltypes.component';
 import { OrdersComponent } from './orders/orders.component';
 import { ProductsComponent } from './products/products.component';
 import { CustomersComponent } from './customers/customers.component';
+import { InvoicesComponent } from './invoices/invoices.component';
 
 
 @NgModule({
@@ -30,7 +31,7 @@ import { CustomersComponent } from './customers/customers.component';
                     { path: 'products', component: ProductsComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
                     { path: 'orders', component: OrdersComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
                     { path: 'customers', component: CustomersComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
-
+                    { path: 'invoices', component: InvoicesComponent, data: { permission: 'Pages.Orders' }, canActivate: [AppRouteGuard] },
                     { path: 'update-password', component: ChangePasswordComponent }
                 ]
             }

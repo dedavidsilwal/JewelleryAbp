@@ -120,15 +120,24 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
     });
 
 
-    this.orderDetailsFormArray.controls.forEach(element=>{
+    this.orderDetailsFormArray.controls.forEach(element => {
+
+      this.form.controls['orderDetails']
+      .valueChanges
+      .subscribe( (orderEntry:OrderDetailDto[]) => {
+        this.totalPrice =  orderEntry.map(c => c.totalPrice).reduce((sum, current) => sum + current);
+
+    });
+
       element.get('productId').valueChanges.subscribe( val =>{
         element.get('productName').setValue(this.Products.find(s => s.id.match(val)).productName);
 
       });
-
-
     })
- 
+
+
+
+
   }
 
   buildForm(): void {

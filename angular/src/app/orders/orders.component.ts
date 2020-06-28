@@ -13,6 +13,8 @@ import {
 
 import { CreateOrderComponent } from './create-order/create-order.component';
 import { EditOrderComponent } from './edit-order/edit-order.component';
+import { PaymentProcessComponent } from './payment-process/payment-process.component';
+import { OrderDetailComponent } from './order-detail/order-detail.component';
 
 class PagedMetalTypeRequestDto extends PagedRequestDto {
   keyword: string;
@@ -42,7 +44,7 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
     request.keyword = this.keyword;
 
     this._orderService
-      .getAll(request.keyword, false,request.skipCount, request.maxResultCount)
+      .getAll(request.keyword, false, request.skipCount, request.maxResultCount)
       .pipe(
         finalize(() => {
           finishedCallback();
@@ -52,8 +54,8 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
         this.orders = result.items;
         this.showPaging(result, pageNumber);
       });
-    }
-      
+  }
+
   delete(product: OrderDto): void {
     abp.message.confirm(
       this.l('RoleDeleteWarningMessage', product.id),
@@ -68,7 +70,7 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
                 this.refresh();
               })
             )
-            .subscribe(() => {});
+            .subscribe(() => { });
         }
       }
     );
@@ -82,17 +84,45 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
     this.showCreateOrEditOrderDialog(order.id);
   }
 
+  paymentProcess(id: string): void {
+    let paymentProcessDialog: BsModalRef;
+
+    paymentProcessDialog = this._modalService.show(
+    PaymentProcessComponent,
+    {
+      class: 'modal-lg'
+    });
+
+    paymentProcessDialog.content.onSave.subscribe(() => {
+      this.refresh();
+    });
+  }
+
+  DisplayOrderDetail(id: string): void {
+    let OrderDisplayDialog: BsModalRef;
+
+    OrderDisplayDialog = this._modalService.show(
+    OrderDetailComponent,
+    {
+      class: 'modal-lg'
+    });
+
+    OrderDisplayDialog.content.onSave.subscribe(() => {
+      this.refresh();
+    });
+  }
+
   showCreateOrEditOrderDialog(id?: string): void {
-    let createOrEditMetalTypeDialog: BsModalRef;
+    let createOrEditDialog: BsModalRef;
     if (!id) {
-      createOrEditMetalTypeDialog = this._modalService.show(
+      createOrEditDialog = this._modalService.show(
         CreateOrderComponent,
         {
-          class: 'modal-lg',        
+          class: 'modal-lg',
         }
       );
     } else {
-      createOrEditMetalTypeDialog = this._modalService.show(
+      createOrEditDialog = this._modalService.show(
         EditOrderComponent,
         {
           class: 'modal-lg',
@@ -103,7 +133,7 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
       );
     }
 
-    createOrEditMetalTypeDialog.content.onSave.subscribe(() => {
+    createOrEditDialog.content.onSave.subscribe(() => {
       this.refresh();
     });
   }
