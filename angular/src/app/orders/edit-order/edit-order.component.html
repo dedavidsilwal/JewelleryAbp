@@ -37,7 +37,10 @@
         </label>
   
         <div class="col-md-9">
-          <input type="datetime-local" class="form-control" formControlName="requiredDate" />
+          <input type="text" class="form-control" formControlName="requiredDate"
+          #datepickerYMD="bsDatepicker"
+        bsDatepicker [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY, h:mm:ss a' }"
+          />
   
           <span class="text-danger"
             *ngIf="(orderFormControl.requiredDate.touched || save) && orderFormControl.requiredDate.errors?.requiredDate">
@@ -92,15 +95,14 @@
               <td> <input placeholder="metalCostThisDay" type="text" formControlName="metalCostThisDay" /></td>
             
               <td> <input placeholder="makingCharge" type="text" formControlName="makingCharge"   /></td>
-              <td> <input placeholder="weight" type="text" formControlName="weight" (change)="metalWeightChanged($event,i)" /></td>
+              <td> <input placeholder="weight" type="text" formControlName="weight" /></td>
             
-              <td> <input placeholder="wastage" type="text" formControlName="wastage" (change)="metalWeightChanged($event,i)" /></td>
+              <td> <input placeholder="wastage" type="text" formControlName="wastage"/></td>
               <td> <input placeholder="totalWeight" type="text" formControlName="totalWeight" /></td>
               <td> {{orderDetailsFormArray.controls[i].get('totalPrice').value}}</td>
 
               <td>
-                  <button (click)="DeleteOrderDetail(i)" class="btn btn-danger">Del</button>
-            
+                  <button (click)="DeleteOrderDetail(i)" class="btn btn-danger">Del</button>            
             </td>
             </tr>
           </tbody>

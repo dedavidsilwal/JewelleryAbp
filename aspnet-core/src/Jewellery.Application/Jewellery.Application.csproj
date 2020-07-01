@@ -12,5 +12,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Jewellery.Core\Jewellery.Core.csproj" />
+    <ProjectReference Include="..\Jewellery.EntityFrameworkCore\Jewellery.EntityFrameworkCore.csproj" />
   </ItemGroup>
 </Project>

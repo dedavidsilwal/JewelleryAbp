@@ -88,10 +88,14 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
     let paymentProcessDialog: BsModalRef;
 
     paymentProcessDialog = this._modalService.show(
-    PaymentProcessComponent,
-    {
-      class: 'modal-lg'
-    });
+      PaymentProcessComponent,
+      {
+        class: 'modal-lg'
+        ,
+        initialState: {
+          id: id,
+        }
+      });
 
     paymentProcessDialog.content.onSave.subscribe(() => {
       this.refresh();
@@ -102,10 +106,13 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
     let OrderDisplayDialog: BsModalRef;
 
     OrderDisplayDialog = this._modalService.show(
-    OrderDetailComponent,
-    {
-      class: 'modal-lg'
-    });
+      OrderDetailComponent,
+      {
+        class: 'modal-lg',
+        initialState: {
+          id: id,
+        }
+      });
 
     OrderDisplayDialog.content.onSave.subscribe(() => {
       this.refresh();

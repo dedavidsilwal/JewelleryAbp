@@ -62,9 +62,9 @@
                           }order
                   "
                 >
-                  <td>{{ order.orderDate }}</td>
-                  <td>{{ order.requiredDate }}</td>
-                  <td>{{ order.customer }}</td>
+                  <td>{{ order.orderDate.format('D MMM YYYY, h:mm:ss a') }}</td>
+                  <td>{{ order.requiredDate.format('D MMM YYYY, h:mm:ss a') }}</td>
+                  <td>{{ order.customer.customerName }}</td>
                   <td>{{ order.status }}</td>
                   <td>
                     <button

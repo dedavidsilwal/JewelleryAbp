@@ -23,6 +23,14 @@
     <Compile Remove="Migrations\20200627194129_RemoveWeightTypeValueConversion.Designer.cs" />
     <Compile Remove="Migrations\20200628093336_orderCstomerIdIssue.cs" />
     <Compile Remove="Migrations\20200628093336_orderCstomerIdIssue.Designer.cs" />
+    <Compile Remove="Migrations\20200629164815_alterOrderTable.cs" />
+    <Compile Remove="Migrations\20200629164815_alterOrderTable.Designer.cs" />
+    <Compile Remove="Migrations\20200629165339_alterOrderTable.cs" />
+    <Compile Remove="Migrations\20200629165339_alterOrderTable.Designer.cs" />
+    <Compile Remove="Migrations\20200629165649_alterOrderTable.cs" />
+    <Compile Remove="Migrations\20200629165649_alterOrderTable.Designer.cs" />
+    <Compile Remove="Migrations\20200701164759_invoice.cs" />
+    <Compile Remove="Migrations\20200701164759_invoice.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.4" />

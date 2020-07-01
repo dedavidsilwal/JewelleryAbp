@@ -11,8 +11,9 @@ import { AppComponentBase } from '@shared/app-component-base';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { OrderServiceProxy, CreateOrderDto, MetalTypeServiceProxy, MetalTypeDto, CustomerServiceProxy, CustomerDto, ProductServiceProxy, ProductDto, EditOrderDto, OrderDetailDto } from '@shared/service-proxies/service-proxies';
 import { Observable, of, Subject, Subscription, fromEvent } from 'rxjs';
-import { map, filter, debounceTime, distinctUntilChanged, switchAll, tap, finalize } from 'rxjs/operators';
+import { map, filter, debounceTime, distinctUntilChanged, switchAll, tap, finalize, publishReplay } from 'rxjs/operators';
 import { TypeaheadMatch } from 'ngx-bootstrap/typeahead';
+const CACHE_SIZE = 1;
 
 
 @Component({
@@ -35,7 +36,6 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
   totalPrice: number;
 
   id: string;
-
 
   public Customers: CustomerDto[] = [];
   public Products: ProductDto[] = [];
@@ -69,7 +69,7 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
       metalType: '',
       metalCostThisDay: '',
       totalWeight: '',
-      totalPrice: '',
+      totalPrice: ''
     });
   }
 
@@ -79,65 +79,75 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
   ngOnInit(): void {
 
+    this.buildForm();
+
+    this.orderDetailsFormArray.push(this.orderDetailsFormGroup);
+
+    this._orderService.fetchOrderWithDetails(this.id)
+      .subscribe(result => {
+
+        this.form.patchValue(result);
+        this.form.patchValue({ 'requiredDate': new Date(result.requiredDate?.toString()) });
+
+        this.orderDetailsFormArray.patchValue(result.orderDetails);
+
+      });
+
     this._customerService.fetchAllCustomers()
+      //  .pipe(publishReplay(CACHE_SIZE))
       .subscribe((result: CustomerDto[]) => {
         this.Customers = result;
       });
 
     this._productService.fetchAll()
+      // .pipe(publishReplay(CACHE_SIZE))
       .subscribe((result: ProductDto[]) => {
         this.Products = result;
       });
 
-
-    this.buildForm();
-
-  
-
-
-    this.orderDetailsFormArray.push(this.orderDetailsFormGroup);
-
-    // this.orderDetailsFormArray.controls['productId'].valueChanges
-    // .subscribe( (value) => {  
-
-    //   this.form.get('productName').setValue(this.Products.find(s => s.id.match(s.id)).productName);
-    // });
-
-    this._orderService.fetchOrderWithDetails(this.id)
-    .subscribe(result => {
-
-      this.form.patchValue(result);
-
-      this.orderDetailsFormArray.patchValue(result.orderDetails);
-
-    });
-
     this.form.controls['customerId']
-    .valueChanges
-    .subscribe(val => {
-      const cs = this.Customers.find(s => s.id.match(val)).customerName;
-      this.form.get('customerName').setValue(cs);
-    });
+      .valueChanges
+      .subscribe(val => {
+        const cs = this.Customers.find(s => s.id.match(val))?.customerName;
+        this.form.get('customerName').setValue(cs);
+      });
 
 
     this.orderDetailsFormArray.controls.forEach(element => {
 
       this.form.controls['orderDetails']
-      .valueChanges
-      .subscribe( (orderEntry:OrderDetailDto[]) => {
-        this.totalPrice =  orderEntry.map(c => c.totalPrice).reduce((sum, current) => sum + current);
+        .valueChanges
+        .subscribe((orderEntry: OrderDetailDto[]) => {
+          this.totalPrice = orderEntry.map(c => c.totalPrice).reduce((sum, current) => sum + current);
 
-    });
+        });
 
-      element.get('productId').valueChanges.subscribe( val =>{
-        element.get('productName').setValue(this.Products.find(s => s.id.match(val)).productName);
+      element.get('productId').valueChanges.subscribe(val => {
+        element.get('productName').setValue(this.Products.find(s => s.id.match(val))?.productName);
+      });
+
+      element.get('weight').valueChanges.subscribe(val => {
+
+        const weight = parseFloat(element.get('weight').value) || 0;
+        const wastage = parseFloat(element.get('wastage').value) || 0;
+
+        const totalWeight = weight + wastage;
+
+        element.get('totalWeight').setValue(totalWeight);
+
+      });
+
+
+      element.get('totalWeight').valueChanges.subscribe(val => {
+
+        const todayPrice = parseFloat(element.get('metalCostThisDay').value);
+        const makingCharge = parseFloat(element.get('makingCharge').value) || 0;
+        const totalPrice = val * todayPrice + makingCharge;
+
+        element.get('totalPrice').setValue(totalPrice);
 
       });
     })
-
-
-
-
   }
 
   buildForm(): void {
@@ -145,7 +155,7 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
       customerId: '',
       customerName: '',
       requiredDate: '',
-      advancePaymentAmount:'',
+      advancePaymentAmount: '',
       orderDetails: this.fb.array([])
     });
   }
@@ -177,29 +187,7 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
     orderEntry.get('totalWeight').setValue(product.estimatedWeight);
     orderEntry.get('totalPrice').setValue(product.estimatedCost);
-
-    // this.orderDetailsFormGroup.get('productId').setValue(e.item.id);
   }
-
-  metalWeightChanged(event, index: number): void {
-    const orderEntry = (this.form.get('orderDetails') as FormArray).controls[index];
-
-    const weight = parseFloat(orderEntry.get('weight').value) || 0;
-    const wastage = parseFloat(orderEntry.get('wastage').value) || 0;
-
-    const totalWeight = weight + wastage;
-
-    orderEntry.get('totalWeight').setValue(totalWeight);
-
-    const todayPrice = parseFloat(orderEntry.get('metalCostThisDay').value);
-    const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
-    const totalPrice = totalWeight * todayPrice + makingCharge;
-
-    orderEntry.get('totalPrice').setValue(totalPrice);
-
-  }
-
-
 
   DeleteOrderDetail(index: number): void {
     this.orderDetailsFormArray.removeAt(index);

@@ -53,10 +53,13 @@ namespace Jewellery.Jewellery.Dto
 
     public class UpdatePaymentDto
     {
+        public UpdatePaymentDto()
+        {
+            Status = PaymentStatus.Paid;
+        }
         public Guid OrderId { get; set; }
-        public decimal? PaidAmount { get; set; }
-
-
+        public decimal PaidAmount { get; set; }
+        public PaymentStatus Status { get; set; }
     }
 
     public class OrderStatusChangeDto
@@ -97,7 +100,7 @@ namespace Jewellery.Jewellery.Dto
         public DateTime? RequiredDate { get; set; }
 
         public Guid CustomerId { get; set; }
-        public Customer Customer { get; set; }
+        public CustomerDto Customer { get; set; }
 
 
         public OrderStatus Status { get; set; }
@@ -123,22 +126,11 @@ namespace Jewellery.Jewellery.Dto
         public DateTime InvoiceDate { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
 
-        public int PaidAmount { get; set; }
-        public int TotalPaymentAmount { get; set; }
+        public decimal PaidAmount { get; set; }
+        public decimal TotalPaymentAmount { get; set; }
 
+        public string CustomerName { get; set; }
 
-        public Guid OrderId { get; set; }
-        public OrderDto Order { get; set; }
-
-
-        public Guid SaleId { get; set; }
-        public SaleDto Sale { get; set; }
-
-
-        public BillType GetBillType()
-        {
-            return OrderId != default ? BillType.Order : BillType.Sale;
-        }
     }
 
     public enum BillType

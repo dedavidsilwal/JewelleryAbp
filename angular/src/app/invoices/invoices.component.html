@@ -37,6 +37,7 @@
               <thead class="bg-light">
                 <tr>
                   <th>{{ "invoiceDate" | localize }}</th>
+                  <th>{{ "customerName" | localize }}</th>
                   <th>{{ "paymentStatus" | localize }}</th>
                   <th>{{ "paidAmount" | localize }}</th>
                   <th>{{ "totalPaymentAmount" | localize }}</th>
@@ -56,7 +57,8 @@
                           }customer
                   "
                 >
-                  <td>{{ invoice.invoiceDate }}</td>
+                  <td>{{ invoice.invoiceDate.toString() }}</td>
+                  <td>{{ invoice.order?.customerName }}</td>
                   <td>{{ invoice.paymentStatus }}</td>
                   <td>{{ invoice.paidAmount }}</td>
                   <td>{{ invoice.totalPaymentAmount }}</td>
@@ -64,7 +66,6 @@
                     <button
                       type="button"
                       class="btn btn-sm bg-secondary"
-                      (click)="editCustomer(customer)"
                     >
                       <i class="fas fa-pencil-alt"></i>
                       {{ "Print" | localize }}
@@ -72,7 +73,6 @@
                     <button
                       type="button"
                       class="btn btn-sm bg-secondary mx-2"
-                      (click)="delete(customer)"
                     >
                       <i class="fas fa-trash"></i>
                       {{ "Detail" | localize }}

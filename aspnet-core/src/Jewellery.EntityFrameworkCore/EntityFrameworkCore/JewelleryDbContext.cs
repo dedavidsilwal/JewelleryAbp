@@ -39,6 +39,7 @@ namespace Jewellery.EntityFrameworkCore
             modelBuilder.Entity<Order>().Property(p => p.OrderDate).HasColumnType("DATETIME");
             modelBuilder.Entity<Order>().Property(p => p.RequiredDate).HasColumnType("DATETIME");
             modelBuilder.Entity<Order>().Property(p => p.ShippedDate).HasColumnType("DATETIME");
+
             modelBuilder.Entity<Invoice>().Property(p => p.InvoiceDate).HasColumnType("DATETIME");
 
             modelBuilder.Entity<OrderDetail>().HasKey(e => new { e.OrderId, e.ProductId });

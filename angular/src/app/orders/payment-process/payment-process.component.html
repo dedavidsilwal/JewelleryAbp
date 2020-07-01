@@ -1,50 +1,37 @@
 <form
   class="form-horizontal"
   autocomplete="off"
-  #createMetalTypeForm="ngForm"
+  [formGroup]="updateForm"
   (ngSubmit)="save()"
 >
   <abp-modal-header
     [title]="'UpdatePayment' | localize"
     (onCloseClick)="bsModalRef.hide()"
   ></abp-modal-header>
- 
-<div class="modal-body">
-  
-    {{paymentProcess.advancePayment}}
-   {{paymentProcess.totalAmount}}
 
+  <div class="modal-body">
+    
+    advancePayment: {{ paymentProcess?.advancePayment }}
+    totalAmount: {{ paymentProcess?.totalAmount }}
 
     <div class="form-group row required">
-        <label class="col-md-3 col-form-label" for="paidAmount">
-          {{ "paidAmount" | localize }}
-        </label>
-        <div class="col-md-9">
-          <input
-            type="number"
-            class="form-control"
-            name="paidAmount"
-            id="paidAmount"
-            required
-            minlength="2"
-            maxlength="32"
-            [(ngModel)]="updatePayment.paidAmount"
-            #paidAmountModel="ngModel"
-            #paidAmountEl
-          />
-          <abp-validation-summary
-            [control]="paidAmountModel"
-            [controlEl]="paidAmountEl"
-          ></abp-validation-summary>
-        </div>
+      <label class="col-md-3 col-form-label" for="paidAmount">
+        {{ "paidAmount" | localize }}
+      </label>
+      <div class="col-md-9">
+        <input
+          type="number"
+          class="form-control"
+          formControlName="paidAmount"
+          required
+        />
       </div>
-   
-</div>
+    </div>
+  </div>
 
- 
   <abp-modal-footer
     [cancelDisabled]="saving"
-    [saveDisabled]="!createMetalTypeForm.form.valid || saving"
+    [saveDisabled]="!updateForm.valid || saving"
     (onCancelClick)="bsModalRef.hide()"
   ></abp-modal-footer>
 </form>

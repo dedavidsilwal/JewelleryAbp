@@ -8,10 +8,18 @@ import {
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import * as _ from 'lodash';
 import { AppComponentBase } from '@shared/app-component-base';
-import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
-import { OrderServiceProxy, CreateOrderDto, MetalTypeServiceProxy, MetalTypeDto, CustomerServiceProxy, CustomerDto, ProductServiceProxy, ProductDto } from '@shared/service-proxies/service-proxies';
-import { Observable, of, Subject, Subscription, fromEvent } from 'rxjs';
-import { map, filter, debounceTime, distinctUntilChanged, switchAll, tap, finalize } from 'rxjs/operators';
+import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
+import {
+  OrderServiceProxy,
+  CreateOrderDto,
+  MetalTypeServiceProxy,
+  MetalTypeDto,
+  CustomerServiceProxy,
+  CustomerDto,
+  ProductServiceProxy,
+  ProductDto
+} from '@shared/service-proxies/service-proxies';
+import { finalize } from 'rxjs/operators';
 import { TypeaheadMatch } from 'ngx-bootstrap/typeahead';
 
 
@@ -36,6 +44,8 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
 
   public Customers: CustomerDto[] = [];
   public Products: ProductDto[] = [];
+
+  showAdvancePayment = false;
 
   constructor(
     private _orderService: OrderServiceProxy,
@@ -90,11 +100,11 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
     this.buildForm();
     this.orderDetailsFormArray
       .valueChanges
-      .subscribe(s => {
+      .subscribe(() => {
       });
 
     this.orderDetailsFormArray.push(this.orderDetailsFormGroup);
- 
+
   }
 
   calculateTotalAmount() {
@@ -105,7 +115,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
     for (let index = 0; index < orderDetailFormArray.length; index++) {
       const element = orderDetailFormArray.controls[index];
 
-      let price = parseFloat(element.get('totalPrice').value) || 0;
+      const price = parseFloat(element.get('totalPrice').value) || 0;
       Amount = Amount + price;
       console.log(price);
 
@@ -145,7 +155,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
     // this.orderDetailsFormGroup.get('productId').setValue(e.item.id);
   }
 
-  metalWeightChanged(event, index: number): void {
+  metalWeightChanged(index: number): void {
     const orderEntry = (this.form.get('orderDetails') as FormArray).controls[index];
 
     const weight = parseFloat(orderEntry.get('weight').value) || 0;
@@ -168,7 +178,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
       customerId: '',
       customerName: '',
       requiredDate: '',
-      advancePaymentAmount:'',
+      advancePaymentAmount: '',
       orderDetails: this.fb.array([])
     });
   }

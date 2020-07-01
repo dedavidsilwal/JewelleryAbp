@@ -18,6 +18,7 @@ namespace Jewellery.Jewellery
         public Order()
         {
             OrderDetails = new HashSet<OrderDetail>();
+            Invoices = new HashSet<Invoice>();
             Status = OrderStatus.Active;
             OrderDate = DateTime.Now;
         }
@@ -69,19 +70,19 @@ namespace Jewellery.Jewellery
         public DateTime InvoiceDate { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
 
-        public int PaidAmount { get; set; }
+        public decimal PaidAmount { get; set; }
         public int TotalPaymentAmount { get; set; }
 
 
         public Guid OrderId { get; set; }
         public Order Order { get; set; }
 
-        [NotMapped]
-        public bool PartialPaid { get; set; }
+        //[NotMapped]
+        //public bool PartialPaid { get; set; }
 
 
-        [NotMapped]
-        public int RemaingAmount => PaymentStatus == PaymentStatus.PartialPayment ? TotalPaymentAmount - PaidAmount : default;
+        //[NotMapped]
+        //public decimal RemaingAmount => PaymentStatus == PaymentStatus.PartialPayment ? TotalPaymentAmount - PaidAmount : default;
     }
 
     public class OrderDetail

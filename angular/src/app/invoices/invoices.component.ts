@@ -6,7 +6,7 @@ import {
   PagedListingComponentBase,
   PagedRequestDto
 } from '@shared/paged-listing-component-base';
-import {  CustomerServiceProxy, CustomerDtoPagedResultDto, InvoiceDto, InvoiceServiceProxy, InvoiceDtoPagedResultDto } from '@shared/service-proxies/service-proxies';
+import { CustomerServiceProxy, CustomerDtoPagedResultDto, InvoiceDto, InvoiceServiceProxy, InvoiceDtoPagedResultDto } from '@shared/service-proxies/service-proxies';
 
 import { debug } from 'console';
 
@@ -21,7 +21,6 @@ class PagedInvoiceRequestDto extends PagedRequestDto {
 
 export class InvoicesComponent extends PagedListingComponentBase<InvoiceDto> {
 
- 
   invoices: InvoiceDto[] = [];
   keyword = '';
 
@@ -41,7 +40,7 @@ export class InvoicesComponent extends PagedListingComponentBase<InvoiceDto> {
     request.keyword = this.keyword;
 
     this._invoiceService
-      .getAll(request.keyword, false,request.skipCount, request.maxResultCount)
+      .getAll(request.keyword, false, request.skipCount, request.maxResultCount)
       .pipe(
         finalize(() => {
           finishedCallback();
@@ -52,10 +51,10 @@ export class InvoicesComponent extends PagedListingComponentBase<InvoiceDto> {
         this.showPaging(result, pageNumber);
       });
 
-    }
+  }
 
-    protected delete(entity: InvoiceDto): void {
-      throw new Error('Method not implemented.');
-    }
+  protected delete(entity: InvoiceDto): void {
+    throw new Error('Method not implemented.');
+  } 
 
 }
