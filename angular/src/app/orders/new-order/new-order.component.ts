@@ -22,7 +22,6 @@ import { finalize } from 'rxjs/operators';
 import { TypeaheadMatch } from 'ngx-bootstrap/typeahead';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 
-
 @Component({
   templateUrl: './new-order.component.html',
   animations: [appModuleAnimation()]

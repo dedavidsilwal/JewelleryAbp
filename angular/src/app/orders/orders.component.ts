@@ -125,14 +125,14 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
       createOrEditDialog = this._modalService.show(
         CreateOrderComponent,
         {
-          class: 'modal-lg',
+          class: 'modal-xl',
         }
       );
     } else {
       createOrEditDialog = this._modalService.show(
         EditOrderComponent,
         {
-          class: 'modal-lg',
+          class: 'modal-xl',
           initialState: {
             id: id,
           },

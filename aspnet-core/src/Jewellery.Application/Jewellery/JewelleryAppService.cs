@@ -4,8 +4,6 @@ namespace Jewellery.Jewellery
 {
     public class JewelleryAppService : ApplicationService
     {
-        //get weighttype enum 
-
-        public async System.Threading.Tasks.Task<string[]> GetAllWeighTypes() => new string[] { "gm","tola","kg" };
+        public string[] GetAllWeighTypes() => new string[] { "gm", "tola", "kg" };
     }
 }
