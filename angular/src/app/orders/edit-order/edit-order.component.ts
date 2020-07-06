@@ -147,8 +147,9 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
         element.get('totalPrice').setValue(totalPrice);
 
       });
-    })
+    });
   }
+
 
   buildForm(): void {
     this.form = this.fb.group({
@@ -179,10 +180,10 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
     orderEntry.get('quantity').setValue(1);
 
-    orderEntry.get('metalType').setValue(product.metalType.name);
+    orderEntry.get('metalType').setValue(product.metalType);
 
     this._metalTypeService
-      .fetchTodayMetalPrice(product.metalType.name)
+      .fetchTodayMetalPrice(product.metalType)
       .subscribe((price: number) => orderEntry.get('metalCostThisDay').setValue(price));
 
     orderEntry.get('totalWeight').setValue(product.estimatedWeight);

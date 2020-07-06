@@ -1,5 +1,4 @@
-﻿using System;
-using Abp.Zero.EntityFrameworkCore;
+﻿using Abp.Zero.EntityFrameworkCore;
 using Jewellery.Authorization.Roles;
 using Jewellery.Authorization.Users;
 using Jewellery.Jewellery;
@@ -36,6 +35,25 @@ namespace Jewellery.EntityFrameworkCore
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+
+            modelBuilder.HasSequence<int>("InvoiceNumbers", schema: "shared")
+                         .StartsAt(0001)
+                         .IncrementsBy(1);
+
+            modelBuilder.Entity<Invoice>()
+                          .Property(o => o.InvoiceNumber)
+                          .HasDefaultValueSql("NEXT VALUE FOR shared.InvoiceNumbers");
+
+            modelBuilder.HasSequence<int>("OrderNumbers", schema: "shared")
+                       .StartsAt(0001)
+                       .IncrementsBy(1);
+
+            modelBuilder.Entity<Order>()
+                          .Property(o => o.OrderNumber)
+                          .HasDefaultValueSql("NEXT VALUE FOR shared.OrderNumbers");
+
+
             modelBuilder.Entity<Order>().Property(p => p.OrderDate).HasColumnType("DATETIME");
             modelBuilder.Entity<Order>().Property(p => p.RequiredDate).HasColumnType("DATETIME");
             modelBuilder.Entity<Order>().Property(p => p.ShippedDate).HasColumnType("DATETIME");
@@ -75,12 +93,13 @@ namespace Jewellery.EntityFrameworkCore
             modelBuilder.Entity<Product>()
              .Property(e => e.Photo);
 
-            //modelBuilder
-            //    .Entity<MetalType>()
-            //    .Property(e => e.WeightType)
-            //    .HasConversion(
-            //        v => v.ToString(),
-            //        v => (WeightType)Enum.Parse(typeof(WeightType), v));
+
+  
+
+
+
+
+
 
             base.OnModelCreating(modelBuilder);
         }

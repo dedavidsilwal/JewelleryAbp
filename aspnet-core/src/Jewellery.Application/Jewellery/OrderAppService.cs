@@ -35,6 +35,21 @@ namespace Jewellery.Jewellery
         }
 
 
+        public async Task<OrderDto[]> NearOrderDeliver()
+        {
+            var query = _repository
+                .GetAll()
+                .OrderBy(s => s.RequiredDate)
+                .Take(5);
+
+            return await ObjectMapper.ProjectTo<OrderDto>(query).ToArrayAsync();
+        }
+
+        public async Task<int> TotalOrderCount() =>
+            await _repository
+            .GetAll()
+            .Where(s => s.Status == OrderStatus.Active)
+            .CountAsync();
 
         public override async Task<PagedResultDto<OrderDto>> GetAllAsync(PagedUserResultRequestDto input)
         {
@@ -132,7 +147,7 @@ namespace Jewellery.Jewellery
             //var order = await _repository.GetAll()
             //    .Include(x => x.Invoices).Where(x => x.Id == paymentDto.Id)
             //              .FirstOrDefaultAsync();
-          
+
 
 
             //update order status
@@ -149,7 +164,7 @@ namespace Jewellery.Jewellery
             //await _invoiceRepository.UpdateAsync(invoice);
 
 
-             await _invoiceRepository.InsertAsync(invoice);
+            await _invoiceRepository.InsertAsync(invoice);
 
             return true;
         }

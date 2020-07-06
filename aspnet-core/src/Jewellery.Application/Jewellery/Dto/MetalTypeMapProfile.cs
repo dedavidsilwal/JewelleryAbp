@@ -1,9 +1,4 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Jewellery.Jewellery.Dto
 {
@@ -14,11 +9,15 @@ namespace Jewellery.Jewellery.Dto
             CreateMap<MetalTypeDto, MetalType>().ReverseMap();
             CreateMap<CreateEditMetalTypeDto, MetalType>().ReverseMap();
 
-            CreateMap<ProductDto, Product>().ReverseMap();
+            CreateMap<Product, ProductDto>()
+                .ForMember(p => p.MetalType, p => p.MapFrom(s => s.MetalType.Name))
+                .ReverseMap();
+            //   .ForMember(p => p.MetalType, p => p.MapFrom(s => s.MetalType.Name));    
+
             CreateMap<CreateEditProductDto, Product>().ReverseMap();
 
             CreateMap<CustomerDto, Customer>().ReverseMap();
-                      
+
             CreateMap<CreateOrderDto, Order>().ReverseMap();
             CreateMap<OrderDto, Order>().ReverseMap();
 

@@ -42,6 +42,7 @@
             <table class="table table-hover text-nowrap" [busy]="isTableLoading">
               <thead class="bg-light">
                 <tr>
+                  <th>{{ "orderNumber" | localize }}</th>
                   <th>{{ "orderDate" | localize }}</th>
                   <th>{{ "requiredDate" | localize }}</th>
                   <th>{{ "customer" | localize }}</th>
@@ -62,6 +63,7 @@
                           }order
                   "
                 >
+                <td>{{ order.orderNumber }}</td>
                   <td>{{ order.orderDate.format('D MMM YYYY, h:mm:ss a') }}</td>
                   <td>{{ order.requiredDate.format('D MMM YYYY, h:mm:ss a') }}</td>
                   <td>{{ order.customer.customerName }}</td>

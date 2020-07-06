@@ -13,18 +13,11 @@ namespace Jewellery.Jewellery.Dto
 
     public class MetalTypeDto : EntityDto<Guid>
     {
-        public string Name { get; set; }
+
+               public string Name { get; set; }
         public decimal Price { get; set; }
         public WeightType WeightType { get; set; }
 
-
-        public string DisplayWeightType
-        {
-            get
-            {
-                return WeightType.ToString();
-            }
-        }
     }
 
     public class CreateOrderDto : EntityDto<Guid>
@@ -75,6 +68,8 @@ namespace Jewellery.Jewellery.Dto
         {
             OrderDetails = new HashSet<CreateEditOrderDetailDto>();
         }
+        public int OrderNumber { get; set; }
+
 
         public DateTime? RequiredDate { get; set; }
 
@@ -94,6 +89,7 @@ namespace Jewellery.Jewellery.Dto
         {
             OrderDetails = new HashSet<OrderDetailDto>();
         }
+        public int OrderNumber { get; set; }
 
         public DateTime OrderDate { get; set; }
 
@@ -103,7 +99,7 @@ namespace Jewellery.Jewellery.Dto
         public CustomerDto Customer { get; set; }
 
 
-        public OrderStatus Status { get; set; }
+        public string Status { get; set; }
 
         public ICollection<OrderDetailDto> OrderDetails { get; set; }
 
@@ -120,11 +116,10 @@ namespace Jewellery.Jewellery.Dto
 
     public class InvoiceDto : EntityDto<Guid>
     {
-        public string ReceiptNumber { get; set; }
-        public string DocumentNumber { get; set; }
+        public int InvoiceNumber { get; set; }
 
         public DateTime InvoiceDate { get; set; }
-        public PaymentStatus PaymentStatus { get; set; }
+        public string PaymentStatus { get; set; }
 
         public decimal PaidAmount { get; set; }
         public decimal TotalPaymentAmount { get; set; }
@@ -209,15 +204,29 @@ namespace Jewellery.Jewellery.Dto
     public class ProductDto : EntityDto<Guid>
     {
 
+        public ProductDto()
+        {
+
+        }
+
+        public ProductDto(Product product)
+        {
+            ProductName = product.ProductName;
+            EstimatedWeight = product.EstimatedWeight;
+            EstimatedCost = product.EstimatedCost;
+            MetalType = product.MetalType.Name;
+        }
+
         public string ProductName { get; set; }
 
         public string Photo { get; set; }
 
         public Guid MetalTypeId { get; set; }
-        public MetalTypeDto MetalType { get; set; }
+        public string MetalType { get; set; }
 
         public decimal? EstimatedWeight { get; set; }
         public decimal? EstimatedCost { get; set; }
+
     }
 
     public class SaleDto : EntityDto<Guid>

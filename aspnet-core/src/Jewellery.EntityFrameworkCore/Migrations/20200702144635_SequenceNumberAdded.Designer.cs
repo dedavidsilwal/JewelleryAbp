@@ -4,21 +4,23 @@ using Jewellery.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Jewellery.Migrations
 {
     [DbContext(typeof(JewelleryDbContext))]
-    partial class JewelleryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200702144635_SequenceNumberAdded")]
+    partial class SequenceNumberAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("Relational:Sequence:shared.InvoiceNumbers", "'InvoiceNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
-                .HasAnnotation("Relational:Sequence:shared.OrderNumbers", "'OrderNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
+                .HasAnnotation("Relational:Sequence:shared.InvoiceNumbers", "'InvoiceNumbers', 'shared', '0', '1', '', '', 'Int32', 'False'")
+                .HasAnnotation("Relational:Sequence:shared.OrderNumbers", "'OrderNumbers', 'shared', '0', '1', '', '', 'Int32', 'False'")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Abp.Application.Editions.Edition", b =>

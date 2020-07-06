@@ -5,7 +5,6 @@ import {
   EventEmitter,
   Output,
 } from '@angular/core';
-import { BsModalRef } from 'ngx-bootstrap/modal';
 import * as _ from 'lodash';
 import { AppComponentBase } from '@shared/app-component-base';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
@@ -21,16 +20,16 @@ import {
 } from '@shared/service-proxies/service-proxies';
 import { finalize } from 'rxjs/operators';
 import { TypeaheadMatch } from 'ngx-bootstrap/typeahead';
+import { appModuleAnimation } from '@shared/animations/routerTransition';
 
 
 @Component({
-  templateUrl: './create-order.component.html',
+  templateUrl: './new-order.component.html',
+  animations: [appModuleAnimation()]
 })
 
-export class CreateOrderComponent extends AppComponentBase implements OnInit {
+export class NewOrderComponent extends AppComponentBase implements OnInit {
   saving = false;
-
-  @Output() onSave = new EventEmitter<any>();
 
   loading = new EventEmitter<boolean>();
 
@@ -53,7 +52,6 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
     private _metalTypeService: MetalTypeServiceProxy,
     private _productService: ProductServiceProxy,
     injector: Injector,
-    public bsModalRef: BsModalRef,
     private fb: FormBuilder
   ) {
 
@@ -151,7 +149,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
 
     orderEntry.get('totalWeight').setValue(product.estimatedWeight);
     orderEntry.get('totalPrice').setValue(product.estimatedCost);
-    }
+  }
 
   metalWeightChanged(index: number): void {
     const orderEntry = (this.form.get('orderDetails') as FormArray).controls[index];
@@ -207,8 +205,8 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
       )
       .subscribe(() => {
         this.notify.info(this.l('SavedSuccessfully'));
-        this.bsModalRef.hide();
-        this.onSave.emit();
+
+        //need to redirect
       });
   }
 }

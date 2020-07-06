@@ -23,6 +23,7 @@ namespace Jewellery.Jewellery
             OrderDate = DateTime.Now;
         }
 
+        public int OrderNumber { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime? RequiredDate { get; set; }
         public DateTime? ShippedDate { get; set; }
@@ -67,6 +68,8 @@ namespace Jewellery.Jewellery
     }
     public class Invoice : FullAuditedAggregateRoot<Guid>
     {
+
+        public int InvoiceNumber { get; set; }
         public DateTime InvoiceDate { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
 
