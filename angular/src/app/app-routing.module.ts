@@ -14,6 +14,7 @@ import { ProductsComponent } from './products/products.component';
 import { CustomersComponent } from './customers/customers.component';
 import { InvoicesComponent } from './invoices/invoices.component';
 import { NewOrderComponent } from './orders/new-order/new-order.component';
+import { SalesComponent } from './sales/sales.component';
 
 
 @NgModule({
@@ -30,8 +31,7 @@ import { NewOrderComponent } from './orders/new-order/new-order.component';
                     // tslint:disable-next-line: max-line-length
                     { path: 'metaltypes', component: MetaltypesComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
                     { path: 'products', component: ProductsComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
-
-                    // { path: 'orders', component: OrdersComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
+                    { path: 'sales', component: SalesComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
                     {
                         path: 'orders', children: [
                             { path: '', component: OrdersComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },

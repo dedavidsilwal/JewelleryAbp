@@ -1,11 +1,13 @@
 <!-- Main content -->
-<div class="invoice p-3 mb-3">
+<div class="invoice p-3 mb-3" >
+
+<div #invoice id="invoice">
   <!-- title row -->
   <div class="row">
     <div class="col-12">
       <h4>
         <i class="fas fa-globe"></i> Jewellery Shop.
-        <small class="float-right">Date: 2/10/2014</small>
+        <small class="float-right">Date: {{todayDateString}}</small>
       </h4>
     </div>
     <!-- /.col -->
@@ -26,19 +28,19 @@
     <div class="col-sm-4 invoice-col">
       To
       <address>
-        <strong>{{ order.customerId }}</strong
+        <strong>{{ order?.customerName }}</strong
         ><br />
-        Hetauda<br />
-        Phone: (555) 539-1037<br />
+        {{ order?.customerAddress }}<br />
+        Phone: {{ order?.phoneNumber }}<br />
       </address>
     </div>
     <!-- /.col -->
     <div class="col-sm-4 invoice-col">
-      <b>order Number # {{ order.orderNumber }}</b
+      <b>order Number # {{ order?.orderNumber }}</b
       ><br />
       <br />
-      <b>Order Date:</b> 4F3S8J<br />
-      <b>Advance Payment:</b> 2/22/2014<br />
+      <b>Order Date:</b> {{ order?.orderDate.format('D MMM YYYY') }}<br />
+      <b>Advance Payment:</b> {{ order?.advancePayment }}<br />
     </div>
     <!-- /.col -->
   </div>
@@ -53,20 +55,23 @@
             <th>#</th>
             <th>Product</th>
             <th>Quantity</th>
-            <th>Total Weight</th>
+            <th>Weight</th>
+            <th>Wastage</th>
             <th>Making Charge</th>
-            <th>Today Cost(Metal)</th>
+            <th>Today Metalcost</th>
             <th>Sub Total</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let order of order.orderDetails">
-            <td>{{ order.productId }}( {{ order.metalType }})</td>
-            <td>{{ order.quantity }}</td>
-            <td>{{ order.weight }}</td>
-            <td>{{ order.makingCharge }}</td>
-            <td>{{ order.metalCostThisDay }}</td>
-            <td>{{ order.totalPrice }}</td>
+          <tr *ngFor="let detail of order?.orderDetails; let i = index;">
+            <td>{{ i }}</td>
+            <td> {{detail?.productName}} ( {{  detail.metalType }} )</td>
+            <td>{{ detail?.quantity }}</td>
+            <td>{{ detail?.weight }}</td>
+            <td>{{ detail?.wastage }}</td>
+            <td>{{ detail?.makingCharge }}</td>
+            <td>{{ detail?.metalCostThisDay }}</td>
+            <td>{{ detail?.subTotalPrice }}</td>
           </tr>
         </tbody>
       </table>
@@ -78,13 +83,13 @@
   <div class="row">
     <!-- /.col -->
     <div class="col-6">
-      <p class="lead">Amount Due 2/22/2014</p>
+      <p class="lead">Amount Due {{AmountDue}}</p>
 
       <div class="table-responsive">
         <table class="table">
           <tr>
-            <th style="width: 50%;">Subtotal:</th>
-            <td>$250.30</td>
+            <th style="width: 50%;">Total Price:</th>
+            <td>Nrs.{{ order?.totalPrice }}</td>
           </tr>
         </table>
       </div>
@@ -93,23 +98,23 @@
   </div>
   <!-- /.row -->
 
+</div>
   <!-- this row will not appear when printing -->
   <div class="row no-print">
     <div class="col-12">
       <a
-        href="invoice-print.html"
         rel="noopener"
         target="_blank"
         class="btn btn-default"
+        (click)="downloadAsPDF()"
         ><i class="fas fa-print"></i> Print</a
       >
-      <button type="button" class="btn btn-success float-right">
-        <i class="far fa-credit-card"></i> Submit Payment
-      </button>
+
       <button
         type="button"
         class="btn btn-primary float-right"
         style="margin-right: 5px;"
+        (click)="downloadAsPDF()"
       >
         <i class="fas fa-download"></i> Generate PDF
       </button>

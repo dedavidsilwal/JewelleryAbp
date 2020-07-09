@@ -61,6 +61,10 @@ import { PaymentProcessComponent } from './orders/payment-process/payment-proces
 import { OrderDetailComponent } from './orders/order-detail/order-detail.component';
 import { InvoicesComponent } from './invoices/invoices.component';
 import { NewOrderComponent } from './orders/new-order/new-order.component';
+import { SalesComponent } from './sales/sales.component';
+import { CreateSaleComponent } from './sales/create-sale/create-sale.component';
+import { EditSaleComponent } from './sales/edit-sale/edit-sale.component';
+import { SaleDetailComponent } from './sales/sale-detail/sale-detail.component';
 
 
 @NgModule({
@@ -107,7 +111,11 @@ import { NewOrderComponent } from './orders/new-order/new-order.component';
     PaymentProcessComponent,
     OrderDetailComponent,
     InvoicesComponent,
-    NewOrderComponent
+    NewOrderComponent,
+    SalesComponent,
+    CreateSaleComponent,
+    EditSaleComponent,
+    SaleDetailComponent
   ],
   imports: [
     CommonModule,

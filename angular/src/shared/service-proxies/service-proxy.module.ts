@@ -18,6 +18,8 @@ import * as ApiServiceProxies from './service-proxies';
         ApiServiceProxies.ProductServiceProxy,
         ApiServiceProxies.CustomerServiceProxy,
         ApiServiceProxies.InvoiceServiceProxy,
+        ApiServiceProxies.JewelleryServiceProxy,
+        ApiServiceProxies.SaleServiceProxy,
 
         { provide: HTTP_INTERCEPTORS, useClass: AbpHttpInterceptor, multi: true }
     ]

@@ -9,6 +9,7 @@ import {
 import { CustomerServiceProxy, CustomerDtoPagedResultDto, InvoiceDto, InvoiceServiceProxy, InvoiceDtoPagedResultDto } from '@shared/service-proxies/service-proxies';
 
 import { debug } from 'console';
+import { OrderDetailComponent } from '@app/orders/order-detail/order-detail.component';
 
 class PagedInvoiceRequestDto extends PagedRequestDto {
   keyword: string;
@@ -51,6 +52,23 @@ export class InvoicesComponent extends PagedListingComponentBase<InvoiceDto> {
         this.showPaging(result, pageNumber);
       });
 
+  }
+
+  DisplayOrderDetail(id: string): void {
+    let OrderDisplayDialog: BsModalRef;
+
+    OrderDisplayDialog = this._modalService.show(
+      OrderDetailComponent,
+      {
+        class: 'modal-lg',
+        initialState: {
+          id: id,
+        }
+      });
+
+    OrderDisplayDialog.content.onSave.subscribe(() => {
+      this.refresh();
+    });
   }
 
   protected delete(entity: InvoiceDto): void {

@@ -2,6 +2,7 @@ using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Jewellery.Authorization;
 using Jewellery.EntityFrameworkCore;
 using Jewellery.Jewellery.Dto;
@@ -21,17 +22,23 @@ namespace Jewellery.Jewellery
     {
         private readonly IRepository<Order, Guid> _repository;
         private readonly IRepository<Invoice, Guid> _invoiceRepository;
+        private readonly IRepository<Customer, Guid> _customerRepository;
         private readonly IConfiguration _configuration;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
         public OrderAppService(
             IRepository<Order, Guid> repository,
             IRepository<Invoice, Guid> invoiceRepository,
-            IConfiguration configuration
+            IRepository<Customer, Guid> customerRepository,
+            IConfiguration configuration,
+            IUnitOfWorkManager unitOfWorkManager
             ) : base(repository)
         {
             _repository = repository;
             _invoiceRepository = invoiceRepository;
+            _customerRepository = customerRepository;
             _configuration = configuration;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
 
@@ -131,12 +138,13 @@ namespace Jewellery.Jewellery
                           .FirstOrDefaultAsync();
 
 
-            //need calculation
             return new PaymentOrderDto
             {
                 AdvancePayment = order?.AdvancePaymentAmount,
+                OrderNumber = order.OrderNumber,
+                CustomerName = (await _customerRepository.GetAll().FirstOrDefaultAsync(s => s.Id == order.CustomerId))?.CustomerName,
                 OrderId = order.Id,
-                TotalAmount = order.OrderDetails?.Sum(s => s.TotalPrice)
+                TotalAmount = order.OrderDetails.Sum(s => s.SubTotal)
             };
         }
 
@@ -144,48 +152,26 @@ namespace Jewellery.Jewellery
         public async Task<bool> UpdateOrderPaymentAsync(UpdatePaymentDto paymentDto)
         {
 
-            //var order = await _repository.GetAll()
-            //    .Include(x => x.Invoices).Where(x => x.Id == paymentDto.Id)
-            //              .FirstOrDefaultAsync();
-
-
-
-            //update order status
-            //generate invoice
+            using var uow = _unitOfWorkManager.Begin();
 
             var invoice = new Invoice
             {
                 InvoiceDate = DateTime.Now,
                 OrderId = paymentDto.OrderId,
                 PaidAmount = paymentDto.PaidAmount,
-                PaymentStatus = paymentDto.Status,
+                PaymentStatus = PaymentStatus.Paid
             };
-            //order.Invoices.Add(invoice);
-            //await _invoiceRepository.UpdateAsync(invoice);
 
+            var order = _repository.Get(paymentDto.OrderId);
+            order.Status = OrderStatus.Invoiced;
+
+            await _repository.UpdateAsync(order);
 
             await _invoiceRepository.InsertAsync(invoice);
 
+            await uow.CompleteAsync();
             return true;
         }
-
-        // public async Task<bool> UpdateSalePaymentAsync(UpdatePaymentDto paymentDto)
-        // {
-
-        //     // var order = await _repository.GetAll()
-        //     //               .Where(x => x.Id == paymentDto.OrderSaleId)
-        //     //               .FirstOrDefaultAsync();
-
-        //     var invoice = new Invoice
-        //     {
-        //         SaleId = paymentDto.Id,
-        //         PaidAmount = paymentDto.PaidAmount,
-        //         PaymentStatus = paymentDto.Status,
-        //     };
-        //     await _invoiceRepository.InsertAsync(invoice);
-
-        //     return true;
-        // }
 
         public async Task<bool> UpdateOrderStatusAsync(OrderStatusChangeDto statusChangeDto)
         {
@@ -199,6 +185,35 @@ namespace Jewellery.Jewellery
             order.Status = statusChangeDto.OrderStatus;
 
             return true;
+        }
+
+        public async Task<CustomerOrderDto> FetchOrderDetail(Guid orderId)
+        {
+            var query = _repository.Get(orderId);
+            await _repository.EnsureCollectionLoadedAsync(query, o => o.OrderDetails);
+
+            var result = new CustomerOrderDto
+            {
+                CustomerName = _customerRepository.Get(query.CustomerId)?.CustomerName,
+                CustomerAddress = _customerRepository.Get(query.CustomerId)?.Address,
+                PhoneNumber = _customerRepository.Get(query.CustomerId)?.PhoneNumber,
+                OrderDate = query.OrderDate,
+                OrderNumber = query.OrderNumber,
+                RequiredDate = query.RequiredDate,
+                OrderDetails = query.OrderDetails.Select(o => new CustomerOrderDetailDto
+                {
+                    Quantity = o.Quantity,
+                    MakingCharge = o.MakingCharge,
+                    Weight = o.Weight,
+                    Wastage = o.Wastage,
+                    MetalType = o.MetalType,
+                    MetalCostThisDay = o.MetalCostThisDay,
+                    SubTotal = o.SubTotal
+                }).ToList()
+
+            };
+            return result;
+
         }
 
     }

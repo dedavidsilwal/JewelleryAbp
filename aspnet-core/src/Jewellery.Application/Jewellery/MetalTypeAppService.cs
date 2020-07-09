@@ -23,7 +23,7 @@ namespace Jewellery.Jewellery
         public async Task<MetalTypeDto[]> FetchAllMetalTypes() => await Repository
             .GetAll()
             .Select(x => ObjectMapper.Map<MetalTypeDto>(x))
-            .ToArrayAsync();        
+            .ToArrayAsync();
 
 
         public async Task<decimal?> FetchTodayMetalPrice(string metalType) => (await Repository

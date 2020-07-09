@@ -29,6 +29,8 @@
     "angular-ng-autocomplete": "^2.0.1",
     "core-js": "^3.2.1",
     "famfamfam-flags": "^1.0.0",
+    "html2canvas": "^1.0.0-rc.5",
+    "jspdf": "^1.5.3",
     "lodash": "^4.17.4",
     "moment": "2.24.0",
     "moment-timezone": "^0.5.28",

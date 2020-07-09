@@ -1696,6 +1696,9 @@ namespace Jewellery.Migrations
                         .HasColumnType("int")
                         .HasDefaultValueSql("NEXT VALUE FOR shared.OrderNumbers");
 
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("RequiredDate")
                         .HasColumnType("DATETIME");
 
@@ -1732,10 +1735,7 @@ namespace Jewellery.Migrations
                     b.Property<short>("Quantity")
                         .HasColumnType("smallint");
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("UnitPrice")
+                    b.Property<decimal>("SubTotal")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("Wastage")
@@ -1809,9 +1809,6 @@ namespace Jewellery.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal?>("AdvancePaymentAmount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
@@ -1826,6 +1823,9 @@ namespace Jewellery.Migrations
 
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("DueAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -1875,10 +1875,7 @@ namespace Jewellery.Migrations
                     b.Property<short>("Quantity")
                         .HasColumnType("smallint");
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("UnitPrice")
+                    b.Property<decimal>("SubTotal")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("Wastage")

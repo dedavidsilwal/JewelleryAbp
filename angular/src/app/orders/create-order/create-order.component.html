@@ -13,18 +13,20 @@
     <!--   begin of form  -->
 
     <div class="form-group row required">
-      <label class="col-md-3 col-form-label" for="customerId">
-        {{ "customerId" | localize }}
+      <label class="col-sm-2 col-form-label">
+        {{ "customerName" | localize }}
       </label>
 
-      <input
-        formControlName="customerName"
-        [typeahead]="Customers"
-        (typeaheadOnSelect)="selectedCustomer($event)"
-        typeaheadOptionField="customerName"
-        [typeaheadItemTemplate]="customItemTemplate"
-        class="form-control"
-      />
+      <div class="col-sm-10">
+        <input
+          formControlName="customerName"
+          [typeahead]="Customers"
+          (typeaheadOnSelect)="selectedCustomer($event)"
+          typeaheadOptionField="customerName"
+          [typeaheadItemTemplate]="customItemTemplate"
+          class="form-control"
+        />
+      </div>
 
       <ng-template #customItemTemplate let-model="item">
         <span
@@ -33,16 +35,20 @@
       </ng-template>
     </div>
 
-    <div class="form-group row">
-      <label class="col-md-3 col-form-label" for="requiredDate">
+    <div class="form-group row required">
+      <label class="col-sm-2 col-form-label" for="requiredDate">
         {{ "requiredDate" | localize }}
       </label>
 
-      <div class="col-md-9">
-          <input type="text" class="form-control" formControlName="requiredDate"
+      <div class="col-md-10">
+        <input
+          type="text"
+          class="form-control"
+          formControlName="requiredDate"
           #datepickerYMD="bsDatepicker"
-        bsDatepicker [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY, h:mm:ss a' }"
-          />
+          bsDatepicker
+          [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY, h:mm:ss a' }"
+        />
 
         <span
           class="text-danger"
@@ -65,26 +71,24 @@
       </div>
     </div>
 
-    <button (click)="createOderDetail($event)" class="btn btn-primary">
+    <button (click)="createOderDetail($event)" class="btn btn-primary addButton">
       Add
     </button>
 
-    <div class="table-responsive">
-      <table class="table table-bordered" width="50%">
+    <div class="inline-table-form form-horizontal table-responsive">
+      <table class="table table-bordered table-striped table-highlight" width="50%">
         <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">productName</th>
-            <th scope="col">quantity</th>
-            <th scope="col">metalType</th>
-            <th scope="col">metalCostThisDay</th>
-            <th scope="col">makingCharge</th>
-            <th scope="col">weight</th>
-            <th scope="col">wastage</th>
-            <th scope="col">totalWeight</th>
-            <th scope="col">totalPrice</th>
-            <th scope="col">Action</th>
-          </tr>
+            <th>#</th>
+            <th>productName</th>
+            <th>quantity</th>
+            <th>metalType</th>
+            <th>metalCost</th>
+            <th>makingCharge</th>
+            <th>weight</th>
+            <th>wastage</th>
+            <th>totalWeight</th>
+            <th>SubTotal</th>
+            <th>Action</th>
         </thead>
         <tbody>
           <tr
@@ -113,67 +117,99 @@
             </td>
             <td>
               <input
-                placeholder="quantity"
-                type="text"
+                type="number"
+                required
+                oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+                min="0"
                 formControlName="quantity"
+                class="form-control"
+
               />
             </td>
             <td>
               <input
-                placeholder="metalType"
+              required
+                readonly
                 type="text"
                 formControlName="metalType"
+                class="form-control"
+
               />
             </td>
             <td>
               <input
-                placeholder="metalCostThisDay"
-                type="text"
+              required
+                readonly
+                type="number"
+                oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+                min="0"
                 formControlName="metalCostThisDay"
+                class="form-control"
+
               />
             </td>
 
             <td>
               <input
-                placeholder="makingCharge"
-                type="text"
+                type="number"
+                oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+                min="0"
                 formControlName="makingCharge"
+                (change)="makingChargeChanged(i)"
+                class="form-control"
+
               />
             </td>
             <td>
               <input
-                placeholder="weight"
-                type="text"
+              required
+                type="number"
+                oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+                min="0"
                 formControlName="weight"
-                (change)="metalWeightChanged($event, i)"
+                (change)="metalWeightChanged(i)"
+                class="form-control"
+
               />
             </td>
 
             <td>
               <input
-                placeholder="wastage"
-                type="text"
+                type="number"
+                oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+                min="0"
                 formControlName="wastage"
-                (change)="metalWeightChanged($event, i)"
+                (change)="metalWeightChanged(i)"
+                class="form-control"
+
               />
             </td>
             <td>
               <input
-                placeholder="totalWeight"
-                type="text"
+              required
+              readonly
+                type="number"
+                oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+                min="0"
                 formControlName="totalWeight"
+                class="form-control"
+
               />
             </td>
             <td>
               <input
-                placeholder="totalPrice"
-                type="text"
+              readonly
+              required
+                type="number"
+                oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+                min="0"
                 formControlName="totalPrice"
-                (change)="calculateTotalAmount()"
+                class="form-control"
+
               />
             </td>
             <td>
-              <button (click)="DeleteOrderDetail(i)" class="btn btn-danger">
+              <button (click)="DeleteOrderDetail(i)" class="btn btn-danger form-control">
                 Del
               </button>
             </td>
@@ -182,63 +218,48 @@
       </table>
     </div>
 
-    Total Price : {{ totalPrice }}
-    <br />
+    <div class="form-group form-check row">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        (change)="showAdvancePayment = !showAdvancePayment"
+      />
+      <label class="form-check-label" style="font-weight: 700;">
+        {{ "AdvancePayment" | localize }}        
+      </label>
+    </div>
+    <div *ngIf="showAdvancePayment" class="form-group row">
 
-    <button (click)="showAdvancePayment = !showAdvancePayment;false;">
-      {{ showAdvancePayment ? "No pay Advance" : "Pay Advance" }}
-    </button>
-    <br />
-    <div *ngIf="showAdvancePayment" class="row">
-      Advance Payment :<input
-        placeholder="advancePaymentAmount"
+      <label class="col-sm-2 col-form-label">Advance Amount</label>
+      <div class="col-sm-10">
+      <input
         type="number"
+        oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+        min="0"
+        placeholder="advancePaymentAmount"
         formControlName="advancePaymentAmount"
       />
+      </div>
     </div>
-  </div>
+
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">
+        {{ "TotalPrice" | localize }}
+      </label>
+  
+      <div class="col-sm-10">
+        {{ totalPrice }}
+      </div>
+    </div>
+
+
   <!--   end of body  -->
+
+  </div>
 
   <abp-modal-footer
     [cancelDisabled]="saving"
-    [saveDisabled]="!form.valid || saving"
+    [saveDisabled]="!form.valid || saving || orderDetailsFormArray.length ==0"
     (onCancelClick)="bsModalRef.hide()"
   ></abp-modal-footer>
 </form>
-
-<style>
-td > input { 
-width: 83px;
-}
-
-  .ta-results.list-group {
-    max-width: 400px;
-    overflow: auto;
-    max-height: 75vh;
-    border: 1px solid #ccc;
-  }
-
-  .typeahead-wrap .list-group-item {
-    width: 100%;
-    text-align: left;
-    position: relative;
-    display: block;
-    padding: 5px 10px;
-    margin-bottom: -1px;
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.125);
-  }
-
-  .typeahead-wrap .list-group-item {
-    width: 100%;
-    text-align: left;
-  }
-
-  .typeahead-wrap .list-group-item.active {
-    background-color: #ccc;
-  }
-
-  .typeahead-wrap .list-group-item .item-name {
-    font-weight: bold;
-  }
-</style>

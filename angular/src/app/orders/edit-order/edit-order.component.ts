@@ -40,6 +40,9 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
   public Customers: CustomerDto[] = [];
   public Products: ProductDto[] = [];
 
+  showAdvancePayment = false;
+
+
   constructor(
     private _orderService: OrderServiceProxy,
     private _customerService: CustomerServiceProxy,
@@ -161,6 +164,34 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
     });
   }
 
+  metalWeightChanged(index: number): void {
+
+    const orderEntry = (this.form.get('orderDetails') as FormArray).controls[index];
+
+    const weight = parseFloat(orderEntry.get('weight').value) || 0;
+    const wastage = parseFloat(orderEntry.get('wastage').value) || 0;
+
+    const totalWeight = weight + wastage;
+
+    orderEntry.get('totalWeight').setValue(totalWeight);
+
+    const todayPrice = parseFloat(orderEntry.get('metalCostThisDay').value);
+    const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
+    const totalPrice = totalWeight * todayPrice + makingCharge;
+
+    orderEntry.get('totalPrice').setValue(totalPrice);
+
+  }
+
+  makingChargeChanged(index: number): void {
+
+    const orderEntry = (this.form.get('orderDetails') as FormArray).controls[index];
+    let totalPrice = parseFloat(orderEntry.get('totalPrice').value) || 0;
+    const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
+
+    totalPrice += makingCharge;
+    orderEntry.get('totalPrice').setValue(totalPrice);
+  }
 
   selectedCustomer(e: TypeaheadMatch) {
     console.log(e.item.id);

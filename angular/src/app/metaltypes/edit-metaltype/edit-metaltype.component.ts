@@ -12,6 +12,8 @@ import { AppComponentBase } from '@shared/app-component-base';
 import {
   MetalTypeServiceProxy,
   MetalTypeDto,
+  SelectListItem,
+  JewelleryServiceProxy,
 } from '@shared/service-proxies/service-proxies';
 
 @Component({
@@ -21,14 +23,19 @@ export class EditMetaltypeComponent extends AppComponentBase
   implements OnInit {
   saving = false;
   metaltype = new MetalTypeDto();
- 
-  id:string;
+
+  id: string;
+
+  WeightTypes: SelectListItem[];
+
+
 
   @Output() onSave = new EventEmitter<any>();
 
   constructor(
     injector: Injector,
     private _metalTypeService: MetalTypeServiceProxy,
+    private _jewelleryService: JewelleryServiceProxy,
     public bsModalRef: BsModalRef
   ) {
     super(injector);
@@ -36,7 +43,11 @@ export class EditMetaltypeComponent extends AppComponentBase
 
   ngOnInit(): void {
     this._metalTypeService.get(this.id)
-    .subscribe(result => this.metaltype = result);
+      .subscribe(result => this.metaltype = result);
+
+    this._jewelleryService.getAllWeighTypes().subscribe((result: SelectListItem[]) => {
+      this.WeightTypes = result;
+    });
 
   }
 

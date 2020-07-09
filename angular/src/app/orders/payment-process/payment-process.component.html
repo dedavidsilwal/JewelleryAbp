@@ -10,14 +10,13 @@
   ></abp-modal-header>
 
   <div class="modal-body">
-    <form>
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">{{
-          "invoiceNumber" | localize
+          "orderNumber" | localize
         }}</label>
 
         <div class="col-sm-10">
-          <input type="text" readonly class="form-control-plaintext" />
+          <label>{{ paymentProcess?.orderNumber }}</label>
         </div>
       </div>
 
@@ -27,7 +26,7 @@
         }}</label>
 
         <div class="col-sm-10">
-          <input type="text" readonly class="form-control-plaintext" />
+          <label>{{ paymentProcess?.customerName }}</label>     
         </div>
       </div>
 
@@ -37,12 +36,7 @@
         }}</label>
 
         <div class="col-sm-10">
-          <input
-            type="text"
-            readonly
-            class="form-control-plaintext"
-            [value]="paymentProcess?.totalAmount"
-          />
+          <label>{{ paymentProcess?.totalAmount }}</label>  
         </div>
       </div>
 
@@ -52,12 +46,7 @@
         }}</label>
 
         <div class="col-sm-10">
-          <input
-            type="text"
-            readonly
-            class="form-control-plaintext"
-            [value]="paymentProcess?.advancePayment"
-          />
+          <label>{{ paymentProcess?.advancePayment }}</label>  
         </div>
       </div>
 
@@ -75,12 +64,11 @@
           />
         </div>
       </div>
-    </form>
   </div>
 
   <abp-modal-footer
     [cancelDisabled]="saving"
-    [saveDisabled]="!updateForm.valid || saving"
+    [saveDisabled]="!updateForm.valid || saving || updateForm.get('paidAmount').value > paymentProcess.totalAmount"
     (onCancelClick)="bsModalRef.hide()"
   ></abp-modal-footer>
 </form>

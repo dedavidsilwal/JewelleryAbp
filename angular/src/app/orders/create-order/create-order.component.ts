@@ -21,10 +21,12 @@ import {
 } from '@shared/service-proxies/service-proxies';
 import { finalize } from 'rxjs/operators';
 import { TypeaheadMatch } from 'ngx-bootstrap/typeahead';
+import { debug } from 'console';
 
 
 @Component({
   templateUrl: './create-order.component.html',
+  styleUrls: ['./create-order.component.css']
 })
 
 export class CreateOrderComponent extends AppComponentBase implements OnInit {
@@ -105,9 +107,22 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
 
     this.orderDetailsFormArray.push(this.orderDetailsFormGroup);
 
+    this.orderDetailsFormArray.valueChanges.subscribe(() => this.calculateTotalAmount());
+
+    this.form.get('advancePaymentAmount').valueChanges.subscribe((val) => {
+
+      this.calculateTotalAmount();
+
+      if (this.totalPrice > 0) {
+        val = val || 0;
+        this.totalPrice -= val;
+      }
+
+    });
+
   }
 
-  calculateTotalAmount() {
+  calculateTotalAmount(): void {
 
     const orderDetailFormArray = (this.form.get('orderDetails') as FormArray);
 
@@ -121,8 +136,6 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
 
     }
     this.totalPrice = Amount;
-
-
   }
 
   selectedCustomer(e: TypeaheadMatch) {
@@ -140,7 +153,6 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
 
     orderEntry.get('productId').setValue(product.id);
 
-
     orderEntry.get('quantity').setValue(1);
 
     orderEntry.get('metalType').setValue(product.metalType);
@@ -151,9 +163,10 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
 
     orderEntry.get('totalWeight').setValue(product.estimatedWeight);
     orderEntry.get('totalPrice').setValue(product.estimatedCost);
-    }
+  }
 
   metalWeightChanged(index: number): void {
+
     const orderEntry = (this.form.get('orderDetails') as FormArray).controls[index];
 
     const weight = parseFloat(orderEntry.get('weight').value) || 0;
@@ -169,6 +182,17 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
 
     orderEntry.get('totalPrice').setValue(totalPrice);
 
+  }
+
+
+  makingChargeChanged(index: number): void {
+
+    const orderEntry = (this.form.get('orderDetails') as FormArray).controls[index];
+    let totalPrice = parseFloat(orderEntry.get('totalPrice').value) || 0;
+    const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
+
+    totalPrice += makingCharge;
+    orderEntry.get('totalPrice').setValue(totalPrice);
   }
 
   buildForm(): void {
@@ -197,6 +221,10 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
     this.saving = true;
 
     const order: CreateOrderDto = this.form.value as CreateOrderDto;
+
+    if (!this.showAdvancePayment) {
+      order.advancePaymentAmount = null;
+    }
 
     this._orderService
       .create(order)

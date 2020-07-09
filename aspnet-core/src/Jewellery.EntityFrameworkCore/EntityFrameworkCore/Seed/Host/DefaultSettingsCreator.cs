@@ -20,7 +20,7 @@ namespace Jewellery.EntityFrameworkCore.Seed.Host
         {
             int? tenantId = null;
 
-            if (JewelleryConsts.MultiTenancyEnabled == false)
+            if (JewelleryConsts.MultiTenancyEnabled == true)
             {
                 tenantId = MultiTenancyConsts.DefaultTenantId;
             }

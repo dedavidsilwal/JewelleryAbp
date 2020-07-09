@@ -38,6 +38,7 @@ namespace Jewellery.Jewellery
                          select new InvoiceDto
                          {
                              Id = inv.Id,
+                             OrderId = o.Id,
                              InvoiceNumber = inv.InvoiceNumber,
                              PaidAmount = inv.PaidAmount,
                              TotalPaymentAmount = inv.TotalPaymentAmount,
