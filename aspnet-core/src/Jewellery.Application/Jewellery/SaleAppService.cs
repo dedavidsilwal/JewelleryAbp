@@ -10,7 +10,7 @@ namespace Jewellery.Jewellery
 {
     [AbpAuthorize(PermissionNames.Pages_Orders)]
 
-    public class SaleAppService : AsyncCrudAppService<Sale, SaleDto, Guid, PagedUserResultRequestDto, SaleDto, SaleDto>
+    public class SaleAppService : AsyncCrudAppService<Sale, SaleDto, Guid, PagedUserResultRequestDto, CreateEditSaleDto, CreateEditSaleDto>
     {
         public SaleAppService(IRepository<Sale, Guid> saleRepository) : base(saleRepository)
         {

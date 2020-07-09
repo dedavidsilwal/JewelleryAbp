@@ -23,7 +23,7 @@ import {
 import { finalize } from 'rxjs/operators';
 import { TypeaheadMatch } from 'ngx-bootstrap/typeahead';
 import { debug } from 'console';
-import { SaleServiceProxy, SaleDto } from '../../../shared/service-proxies/service-proxies';
+import { SaleServiceProxy, SaleDto, CreateEditSaleDto } from '../../../shared/service-proxies/service-proxies';
 
 
 @Component({
@@ -227,7 +227,7 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
   save(): void {
     this.saving = true;
 
-    const sale: SaleDto = this.form.value as SaleDto;
+    const sale: CreateEditSaleDto = this.form.value as CreateEditSaleDto;
 
     if (!this.showAdvancePayment) {
       sale.advancePaymentAmount = null;
