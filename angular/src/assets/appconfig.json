@@ -1,6 +1,6 @@
 {
-  "remoteServiceBaseUrl": "http://localhost:21021",
-  "appBaseUrl": "http://localhost:4200",
+  "remoteServiceBaseUrl": "https://jewellery-api.azurewebsites.net",
+  "appBaseUrl": "http://localhost:8080",
   "localeMappings": [
     {
       "from": "pt-BR",
