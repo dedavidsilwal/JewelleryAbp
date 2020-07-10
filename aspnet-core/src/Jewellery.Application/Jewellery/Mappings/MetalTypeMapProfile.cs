@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using Jewellery.Jewellery.Dto;
 
-namespace Jewellery.Jewellery.Dto
+namespace Jewellery.Jewellery.Mappings
 {
     public class MetalTypeMapProfile : Profile
     {
@@ -30,6 +31,9 @@ namespace Jewellery.Jewellery.Dto
             CreateMap<CreateEditOrderDetailDto, OrderDetailDto>().ReverseMap();
 
             CreateMap<Invoice, InvoiceDto>().ReverseMap();
+
+            CreateMap<Sale, CreateEditSaleDto>().ReverseMap();
+            CreateMap<SaleDetailDto, CreateEditSaleDetailDto>().ReverseMap();
         }
     }
 }
