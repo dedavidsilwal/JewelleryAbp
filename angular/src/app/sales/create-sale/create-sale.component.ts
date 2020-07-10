@@ -11,8 +11,6 @@ import * as _ from 'lodash';
 import { AppComponentBase } from '@shared/app-component-base';
 import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
 import {
-  OrderServiceProxy,
-  CreateOrderDto,
   MetalTypeServiceProxy,
   MetalTypeDto,
   CustomerServiceProxy,
@@ -22,8 +20,7 @@ import {
 } from '@shared/service-proxies/service-proxies';
 import { finalize } from 'rxjs/operators';
 import { TypeaheadMatch } from 'ngx-bootstrap/typeahead';
-import { debug } from 'console';
-import { SaleServiceProxy, SaleDto, CreateEditSaleDto } from '../../../shared/service-proxies/service-proxies';
+import { SaleServiceProxy, CreateEditSaleDto } from '../../../shared/service-proxies/service-proxies';
 
 
 @Component({
@@ -49,7 +46,7 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
   public Customers: CustomerDto[] = [];
   public Products: ProductDto[] = [];
 
-  showAdvancePayment = false;
+  showDuePayment = false;
 
   constructor(
     private _saleService: SaleServiceProxy,
@@ -229,8 +226,8 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
     const sale: CreateEditSaleDto = this.form.value as CreateEditSaleDto;
 
-    if (!this.showAdvancePayment) {
-      sale.advancePaymentAmount = null;
+    if (!this.showDuePayment) {
+      sale.DueAmount = null;
     }
 
     this._saleService

@@ -7359,7 +7359,7 @@ export class CreateEditSaleDto implements ICreateEditSaleDto {
     saleStatus: SaleStatus;
     paymentStatus: PaymentStatus;
     saleDetails: CreateEditSaleDetailDto[] | undefined;
-    advancePaymentAmount: number | undefined;
+    DueAmount: number | undefined;
     id: string;
 
     constructor(data?: ICreateEditSaleDto) {
@@ -7382,7 +7382,7 @@ export class CreateEditSaleDto implements ICreateEditSaleDto {
                 for (let item of _data["saleDetails"])
                     this.saleDetails.push(CreateEditSaleDetailDto.fromJS(item));
             }
-            this.advancePaymentAmount = _data["advancePaymentAmount"];
+            this.DueAmount = _data["advancePaymentAmount"];
             this.id = _data["id"];
         }
     }
@@ -7405,7 +7405,7 @@ export class CreateEditSaleDto implements ICreateEditSaleDto {
             for (let item of this.saleDetails)
                 data["saleDetails"].push(item.toJSON());
         }
-        data["advancePaymentAmount"] = this.advancePaymentAmount;
+        data["advancePaymentAmount"] = this.DueAmount;
         data["id"] = this.id;
         return data; 
     }
@@ -7424,7 +7424,7 @@ export interface ICreateEditSaleDto {
     saleStatus: SaleStatus;
     paymentStatus: PaymentStatus;
     saleDetails: CreateEditSaleDetailDto[] | undefined;
-    advancePaymentAmount: number | undefined;
+    DueAmount: number | undefined;
     id: string;
 }
 

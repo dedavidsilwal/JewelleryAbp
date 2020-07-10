@@ -42,11 +42,12 @@
           <table class="table table-hover text-nowrap" [busy]="isTableLoading">
             <thead class="bg-light">
               <tr>
-                <th>{{ "orderNumber" | localize }}</th>
-                <th>{{ "orderDate" | localize }}</th>
-                <th>{{ "requiredDate" | localize }}</th>
-                <th>{{ "customer" | localize }}</th>
-                <th>{{ "status" | localize }}</th>
+                <th>{{ "saleNumber" | localize }}</th>
+                <th>{{ "saleDate" | localize }}</th>
+                <th>{{ "customerName" | localize }}</th>
+                <th>{{ "paymentStatus" | localize }}</th>
+                <th>{{ "saleStatus" | localize }}</th>
+                <th>{{ "dueAmount" | localize }}</th>
                 <th style="width: 200px;">{{ "Actions" | localize }}</th>
               </tr>
             </thead>
@@ -64,11 +65,12 @@
                   order
                 "
               >
-                <td>{{ sale.id }}</td>
-                <td>{{ sale.orderDate.format("D MMM YYYY, h:mm:ss a") }}</td>
-                <td>{{ sale.requiredDate.format("D MMM YYYY, h:mm:ss a") }}</td>
+                <td>{{ sale.saleNumber }}</td>
+                <td>{{ sale.salesDate.format("D MMM YYYY, h:mm:ss a") }}</td>
                 <td>{{ sale.customer.customerName }}</td>
-                <td>{{ sale.status }}</td>
+                <td>{{ sale.paymentStatus }}</td>
+                <td>{{ sale.saleStatus }}</td>
+                <td>{{ sale.dueAmount }}</td>
                 <td>
                   <button
                     type="button"

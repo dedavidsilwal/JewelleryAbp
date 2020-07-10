@@ -1,6 +1,6 @@
 {
-  "remoteServiceBaseUrl": "http://localhost:21021",
-  "appBaseUrl": "http://localhost:4200",
+  "remoteServiceBaseUrl": "https://jewellery-hetauda.azurewebsites.net/swagger/index.html",
+  "appBaseUrl": "https://dedavidsilwal.github.io/JewelleryAbp/",
   "localeMappings": [
     {
       "from": "pt-BR",

@@ -1,0 +1,10 @@
+{
+    "appService.preDeployTask": "publish-release",
+    "appService.deploySubpath": "bin\\Release\\netcoreapp3.1\\publish",
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.showBuildDuringDeployPrompt": false,
+    "appService.defaultWebAppToDeploy": "/subscriptions/61c96c39-5af7-4993-9cc4-99a09d91393f/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/jewellery-store1"
+}
