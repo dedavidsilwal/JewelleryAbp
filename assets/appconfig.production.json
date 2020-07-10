@@ -1,0 +1,18 @@
+{
+  "remoteServiceBaseUrl": "https://jewellery-hetauda.azurewebsites.net/swagger/index.html",
+  "appBaseUrl": "https://dedavidsilwal.github.io/JewelleryAbp/",
+  "localeMappings": [
+    {
+      "from": "pt-BR",
+      "to": "pt"
+    },
+    {
+      "from": "zh-CN",
+      "to": "zh"
+    },
+    {
+      "from": "he-IL",
+      "to": "he"
+    }
+  ]
+}
