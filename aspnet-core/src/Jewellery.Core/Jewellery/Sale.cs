@@ -12,9 +12,12 @@ namespace Jewellery.Jewellery
             SaleDetails = new HashSet<SaleDetail>();
             Invoices = new HashSet<Invoice>();
             SaleStatus = SaleStatus.Sold;
+            PaymentStatus = PaymentStatus.None;
             SalesDate = DateTime.Now;
         }
 
+
+        public int SaleNumber { get; set; }
 
         public DateTime SalesDate { get; set; }
 
@@ -33,7 +36,7 @@ namespace Jewellery.Jewellery
         public ICollection<Invoice> Invoices { get; set; }
 
 
-        public decimal? DueAmount { get; set; }
+        public decimal? PaidAmount { get; set; }
 
     }
 }

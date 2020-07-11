@@ -41,8 +41,6 @@ namespace Jewellery.Jewellery
                              OrderId = o.Id,
                              InvoiceNumber = inv.InvoiceNumber,
                              PaidAmount = inv.PaidAmount,
-                             TotalPaymentAmount = inv.TotalPaymentAmount,
-                             PaymentStatus = inv.PaymentStatus.ToString(),
                              InvoiceDate = inv.InvoiceDate,
                              CustomerName = c.CustomerName,
                          })

@@ -41,12 +41,14 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
   metaltypes = new MetalTypeDto();
 
-  totalPrice: number;
+  totalPrice = 0;
 
   public Customers: CustomerDto[] = [];
   public Products: ProductDto[] = [];
 
-  showDuePayment = false;
+  showPartialPayment = false;
+
+  dueAmount = 0;
 
   constructor(
     private _saleService: SaleServiceProxy,
@@ -63,7 +65,7 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
   }
 
   get orderDetailsFormArray(): FormArray {
-    return this.form.get('orderDetails') as FormArray;
+    return this.form.get('saleDetails') as FormArray;
   }
 
   get orderDetailsFormGroup(): FormGroup {
@@ -75,7 +77,7 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
       weight: '',
       wastage: '',
       metalType: '',
-      metalCostThisDay: '',
+      todayMetalPrice: '',
       totalWeight: '',
       totalPrice: '',
     });
@@ -109,34 +111,30 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
     this.orderDetailsFormArray.valueChanges.subscribe(() => this.calculateTotalAmount());
 
-    this.form.get('advancePaymentAmount').valueChanges.subscribe((val) => {
+    this.form.get('paidAmount').valueChanges.subscribe((val) => {
 
       this.calculateTotalAmount();
 
       if (this.totalPrice > 0) {
         val = val || 0;
-        this.totalPrice -= val;
+        this.dueAmount = this.totalPrice - val;
       }
-
     });
-
   }
 
   buildForm(): void {
     this.form = this.fb.group({
       customerId: '',
       customerName: '',
-      requiredDate: '',
-      advancePaymentAmount: '',
-      orderDetails: this.fb.array([])
+      paidAmount: '',
+      saleDetails: this.fb.array([])
     });
   }
 
 
-
   calculateTotalAmount(): void {
 
-    const orderDetailFormArray = (this.form.get('orderDetails') as FormArray);
+    const orderDetailFormArray = (this.form.get('saleDetails') as FormArray);
 
     let Amount = 0;
     for (let index = 0; index < orderDetailFormArray.length; index++) {
@@ -160,7 +158,7 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
     console.log(product);
 
 
-    const orderEntry = (this.form.get('orderDetails') as FormArray).controls[index];
+    const orderEntry = (this.form.get('saleDetails') as FormArray).controls[index];
     console.log(orderEntry);
 
     orderEntry.get('productId').setValue(product.id);
@@ -171,7 +169,7 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
     this._metalTypeService
       .fetchTodayMetalPrice(product.metalType)
-      .subscribe((price: number) => orderEntry.get('metalCostThisDay').setValue(price));
+      .subscribe((price: number) => orderEntry.get('todayMetalPrice').setValue(price));
 
     orderEntry.get('totalWeight').setValue(product.estimatedWeight);
     orderEntry.get('totalPrice').setValue(product.estimatedCost);
@@ -179,7 +177,7 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
   metalWeightChanged(index: number): void {
 
-    const orderEntry = (this.form.get('orderDetails') as FormArray).controls[index];
+    const orderEntry = (this.form.get('saleDetails') as FormArray).controls[index];
 
     const weight = parseFloat(orderEntry.get('weight').value) || 0;
     const wastage = parseFloat(orderEntry.get('wastage').value) || 0;
@@ -188,7 +186,7 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
     orderEntry.get('totalWeight').setValue(totalWeight);
 
-    const todayPrice = parseFloat(orderEntry.get('metalCostThisDay').value);
+    const todayPrice = parseFloat(orderEntry.get('todayMetalPrice').value);
     const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
     const totalPrice = totalWeight * todayPrice + makingCharge;
 
@@ -199,7 +197,7 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
   makingChargeChanged(index: number): void {
 
-    const orderEntry = (this.form.get('orderDetails') as FormArray).controls[index];
+    const orderEntry = (this.form.get('saleDetails') as FormArray).controls[index];
     let totalPrice = parseFloat(orderEntry.get('totalPrice').value) || 0;
     const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
 
@@ -226,8 +224,10 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
     const sale: CreateEditSaleDto = this.form.value as CreateEditSaleDto;
 
-    if (!this.showDuePayment) {
-      sale.DueAmount = null;
+    console.log(sale);
+
+    if (!this.showPartialPayment) {
+      sale.paidAmount = this.totalPrice;
     }
 
     this._saleService

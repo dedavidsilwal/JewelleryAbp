@@ -76,7 +76,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
       weight: '',
       wastage: '',
       metalType: '',
-      metalCostThisDay: '',
+      todayMetalCost: '',
       totalWeight: '',
       totalPrice: '',
     });
@@ -109,7 +109,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
 
     this.orderDetailsFormArray.valueChanges.subscribe(() => this.calculateTotalAmount());
 
-    this.form.get('advancePaymentAmount').valueChanges.subscribe((val) => {
+    this.form.get('advancePaid').valueChanges.subscribe((val) => {
 
       this.calculateTotalAmount();
 
@@ -159,7 +159,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
 
     this._metalTypeService
       .fetchTodayMetalPrice(product.metalType)
-      .subscribe((price: number) => orderEntry.get('metalCostThisDay').setValue(price));
+      .subscribe((price: number) => orderEntry.get('todayMetalCost').setValue(price));
 
     orderEntry.get('totalWeight').setValue(product.estimatedWeight);
     orderEntry.get('totalPrice').setValue(product.estimatedCost);
@@ -176,7 +176,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
 
     orderEntry.get('totalWeight').setValue(totalWeight);
 
-    const todayPrice = parseFloat(orderEntry.get('metalCostThisDay').value);
+    const todayPrice = parseFloat(orderEntry.get('todayMetalCost').value);
     const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
     const totalPrice = totalWeight * todayPrice + makingCharge;
 
@@ -200,7 +200,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
       customerId: '',
       customerName: '',
       requiredDate: '',
-      advancePaymentAmount: '',
+      advancePaid: '',
       orderDetails: this.fb.array([])
     });
   }
@@ -223,7 +223,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
     const order: CreateOrderDto = this.form.value as CreateOrderDto;
 
     if (!this.showAdvancePayment) {
-      order.advancePaymentAmount = null;
+      order.advancePaid = null;
     }
 
     this._orderService

@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  jewellery.api:
+    image: jewellerywebhost
+    build:
+      context: .
+      dockerfile: aspnet-core/src/Jewellery.Web.Host/Dockerfile
+
+  jewellery.ui:
+    image: jewellerywebhost
+    build:
+      context: .
+      dockerfile: angular/Dockerfile
+      

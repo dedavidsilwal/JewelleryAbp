@@ -2,9 +2,8 @@
 {
     public enum OrderStatus
     {
-        Active,
-        Canceled,
-        Invoiced,
-        PartialInvoiced
+        Active = 0,
+        Canceled = 1,
+        Delivered = 2
     }
 }

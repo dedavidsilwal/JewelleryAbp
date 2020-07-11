@@ -20,10 +20,14 @@ namespace Jewellery.Jewellery.Dto
         public CustomerDto Customer { get; set; }
 
 
-        public string Status { get; set; }
+        public string PaymentStatus { get; set; }
+
+        public string OrderStatus { get; set; }
 
         public ICollection<OrderDetailDto> OrderDetails { get; set; }
 
-        public decimal? AdvancePaymentAmount { get; set; }
+        public decimal? AdvancePaid { get; set; }
+
+        public decimal? Total { get; set; }
     }
 }

@@ -39,9 +39,7 @@
                 <th>{{ "invoiceNumber" | localize }}</th>
                 <th>{{ "invoiceDate" | localize }}</th>
                 <th>{{ "customerName" | localize }}</th>
-                <th>{{ "paymentStatus" | localize }}</th>
                 <th>{{ "paidAmount" | localize }}</th>
-                <th>{{ "totalPaymentAmount" | localize }}</th>
                 <th style="width: 200px;">{{ "Actions" | localize }}</th>
               </tr>
             </thead>
@@ -62,14 +60,12 @@
                 <td>{{ invoice.invoiceNumber }}</td>
                 <td>{{ invoice.invoiceDate.format('D MMM YYYY, h:mm:ss a') }}</td>
                 <td>{{ invoice.customerName }}</td>
-                <td>{{ invoice.paymentStatus }}</td>
                 <td>{{ invoice.paidAmount }}</td>
-                <td>{{ invoice.totalPaymentAmount }}</td>
                 <td>
-                  <button type="button" class="btn btn-sm bg-secondary">
+                  <!-- <button type="button" class="btn btn-sm bg-secondary">
                     <i class="fas fa-pencil-alt"></i>
                     {{ "Print" | localize }}
-                  </button>
+                  </button> -->
                   <button type="button" class="btn btn-sm bg-secondary mx-2" (click)="DisplayOrderDetail(invoice.orderId)" >
                     <i class="fas fa-trash"></i>
                     {{ "Detail" | localize }}

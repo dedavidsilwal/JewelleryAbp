@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Jewellery.Jewellery.Dto
 {
-    public class CustomerOrderDto : EntityDto<Guid>
+    public class CustomerOrderDisplayDto : EntityDto<Guid>
     {
         public DateTime OrderDate { get; set; }
 
@@ -15,11 +15,16 @@ namespace Jewellery.Jewellery.Dto
         public string PhoneNumber { get; set; }
         public int OrderNumber { get; set; }
 
-        public decimal AdvancePayment { get; set; }
+        public decimal? AdvancePaid { get; set; }
 
-        public ICollection<CustomerOrderDetailDto> OrderDetails { get; set; }
+        public ICollection<CustomerOrderDetailDisplayDto> OrderDetails { get; set; }
 
         public decimal TotalPrice => OrderDetails.Sum(s => s.SubTotal);
+
+        public decimal? Due => TotalPrice - (AdvancePaid.HasValue ? AdvancePaid.Value : 0);
+
+        public string OrderStatus { get; set; }
+        public string PaymentStatus { get; set; }
 
     }
 }

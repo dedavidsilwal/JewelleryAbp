@@ -46,29 +46,49 @@
         }}</label>
 
         <div class="col-sm-10">
-          <label>{{ paymentProcess?.advancePayment }}</label>  
+          <label>{{ paymentProcess?.advancePaid }}</label>  
         </div>
       </div>
 
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">{{
-          "paidAmount" | localize
+          "due" | localize
         }}</label>
 
         <div class="col-sm-10">
-          <input
-            type="number"
-            class="form-control"
-            formControlName="paidAmount"
-            required
-          />
+          <label>{{ paymentProcess?.due }}</label>  
+        </div>
+      </div>
+
+
+      <div class="form-group form-check row">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          (change)="showpartialPayment = !showpartialPayment"
+        />
+        <label class="form-check-label" style="font-weight: 700;">
+          {{ "paidAmount" | localize }}        
+        </label>
+      </div>
+      <div *ngIf="showpartialPayment" class="form-group row">
+  
+        <label class="col-sm-2 col-form-label">Due</label>
+        <div class="col-sm-10">
+        <input
+          type="number"
+          oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+          min="0" 
+          [max]="paymentProcess.due"         
+          formControlName="paidAmount"
+        />
         </div>
       </div>
   </div>
 
   <abp-modal-footer
     [cancelDisabled]="saving"
-    [saveDisabled]="!updateForm.valid || saving || updateForm.get('paidAmount').value > paymentProcess.totalAmount"
+    [saveDisabled]="!updateForm.valid || saving ||   paymentProcess.due <= updateForm.get('paidAmount').value || showpartialPayment"
     (onCancelClick)="bsModalRef.hide()"
   ></abp-modal-footer>
 </form>

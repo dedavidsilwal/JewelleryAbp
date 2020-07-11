@@ -8,14 +8,15 @@ namespace Jewellery.Jewellery
 
         public int InvoiceNumber { get; set; }
         public DateTime InvoiceDate { get; set; }
-        public PaymentStatus PaymentStatus { get; set; }
+
 
         public decimal PaidAmount { get; set; }
-        public int TotalPaymentAmount { get; set; }
 
-
-        public Guid OrderId { get; set; }
+        public Guid? OrderId { get; set; }
         public Order Order { get; set; }
+
+        //public Guid? SaleId { get; set; }
+        //public Sale Sale { get; set; }
 
     }
 }

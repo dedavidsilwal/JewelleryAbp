@@ -4,14 +4,16 @@ using Jewellery.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Jewellery.Migrations
 {
     [DbContext(typeof(JewelleryDbContext))]
-    partial class JewelleryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200711115133_todayMetalCost")]
+    partial class todayMetalCost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -19,7 +21,6 @@ namespace Jewellery.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("Relational:Sequence:shared.InvoiceNumbers", "'InvoiceNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
                 .HasAnnotation("Relational:Sequence:shared.OrderNumbers", "'OrderNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
-                .HasAnnotation("Relational:Sequence:shared.SaleNumbers", "'SaleNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Abp.Application.Editions.Edition", b =>
@@ -1597,6 +1598,9 @@ namespace Jewellery.Migrations
                     b.Property<decimal>("PaidAmount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
+
                     b.Property<Guid?>("SaleId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1816,6 +1820,9 @@ namespace Jewellery.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal?>("DueAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1825,16 +1832,8 @@ namespace Jewellery.Migrations
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<decimal?>("PaidAmount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("int");
-
-                    b.Property<int>("SaleNumber")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValueSql("NEXT VALUE FOR shared.SaleNumbers");
 
                     b.Property<int>("SaleStatus")
                         .HasColumnType("int");

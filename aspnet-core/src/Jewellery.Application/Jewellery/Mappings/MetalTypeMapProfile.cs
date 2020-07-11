@@ -32,8 +32,10 @@ namespace Jewellery.Jewellery.Mappings
 
             CreateMap<Invoice, InvoiceDto>().ReverseMap();
 
+            CreateMap<Sale, SaleDto>().ReverseMap();
             CreateMap<Sale, CreateEditSaleDto>().ReverseMap();
-            CreateMap<SaleDetailDto, CreateEditSaleDetailDto>().ReverseMap();
+            CreateMap<SaleDetail, SaleDetailDto>().ReverseMap();
+            CreateMap<SaleDetail, CreateEditSaleDetailDto>().ReverseMap();
         }
     }
 }

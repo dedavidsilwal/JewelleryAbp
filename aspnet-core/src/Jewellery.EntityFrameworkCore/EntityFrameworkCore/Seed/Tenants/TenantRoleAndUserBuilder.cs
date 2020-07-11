@@ -1,17 +1,18 @@
-﻿using System.Linq;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Authorization.Roles;
 using Abp.Authorization.Users;
 using Abp.MultiTenancy;
 using Jewellery.Authorization;
 using Jewellery.Authorization.Roles;
 using Jewellery.Authorization.Users;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace Jewellery.EntityFrameworkCore.Seed.Tenants
 {
+
     public class TenantRoleAndUserBuilder
     {
         private readonly JewelleryDbContext _context;

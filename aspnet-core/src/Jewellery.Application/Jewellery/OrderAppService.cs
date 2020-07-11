@@ -23,6 +23,7 @@ namespace Jewellery.Jewellery
         private readonly IRepository<Order, Guid> _repository;
         private readonly IRepository<Invoice, Guid> _invoiceRepository;
         private readonly IRepository<Customer, Guid> _customerRepository;
+        private readonly IRepository<Product, Guid> _productRepository;
         private readonly IConfiguration _configuration;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
@@ -30,6 +31,7 @@ namespace Jewellery.Jewellery
             IRepository<Order, Guid> repository,
             IRepository<Invoice, Guid> invoiceRepository,
             IRepository<Customer, Guid> customerRepository,
+            IRepository<Product, Guid> productRepository,
             IConfiguration configuration,
             IUnitOfWorkManager unitOfWorkManager
             ) : base(repository)
@@ -37,8 +39,21 @@ namespace Jewellery.Jewellery
             _repository = repository;
             _invoiceRepository = invoiceRepository;
             _customerRepository = customerRepository;
+            _productRepository = productRepository;
             _configuration = configuration;
             _unitOfWorkManager = unitOfWorkManager;
+        }
+
+        public override async Task<OrderDto> CreateAsync(CreateOrderDto input)
+        {
+            var order = ObjectMapper.Map<Order>(input);
+
+            if (order.AdvancePaid.HasValue)
+                order.PaymentStatus = PaymentStatus.PartialPaid;
+
+            var orderResult = await _repository.InsertAsync(order);
+
+            return ObjectMapper.Map<OrderDto>(orderResult);
         }
 
 
@@ -55,7 +70,7 @@ namespace Jewellery.Jewellery
         public async Task<int> TotalOrderCount() =>
             await _repository
             .GetAll()
-            .Where(s => s.Status == OrderStatus.Active)
+            .Where(s => s.OrderStatus == OrderStatus.Active)
             .CountAsync();
 
         public override async Task<PagedResultDto<OrderDto>> GetAllAsync(PagedUserResultRequestDto input)
@@ -78,8 +93,17 @@ namespace Jewellery.Jewellery
             .Select(x => ObjectMapper.Map<EditOrderDto>(x)).FirstOrDefaultAsync();
 
 
+        public async Task CancelAsync(Guid id)
+        {
+            var order = _repository.Get(id);
+            order.OrderStatus = OrderStatus.Canceled;
+            order.PaymentStatus = PaymentStatus.None;
+
+            await _repository.UpdateAsync(order);
+        }
 
 
+     
         public override async Task<OrderDto> UpdateAsync(EditOrderDto input)
         {
             var builder = new DbContextOptionsBuilder<JewelleryDbContext>();
@@ -140,7 +164,7 @@ namespace Jewellery.Jewellery
 
             return new PaymentOrderDto
             {
-                AdvancePayment = order?.AdvancePaymentAmount,
+                AdvancePaid = order?.AdvancePaid,
                 OrderNumber = order.OrderNumber,
                 CustomerName = (await _customerRepository.GetAll().FirstOrDefaultAsync(s => s.Id == order.CustomerId))?.CustomerName,
                 OrderId = order.Id,
@@ -152,18 +176,36 @@ namespace Jewellery.Jewellery
         public async Task<bool> UpdateOrderPaymentAsync(UpdatePaymentDto paymentDto)
         {
 
+
             using var uow = _unitOfWorkManager.Begin();
 
             var invoice = new Invoice
             {
                 InvoiceDate = DateTime.Now,
                 OrderId = paymentDto.OrderId,
-                PaidAmount = paymentDto.PaidAmount,
-                PaymentStatus = PaymentStatus.Paid
+                PaidAmount = paymentDto.PaidAmount
             };
 
             var order = _repository.Get(paymentDto.OrderId);
-            order.Status = OrderStatus.Invoiced;
+
+            await _repository.EnsureCollectionLoadedAsync(order, o => o.OrderDetails);
+
+            var dueAmount = order.OrderDetails.Sum(s => s.SubTotal) - (order.AdvancePaid.HasValue ? order.AdvancePaid.Value : 0);
+
+            if (dueAmount < paymentDto.PaidAmount)
+            {
+                throw new Exception("amount exceed");
+            }
+            else if (paymentDto.PaidAmount == dueAmount)
+            {
+                order.PaymentStatus = PaymentStatus.Paid;
+            }
+            else
+            {
+                order.PaymentStatus = PaymentStatus.PartialPaid;
+            }
+
+            order.OrderStatus = OrderStatus.Delivered;
 
             await _repository.UpdateAsync(order);
 
@@ -182,33 +224,39 @@ namespace Jewellery.Jewellery
                           .FirstOrDefaultAsync();
 
             //update order status
-            order.Status = statusChangeDto.OrderStatus;
+            order.OrderStatus = statusChangeDto.OrderStatus;
 
             return true;
         }
 
-        public async Task<CustomerOrderDto> FetchOrderDetail(Guid orderId)
+        public async Task<CustomerOrderDisplayDto> FetchOrderDetail(Guid orderId)
         {
             var query = _repository.Get(orderId);
             await _repository.EnsureCollectionLoadedAsync(query, o => o.OrderDetails);
 
-            var result = new CustomerOrderDto
+            var result = new CustomerOrderDisplayDto
             {
+
                 CustomerName = _customerRepository.Get(query.CustomerId)?.CustomerName,
                 CustomerAddress = _customerRepository.Get(query.CustomerId)?.Address,
                 PhoneNumber = _customerRepository.Get(query.CustomerId)?.PhoneNumber,
                 OrderDate = query.OrderDate,
                 OrderNumber = query.OrderNumber,
                 RequiredDate = query.RequiredDate,
-                OrderDetails = query.OrderDetails.Select(o => new CustomerOrderDetailDto
+                AdvancePaid = query.AdvancePaid,
+                OrderStatus = query.OrderStatus.ToString(),
+                PaymentStatus = query.PaymentStatus.ToString(),
+                OrderDetails = query.OrderDetails.Select(o => new CustomerOrderDetailDisplayDto
                 {
                     Quantity = o.Quantity,
                     MakingCharge = o.MakingCharge,
                     Weight = o.Weight,
                     Wastage = o.Wastage,
                     MetalType = o.MetalType,
-                    MetalCostThisDay = o.MetalCostThisDay,
-                    SubTotal = o.SubTotal
+                    TodayMetalCost = o.TodayMetalCost,
+                    SubTotal = o.SubTotal,
+                    TotalWeight = o.TotalWeight,
+                    ProductName = _productRepository.Get(o.ProductId)?.ProductName
                 }).ToList()
 
             };

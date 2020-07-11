@@ -9,10 +9,8 @@ namespace Jewellery.Jewellery.Dto
         public int InvoiceNumber { get; set; }
 
         public DateTime InvoiceDate { get; set; }
-        public string PaymentStatus { get; set; }
 
         public decimal PaidAmount { get; set; }
-        public decimal TotalPaymentAmount { get; set; }
 
         public string CustomerName { get; set; }
 

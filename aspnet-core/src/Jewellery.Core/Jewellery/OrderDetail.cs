@@ -13,15 +13,16 @@ namespace Jewellery.Jewellery
         public decimal? MakingCharge { get; set; }
         public decimal? Wastage { get; set; }
 
-
         public Order Order { get; set; }
         public Product Product { get; set; }
 
 
         public string MetalType { get; set; }
-        public decimal MetalCostThisDay { get; set; }
+        public decimal TodayMetalCost { get; set; }
 
 
-        public decimal SubTotal { get; set; }
+        public decimal TotalWeight => (Weight.HasValue ? Weight.Value : 0) + (Wastage.HasValue ? Wastage.Value : 0);
+
+        public decimal SubTotal => (TotalWeight * TodayMetalCost) + (MakingCharge.HasValue ? MakingCharge.Value : 0);
     }
 }

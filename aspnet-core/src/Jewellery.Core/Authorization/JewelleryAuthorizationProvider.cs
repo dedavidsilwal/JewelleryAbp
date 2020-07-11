@@ -10,11 +10,14 @@ namespace Jewellery.Authorization
         {
             context.CreatePermission(PermissionNames.Pages_Users, L("Users"));
             context.CreatePermission(PermissionNames.Pages_Roles, L("Roles"));
+            context.CreatePermission(PermissionNames.Pages_Tenants, L("Tenants"), multiTenancySides: MultiTenancySides.Host);
+
             context.CreatePermission(PermissionNames.Pages_Customers, L("Customers"));
             context.CreatePermission(PermissionNames.Pages_MetalTypes, L("MetalTypes"));
             context.CreatePermission(PermissionNames.Pages_Orders, L("Orders"));
+            context.CreatePermission(PermissionNames.Pages_Sales, L("Sales"));
+            context.CreatePermission(PermissionNames.Pages_Invoice, L("Invoices"));
             context.CreatePermission(PermissionNames.Pages_Products, L("Products"));
-            context.CreatePermission(PermissionNames.Pages_Tenants, L("Tenants"), multiTenancySides: MultiTenancySides.Host);
         }
 
         private static ILocalizableString L(string name)

@@ -76,10 +76,28 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
     );
   }
 
+  cancelOrder(id: string): void {
+    abp.message.confirm(
+      this.l('OrderCancelWarningMessage', id),
+      undefined,
+      (result: boolean) => {
+        if (result) {
+          this._orderService
+            .cancel(id)
+            .pipe(
+              finalize(() => {
+                abp.notify.success(this.l('SuccessfullyDeleted'));
+                this.refresh();
+              })
+            )
+            .subscribe(() => { });
+        }
+      }
+    );
+  }
   createOrder(): void {
     this.showCreateOrEditOrderDialog();
   }
-
   editOrder(order: OrderDto): void {
     this.showCreateOrEditOrderDialog(order.id);
   }
@@ -113,10 +131,6 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
           id: id,
         }
       });
-
-    OrderDisplayDialog.content.onSave.subscribe(() => {
-      this.refresh();
-    });
   }
 
   showCreateOrEditOrderDialog(id?: string): void {

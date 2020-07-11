@@ -27,24 +27,7 @@ namespace Jewellery.Jewellery.Dto
 
         public ICollection<OrderDetailDto> OrderDetails { get; set; }
 
-        public decimal? AdvancePaymentAmount { get; set; }
-
-    }
-
-    public class CreateSaleDto : EntityDto<Guid>
-    {
-        public CreateSaleDto()
-        {
-            SaleDetails = new HashSet<SaleDetailDto>();
-        }
-
-        public DateTime? RequiredDate { get; set; }
-
-        public Guid CustomerId { get; set; }
-
-        public ICollection<SaleDetailDto> SaleDetails { get; set; }
-
-        public decimal? DueAmount { get; set; }
+        public decimal? AdvancePaid { get; set; }
 
     }
 

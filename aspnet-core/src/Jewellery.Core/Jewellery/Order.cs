@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Jewellery.Jewellery
 {
@@ -10,9 +11,9 @@ namespace Jewellery.Jewellery
         {
             OrderDetails = new HashSet<OrderDetail>();
             Invoices = new HashSet<Invoice>();
-            Status = OrderStatus.Active;
+            OrderStatus = OrderStatus.Active;
             OrderDate = DateTime.Now;
-            PaymentStatus = PaymentStatus.PartialPayment;
+            PaymentStatus = PaymentStatus.None;
         }
 
         public int OrderNumber { get; set; }
@@ -24,7 +25,7 @@ namespace Jewellery.Jewellery
 
         public Customer Customer { get; set; }
 
-        public OrderStatus Status { get; set; }
+        public OrderStatus OrderStatus { get; set; }
 
         public PaymentStatus PaymentStatus { get; set; }
 
@@ -34,7 +35,10 @@ namespace Jewellery.Jewellery
         public ICollection<Invoice> Invoices { get; set; }
 
 
-        public decimal? AdvancePaymentAmount { get; set; }
+        public decimal? AdvancePaid { get; set; }
+
+
+        public decimal? Total => OrderDetails?.Sum(s => s.SubTotal);
 
     }
 }

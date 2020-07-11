@@ -31,7 +31,7 @@ namespace Jewellery.Jewellery.Dto
         public ICollection<InvoiceDto> Invoices { get; set; }
 
         
-        public decimal? DueAmount { get; set; }
+        public decimal? PaidAmouunt { get; set; }
 
     }
 }

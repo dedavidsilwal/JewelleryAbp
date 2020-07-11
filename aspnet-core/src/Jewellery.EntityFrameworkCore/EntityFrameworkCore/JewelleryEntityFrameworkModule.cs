@@ -7,7 +7,7 @@ using Jewellery.EntityFrameworkCore.Seed;
 namespace Jewellery.EntityFrameworkCore
 {
     [DependsOn(
-        typeof(JewelleryCoreModule), 
+        typeof(JewelleryCoreModule),
         typeof(AbpZeroCoreEntityFrameworkCoreModule))]
     public class JewelleryEntityFrameworkModule : AbpModule
     {
@@ -22,6 +22,9 @@ namespace Jewellery.EntityFrameworkCore
             {
                 Configuration.Modules.AbpEfCore().AddDbContext<JewelleryDbContext>(options =>
                 {
+                    options.DbContextOptions.EnableDetailedErrors();
+                    options.DbContextOptions.EnableSensitiveDataLogging();
+
                     if (options.ExistingConnection != null)
                     {
                         JewelleryDbContextConfigurer.Configure(options.DbContextOptions, options.ExistingConnection);

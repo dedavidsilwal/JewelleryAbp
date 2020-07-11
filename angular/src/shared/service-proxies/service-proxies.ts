@@ -1182,6 +1182,62 @@ export class OrderServiceProxy {
     }
 
     /**
+     * @param body (optional) 
+     * @return Success
+     */
+    create(body: CreateOrderDto | undefined): Observable<OrderDto> {
+        let url_ = this.baseUrl + "/api/services/app/Order/Create";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(<any>response_);
+                } catch (e) {
+                    return <Observable<OrderDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<OrderDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<OrderDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = OrderDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<OrderDto>(<any>null);
+    }
+
+    /**
      * @return Success
      */
     nearOrderDeliver(): Observable<OrderDto[]> {
@@ -1408,6 +1464,58 @@ export class OrderServiceProxy {
             }));
         }
         return _observableOf<EditOrderDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    cancel(id: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Order/Cancel?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCancel(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCancel(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCancel(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
     }
 
     /**
@@ -1638,7 +1746,7 @@ export class OrderServiceProxy {
      * @param orderId (optional) 
      * @return Success
      */
-    fetchOrderDetail(orderId: string | undefined): Observable<CustomerOrderDto> {
+    fetchOrderDetail(orderId: string | undefined): Observable<CustomerOrderDisplayDto> {
         let url_ = this.baseUrl + "/api/services/app/Order/FetchOrderDetail?";
         if (orderId === null)
             throw new Error("The parameter 'orderId' cannot be null.");
@@ -1661,14 +1769,14 @@ export class OrderServiceProxy {
                 try {
                     return this.processFetchOrderDetail(<any>response_);
                 } catch (e) {
-                    return <Observable<CustomerOrderDto>><any>_observableThrow(e);
+                    return <Observable<CustomerOrderDisplayDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<CustomerOrderDto>><any>_observableThrow(response_);
+                return <Observable<CustomerOrderDisplayDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processFetchOrderDetail(response: HttpResponseBase): Observable<CustomerOrderDto> {
+    protected processFetchOrderDetail(response: HttpResponseBase): Observable<CustomerOrderDisplayDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1679,7 +1787,7 @@ export class OrderServiceProxy {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = CustomerOrderDto.fromJS(resultData200);
+            result200 = CustomerOrderDisplayDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1687,7 +1795,7 @@ export class OrderServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<CustomerOrderDto>(<any>null);
+        return _observableOf<CustomerOrderDisplayDto>(<any>null);
     }
 
     /**
@@ -1725,62 +1833,6 @@ export class OrderServiceProxy {
     }
 
     protected processGet(response: HttpResponseBase): Observable<OrderDto> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = OrderDto.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<OrderDto>(<any>null);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    create(body: CreateOrderDto | undefined): Observable<OrderDto> {
-        let url_ = this.baseUrl + "/api/services/app/Order/Create";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json-patch+json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreate(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processCreate(<any>response_);
-                } catch (e) {
-                    return <Observable<OrderDto>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<OrderDto>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processCreate(response: HttpResponseBase): Observable<OrderDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2678,6 +2730,62 @@ export class SaleServiceProxy {
     }
 
     /**
+     * @param body (optional) 
+     * @return Success
+     */
+    create(body: CreateEditSaleDto | undefined): Observable<SaleDto> {
+        let url_ = this.baseUrl + "/api/services/app/Sale/Create";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(<any>response_);
+                } catch (e) {
+                    return <Observable<SaleDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<SaleDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<SaleDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SaleDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SaleDto>(<any>null);
+    }
+
+    /**
      * @param id (optional) 
      * @return Success
      */
@@ -2798,62 +2906,6 @@ export class SaleServiceProxy {
             }));
         }
         return _observableOf<SaleDtoPagedResultDto>(<any>null);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    create(body: CreateEditSaleDto | undefined): Observable<SaleDto> {
-        let url_ = this.baseUrl + "/api/services/app/Sale/Create";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json-patch+json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreate(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processCreate(<any>response_);
-                } catch (e) {
-                    return <Observable<SaleDto>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<SaleDto>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processCreate(response: HttpResponseBase): Observable<SaleDto> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SaleDto.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<SaleDto>(<any>null);
     }
 
     /**
@@ -4379,9 +4431,7 @@ export class InvoiceDto implements IInvoiceDto {
     orderId: string;
     invoiceNumber: number;
     invoiceDate: moment.Moment;
-    paymentStatus: string | undefined;
     paidAmount: number;
-    totalPaymentAmount: number;
     customerName: string | undefined;
     id: string;
 
@@ -4399,9 +4449,7 @@ export class InvoiceDto implements IInvoiceDto {
             this.orderId = _data["orderId"];
             this.invoiceNumber = _data["invoiceNumber"];
             this.invoiceDate = _data["invoiceDate"] ? moment(_data["invoiceDate"].toString()) : <any>undefined;
-            this.paymentStatus = _data["paymentStatus"];
             this.paidAmount = _data["paidAmount"];
-            this.totalPaymentAmount = _data["totalPaymentAmount"];
             this.customerName = _data["customerName"];
             this.id = _data["id"];
         }
@@ -4419,9 +4467,7 @@ export class InvoiceDto implements IInvoiceDto {
         data["orderId"] = this.orderId;
         data["invoiceNumber"] = this.invoiceNumber;
         data["invoiceDate"] = this.invoiceDate ? this.invoiceDate.toISOString() : <any>undefined;
-        data["paymentStatus"] = this.paymentStatus;
         data["paidAmount"] = this.paidAmount;
-        data["totalPaymentAmount"] = this.totalPaymentAmount;
         data["customerName"] = this.customerName;
         data["id"] = this.id;
         return data; 
@@ -4439,9 +4485,7 @@ export interface IInvoiceDto {
     orderId: string;
     invoiceNumber: number;
     invoiceDate: moment.Moment;
-    paymentStatus: string | undefined;
     paidAmount: number;
-    totalPaymentAmount: number;
     customerName: string | undefined;
     id: string;
 }
@@ -4777,6 +4821,97 @@ export interface ICreateEditMetalTypeDto {
     id: string;
 }
 
+export class OrderDto implements IOrderDto {
+    orderNumber: number;
+    orderDate: moment.Moment;
+    requiredDate: moment.Moment | undefined;
+    customerId: string;
+    customer: CustomerDto;
+    paymentStatus: string | undefined;
+    orderStatus: string | undefined;
+    orderDetails: OrderDetailDto[] | undefined;
+    advancePaid: number | undefined;
+    total: number | undefined;
+    id: string;
+
+    constructor(data?: IOrderDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.orderNumber = _data["orderNumber"];
+            this.orderDate = _data["orderDate"] ? moment(_data["orderDate"].toString()) : <any>undefined;
+            this.requiredDate = _data["requiredDate"] ? moment(_data["requiredDate"].toString()) : <any>undefined;
+            this.customerId = _data["customerId"];
+            this.customer = _data["customer"] ? CustomerDto.fromJS(_data["customer"]) : <any>undefined;
+            this.paymentStatus = _data["paymentStatus"];
+            this.orderStatus = _data["orderStatus"];
+            if (Array.isArray(_data["orderDetails"])) {
+                this.orderDetails = [] as any;
+                for (let item of _data["orderDetails"])
+                    this.orderDetails.push(OrderDetailDto.fromJS(item));
+            }
+            this.advancePaid = _data["advancePaid"];
+            this.total = _data["total"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): OrderDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new OrderDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["orderNumber"] = this.orderNumber;
+        data["orderDate"] = this.orderDate ? this.orderDate.toISOString() : <any>undefined;
+        data["requiredDate"] = this.requiredDate ? this.requiredDate.toISOString() : <any>undefined;
+        data["customerId"] = this.customerId;
+        data["customer"] = this.customer ? this.customer.toJSON() : <any>undefined;
+        data["paymentStatus"] = this.paymentStatus;
+        data["orderStatus"] = this.orderStatus;
+        if (Array.isArray(this.orderDetails)) {
+            data["orderDetails"] = [];
+            for (let item of this.orderDetails)
+                data["orderDetails"].push(item.toJSON());
+        }
+        data["advancePaid"] = this.advancePaid;
+        data["total"] = this.total;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): OrderDto {
+        const json = this.toJSON();
+        let result = new OrderDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IOrderDto {
+    orderNumber: number;
+    orderDate: moment.Moment;
+    requiredDate: moment.Moment | undefined;
+    customerId: string;
+    customer: CustomerDto;
+    paymentStatus: string | undefined;
+    orderStatus: string | undefined;
+    orderDetails: OrderDetailDto[] | undefined;
+    advancePaid: number | undefined;
+    total: number | undefined;
+    id: string;
+}
+
 export class ProductDto implements IProductDto {
     productName: string | undefined;
     photo: string | undefined;
@@ -4854,9 +4989,9 @@ export class OrderDetailDto implements IOrderDetailDto {
     order: OrderDto;
     product: ProductDto;
     metalType: string | undefined;
-    metalCostThisDay: number;
-    unitPrice: number;
-    totalPrice: number;
+    todayMetalCost: number;
+    totalWeight: number;
+    subTotal: number;
 
     constructor(data?: IOrderDetailDto) {
         if (data) {
@@ -4878,9 +5013,9 @@ export class OrderDetailDto implements IOrderDetailDto {
             this.order = _data["order"] ? OrderDto.fromJS(_data["order"]) : <any>undefined;
             this.product = _data["product"] ? ProductDto.fromJS(_data["product"]) : <any>undefined;
             this.metalType = _data["metalType"];
-            this.metalCostThisDay = _data["metalCostThisDay"];
-            this.unitPrice = _data["unitPrice"];
-            this.totalPrice = _data["totalPrice"];
+            this.todayMetalCost = _data["todayMetalCost"];
+            this.totalWeight = _data["totalWeight"];
+            this.subTotal = _data["subTotal"];
         }
     }
 
@@ -4902,9 +5037,9 @@ export class OrderDetailDto implements IOrderDetailDto {
         data["order"] = this.order ? this.order.toJSON() : <any>undefined;
         data["product"] = this.product ? this.product.toJSON() : <any>undefined;
         data["metalType"] = this.metalType;
-        data["metalCostThisDay"] = this.metalCostThisDay;
-        data["unitPrice"] = this.unitPrice;
-        data["totalPrice"] = this.totalPrice;
+        data["todayMetalCost"] = this.todayMetalCost;
+        data["totalWeight"] = this.totalWeight;
+        data["subTotal"] = this.subTotal;
         return data; 
     }
 
@@ -4926,23 +5061,19 @@ export interface IOrderDetailDto {
     order: OrderDto;
     product: ProductDto;
     metalType: string | undefined;
-    metalCostThisDay: number;
-    unitPrice: number;
-    totalPrice: number;
+    todayMetalCost: number;
+    totalWeight: number;
+    subTotal: number;
 }
 
-export class OrderDto implements IOrderDto {
-    orderNumber: number;
-    orderDate: moment.Moment;
+export class CreateOrderDto implements ICreateOrderDto {
     requiredDate: moment.Moment | undefined;
     customerId: string;
-    customer: CustomerDto;
-    status: string | undefined;
     orderDetails: OrderDetailDto[] | undefined;
-    advancePaymentAmount: number | undefined;
+    advancePaid: number | undefined;
     id: string;
 
-    constructor(data?: IOrderDto) {
+    constructor(data?: ICreateOrderDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -4953,64 +5084,52 @@ export class OrderDto implements IOrderDto {
 
     init(_data?: any) {
         if (_data) {
-            this.orderNumber = _data["orderNumber"];
-            this.orderDate = _data["orderDate"] ? moment(_data["orderDate"].toString()) : <any>undefined;
             this.requiredDate = _data["requiredDate"] ? moment(_data["requiredDate"].toString()) : <any>undefined;
             this.customerId = _data["customerId"];
-            this.customer = _data["customer"] ? CustomerDto.fromJS(_data["customer"]) : <any>undefined;
-            this.status = _data["status"];
             if (Array.isArray(_data["orderDetails"])) {
                 this.orderDetails = [] as any;
                 for (let item of _data["orderDetails"])
                     this.orderDetails.push(OrderDetailDto.fromJS(item));
             }
-            this.advancePaymentAmount = _data["advancePaymentAmount"];
+            this.advancePaid = _data["advancePaid"];
             this.id = _data["id"];
         }
     }
 
-    static fromJS(data: any): OrderDto {
+    static fromJS(data: any): CreateOrderDto {
         data = typeof data === 'object' ? data : {};
-        let result = new OrderDto();
+        let result = new CreateOrderDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["orderNumber"] = this.orderNumber;
-        data["orderDate"] = this.orderDate ? this.orderDate.toISOString() : <any>undefined;
         data["requiredDate"] = this.requiredDate ? this.requiredDate.toISOString() : <any>undefined;
         data["customerId"] = this.customerId;
-        data["customer"] = this.customer ? this.customer.toJSON() : <any>undefined;
-        data["status"] = this.status;
         if (Array.isArray(this.orderDetails)) {
             data["orderDetails"] = [];
             for (let item of this.orderDetails)
                 data["orderDetails"].push(item.toJSON());
         }
-        data["advancePaymentAmount"] = this.advancePaymentAmount;
+        data["advancePaid"] = this.advancePaid;
         data["id"] = this.id;
         return data; 
     }
 
-    clone(): OrderDto {
+    clone(): CreateOrderDto {
         const json = this.toJSON();
-        let result = new OrderDto();
+        let result = new CreateOrderDto();
         result.init(json);
         return result;
     }
 }
 
-export interface IOrderDto {
-    orderNumber: number;
-    orderDate: moment.Moment;
+export interface ICreateOrderDto {
     requiredDate: moment.Moment | undefined;
     customerId: string;
-    customer: CustomerDto;
-    status: string | undefined;
     orderDetails: OrderDetailDto[] | undefined;
-    advancePaymentAmount: number | undefined;
+    advancePaid: number | undefined;
     id: string;
 }
 
@@ -5073,7 +5192,6 @@ export enum OrderStatus {
     _0 = 0,
     _1 = 1,
     _2 = 2,
-    _3 = 3,
 }
 
 export class CreateEditOrderDetailDto implements ICreateEditOrderDetailDto {
@@ -5084,9 +5202,7 @@ export class CreateEditOrderDetailDto implements ICreateEditOrderDetailDto {
     makingCharge: number | undefined;
     wastage: number | undefined;
     metalType: string | undefined;
-    metalCostThisDay: number;
-    unitPrice: number;
-    totalPrice: number;
+    todayMetalCost: number;
 
     constructor(data?: ICreateEditOrderDetailDto) {
         if (data) {
@@ -5106,9 +5222,7 @@ export class CreateEditOrderDetailDto implements ICreateEditOrderDetailDto {
             this.makingCharge = _data["makingCharge"];
             this.wastage = _data["wastage"];
             this.metalType = _data["metalType"];
-            this.metalCostThisDay = _data["metalCostThisDay"];
-            this.unitPrice = _data["unitPrice"];
-            this.totalPrice = _data["totalPrice"];
+            this.todayMetalCost = _data["todayMetalCost"];
         }
     }
 
@@ -5128,9 +5242,7 @@ export class CreateEditOrderDetailDto implements ICreateEditOrderDetailDto {
         data["makingCharge"] = this.makingCharge;
         data["wastage"] = this.wastage;
         data["metalType"] = this.metalType;
-        data["metalCostThisDay"] = this.metalCostThisDay;
-        data["unitPrice"] = this.unitPrice;
-        data["totalPrice"] = this.totalPrice;
+        data["todayMetalCost"] = this.todayMetalCost;
         return data; 
     }
 
@@ -5150,9 +5262,7 @@ export interface ICreateEditOrderDetailDto {
     makingCharge: number | undefined;
     wastage: number | undefined;
     metalType: string | undefined;
-    metalCostThisDay: number;
-    unitPrice: number;
-    totalPrice: number;
+    todayMetalCost: number;
 }
 
 export class EditOrderDto implements IEditOrderDto {
@@ -5234,8 +5344,9 @@ export class PaymentOrderDto implements IPaymentOrderDto {
     orderNumber: number;
     customerName: string | undefined;
     orderId: string;
-    advancePayment: number | undefined;
+    advancePaid: number | undefined;
     totalAmount: number;
+    readonly due: number;
 
     constructor(data?: IPaymentOrderDto) {
         if (data) {
@@ -5251,8 +5362,9 @@ export class PaymentOrderDto implements IPaymentOrderDto {
             this.orderNumber = _data["orderNumber"];
             this.customerName = _data["customerName"];
             this.orderId = _data["orderId"];
-            this.advancePayment = _data["advancePayment"];
+            this.advancePaid = _data["advancePaid"];
             this.totalAmount = _data["totalAmount"];
+            (<any>this).due = _data["due"];
         }
     }
 
@@ -5268,8 +5380,9 @@ export class PaymentOrderDto implements IPaymentOrderDto {
         data["orderNumber"] = this.orderNumber;
         data["customerName"] = this.customerName;
         data["orderId"] = this.orderId;
-        data["advancePayment"] = this.advancePayment;
+        data["advancePaid"] = this.advancePaid;
         data["totalAmount"] = this.totalAmount;
+        data["due"] = this.due;
         return data; 
     }
 
@@ -5285,8 +5398,9 @@ export interface IPaymentOrderDto {
     orderNumber: number;
     customerName: string | undefined;
     orderId: string;
-    advancePayment: number | undefined;
+    advancePaid: number | undefined;
     totalAmount: number;
+    due: number;
 }
 
 export enum PaymentStatus {
@@ -5393,17 +5507,18 @@ export interface IOrderStatusChangeDto {
     orderStatus: OrderStatus;
 }
 
-export class CustomerOrderDetailDto implements ICustomerOrderDetailDto {
+export class CustomerOrderDetailDisplayDto implements ICustomerOrderDetailDisplayDto {
     quantity: number;
     makingCharge: number | undefined;
     weight: number | undefined;
     wastage: number | undefined;
     metalType: string | undefined;
     productName: string | undefined;
-    metalCostThisDay: number;
+    todayMetalCost: number;
+    totalWeight: number;
     subTotal: number;
 
-    constructor(data?: ICustomerOrderDetailDto) {
+    constructor(data?: ICustomerOrderDetailDisplayDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -5420,14 +5535,15 @@ export class CustomerOrderDetailDto implements ICustomerOrderDetailDto {
             this.wastage = _data["wastage"];
             this.metalType = _data["metalType"];
             this.productName = _data["productName"];
-            this.metalCostThisDay = _data["metalCostThisDay"];
+            this.todayMetalCost = _data["todayMetalCost"];
+            this.totalWeight = _data["totalWeight"];
             this.subTotal = _data["subTotal"];
         }
     }
 
-    static fromJS(data: any): CustomerOrderDetailDto {
+    static fromJS(data: any): CustomerOrderDetailDisplayDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CustomerOrderDetailDto();
+        let result = new CustomerOrderDetailDisplayDto();
         result.init(data);
         return result;
     }
@@ -5440,43 +5556,48 @@ export class CustomerOrderDetailDto implements ICustomerOrderDetailDto {
         data["wastage"] = this.wastage;
         data["metalType"] = this.metalType;
         data["productName"] = this.productName;
-        data["metalCostThisDay"] = this.metalCostThisDay;
+        data["todayMetalCost"] = this.todayMetalCost;
+        data["totalWeight"] = this.totalWeight;
         data["subTotal"] = this.subTotal;
         return data; 
     }
 
-    clone(): CustomerOrderDetailDto {
+    clone(): CustomerOrderDetailDisplayDto {
         const json = this.toJSON();
-        let result = new CustomerOrderDetailDto();
+        let result = new CustomerOrderDetailDisplayDto();
         result.init(json);
         return result;
     }
 }
 
-export interface ICustomerOrderDetailDto {
+export interface ICustomerOrderDetailDisplayDto {
     quantity: number;
     makingCharge: number | undefined;
     weight: number | undefined;
     wastage: number | undefined;
     metalType: string | undefined;
     productName: string | undefined;
-    metalCostThisDay: number;
+    todayMetalCost: number;
+    totalWeight: number;
     subTotal: number;
 }
 
-export class CustomerOrderDto implements ICustomerOrderDto {
+export class CustomerOrderDisplayDto implements ICustomerOrderDisplayDto {
     orderDate: moment.Moment;
     requiredDate: moment.Moment | undefined;
     customerName: string | undefined;
     customerAddress: string | undefined;
     phoneNumber: string | undefined;
     orderNumber: number;
-    advancePayment: number;
-    orderDetails: CustomerOrderDetailDto[] | undefined;
+    advancePaid: number | undefined;
+    orderDetails: CustomerOrderDetailDisplayDto[] | undefined;
     readonly totalPrice: number;
+    readonly due: number | undefined;
+    orderStatus: string | undefined;
+    paymentStatus: string | undefined;
     id: string;
 
-    constructor(data?: ICustomerOrderDto) {
+    constructor(data?: ICustomerOrderDisplayDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -5493,20 +5614,23 @@ export class CustomerOrderDto implements ICustomerOrderDto {
             this.customerAddress = _data["customerAddress"];
             this.phoneNumber = _data["phoneNumber"];
             this.orderNumber = _data["orderNumber"];
-            this.advancePayment = _data["advancePayment"];
+            this.advancePaid = _data["advancePaid"];
             if (Array.isArray(_data["orderDetails"])) {
                 this.orderDetails = [] as any;
                 for (let item of _data["orderDetails"])
-                    this.orderDetails.push(CustomerOrderDetailDto.fromJS(item));
+                    this.orderDetails.push(CustomerOrderDetailDisplayDto.fromJS(item));
             }
             (<any>this).totalPrice = _data["totalPrice"];
+            (<any>this).due = _data["due"];
+            this.orderStatus = _data["orderStatus"];
+            this.paymentStatus = _data["paymentStatus"];
             this.id = _data["id"];
         }
     }
 
-    static fromJS(data: any): CustomerOrderDto {
+    static fromJS(data: any): CustomerOrderDisplayDto {
         data = typeof data === 'object' ? data : {};
-        let result = new CustomerOrderDto();
+        let result = new CustomerOrderDisplayDto();
         result.init(data);
         return result;
     }
@@ -5519,102 +5643,41 @@ export class CustomerOrderDto implements ICustomerOrderDto {
         data["customerAddress"] = this.customerAddress;
         data["phoneNumber"] = this.phoneNumber;
         data["orderNumber"] = this.orderNumber;
-        data["advancePayment"] = this.advancePayment;
+        data["advancePaid"] = this.advancePaid;
         if (Array.isArray(this.orderDetails)) {
             data["orderDetails"] = [];
             for (let item of this.orderDetails)
                 data["orderDetails"].push(item.toJSON());
         }
         data["totalPrice"] = this.totalPrice;
+        data["due"] = this.due;
+        data["orderStatus"] = this.orderStatus;
+        data["paymentStatus"] = this.paymentStatus;
         data["id"] = this.id;
         return data; 
     }
 
-    clone(): CustomerOrderDto {
+    clone(): CustomerOrderDisplayDto {
         const json = this.toJSON();
-        let result = new CustomerOrderDto();
+        let result = new CustomerOrderDisplayDto();
         result.init(json);
         return result;
     }
 }
 
-export interface ICustomerOrderDto {
+export interface ICustomerOrderDisplayDto {
     orderDate: moment.Moment;
     requiredDate: moment.Moment | undefined;
     customerName: string | undefined;
     customerAddress: string | undefined;
     phoneNumber: string | undefined;
     orderNumber: number;
-    advancePayment: number;
-    orderDetails: CustomerOrderDetailDto[] | undefined;
+    advancePaid: number | undefined;
+    orderDetails: CustomerOrderDetailDisplayDto[] | undefined;
     totalPrice: number;
-    id: string;
-}
-
-export class CreateOrderDto implements ICreateOrderDto {
-    requiredDate: moment.Moment | undefined;
-    customerId: string;
-    orderDetails: OrderDetailDto[] | undefined;
-    advancePaymentAmount: number | undefined;
-    id: string;
-
-    constructor(data?: ICreateOrderDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.requiredDate = _data["requiredDate"] ? moment(_data["requiredDate"].toString()) : <any>undefined;
-            this.customerId = _data["customerId"];
-            if (Array.isArray(_data["orderDetails"])) {
-                this.orderDetails = [] as any;
-                for (let item of _data["orderDetails"])
-                    this.orderDetails.push(OrderDetailDto.fromJS(item));
-            }
-            this.advancePaymentAmount = _data["advancePaymentAmount"];
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): CreateOrderDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateOrderDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["requiredDate"] = this.requiredDate ? this.requiredDate.toISOString() : <any>undefined;
-        data["customerId"] = this.customerId;
-        if (Array.isArray(this.orderDetails)) {
-            data["orderDetails"] = [];
-            for (let item of this.orderDetails)
-                data["orderDetails"].push(item.toJSON());
-        }
-        data["advancePaymentAmount"] = this.advancePaymentAmount;
-        data["id"] = this.id;
-        return data; 
-    }
-
-    clone(): CreateOrderDto {
-        const json = this.toJSON();
-        let result = new CreateOrderDto();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface ICreateOrderDto {
-    requiredDate: moment.Moment | undefined;
-    customerId: string;
-    orderDetails: OrderDetailDto[] | undefined;
-    advancePaymentAmount: number | undefined;
+    due: number | undefined;
+    orderStatus: string | undefined;
+    paymentStatus: string | undefined;
     id: string;
 }
 
@@ -6326,6 +6389,140 @@ export interface IRoleDtoPagedResultDto {
     items: RoleDto[] | undefined;
 }
 
+export class CreateEditSaleDetailDto implements ICreateEditSaleDetailDto {
+    orderId: string;
+    productId: string;
+    quantity: number;
+    weight: number | undefined;
+    makingCharge: number | undefined;
+    wastage: number | undefined;
+    metalType: string | undefined;
+    todayMetalPrice: number;
+
+    constructor(data?: ICreateEditSaleDetailDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.orderId = _data["orderId"];
+            this.productId = _data["productId"];
+            this.quantity = _data["quantity"];
+            this.weight = _data["weight"];
+            this.makingCharge = _data["makingCharge"];
+            this.wastage = _data["wastage"];
+            this.metalType = _data["metalType"];
+            this.todayMetalPrice = _data["todayMetalPrice"];
+        }
+    }
+
+    static fromJS(data: any): CreateEditSaleDetailDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateEditSaleDetailDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["orderId"] = this.orderId;
+        data["productId"] = this.productId;
+        data["quantity"] = this.quantity;
+        data["weight"] = this.weight;
+        data["makingCharge"] = this.makingCharge;
+        data["wastage"] = this.wastage;
+        data["metalType"] = this.metalType;
+        data["todayMetalPrice"] = this.todayMetalPrice;
+        return data; 
+    }
+
+    clone(): CreateEditSaleDetailDto {
+        const json = this.toJSON();
+        let result = new CreateEditSaleDetailDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICreateEditSaleDetailDto {
+    orderId: string;
+    productId: string;
+    quantity: number;
+    weight: number | undefined;
+    makingCharge: number | undefined;
+    wastage: number | undefined;
+    metalType: string | undefined;
+    todayMetalPrice: number;
+}
+
+export class CreateEditSaleDto implements ICreateEditSaleDto {
+    customerId: string;
+    saleDetails: CreateEditSaleDetailDto[] | undefined;
+    paidAmount: number | undefined;
+    id: string;
+
+    constructor(data?: ICreateEditSaleDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.customerId = _data["customerId"];
+            if (Array.isArray(_data["saleDetails"])) {
+                this.saleDetails = [] as any;
+                for (let item of _data["saleDetails"])
+                    this.saleDetails.push(CreateEditSaleDetailDto.fromJS(item));
+            }
+            this.paidAmount = _data["paidAmount"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): CreateEditSaleDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateEditSaleDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["customerId"] = this.customerId;
+        if (Array.isArray(this.saleDetails)) {
+            data["saleDetails"] = [];
+            for (let item of this.saleDetails)
+                data["saleDetails"].push(item.toJSON());
+        }
+        data["paidAmount"] = this.paidAmount;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): CreateEditSaleDto {
+        const json = this.toJSON();
+        let result = new CreateEditSaleDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICreateEditSaleDto {
+    customerId: string;
+    saleDetails: CreateEditSaleDetailDto[] | undefined;
+    paidAmount: number | undefined;
+    id: string;
+}
+
 export enum SaleStatus {
     _0 = 0,
     _1 = 1,
@@ -6584,10 +6781,8 @@ export interface ICustomer {
 export class Invoice implements IInvoice {
     invoiceNumber: number;
     invoiceDate: moment.Moment;
-    paymentStatus: PaymentStatus;
     paidAmount: number;
-    totalPaymentAmount: number;
-    orderId: string;
+    orderId: string | undefined;
     order: Order;
     isDeleted: boolean;
     deleterUserId: number | undefined;
@@ -6612,9 +6807,7 @@ export class Invoice implements IInvoice {
         if (_data) {
             this.invoiceNumber = _data["invoiceNumber"];
             this.invoiceDate = _data["invoiceDate"] ? moment(_data["invoiceDate"].toString()) : <any>undefined;
-            this.paymentStatus = _data["paymentStatus"];
             this.paidAmount = _data["paidAmount"];
-            this.totalPaymentAmount = _data["totalPaymentAmount"];
             this.orderId = _data["orderId"];
             this.order = _data["order"] ? Order.fromJS(_data["order"]) : <any>undefined;
             this.isDeleted = _data["isDeleted"];
@@ -6644,9 +6837,7 @@ export class Invoice implements IInvoice {
         data = typeof data === 'object' ? data : {};
         data["invoiceNumber"] = this.invoiceNumber;
         data["invoiceDate"] = this.invoiceDate ? this.invoiceDate.toISOString() : <any>undefined;
-        data["paymentStatus"] = this.paymentStatus;
         data["paidAmount"] = this.paidAmount;
-        data["totalPaymentAmount"] = this.totalPaymentAmount;
         data["orderId"] = this.orderId;
         data["order"] = this.order ? this.order.toJSON() : <any>undefined;
         data["isDeleted"] = this.isDeleted;
@@ -6676,10 +6867,8 @@ export class Invoice implements IInvoice {
 export interface IInvoice {
     invoiceNumber: number;
     invoiceDate: moment.Moment;
-    paymentStatus: PaymentStatus;
     paidAmount: number;
-    totalPaymentAmount: number;
-    orderId: string;
+    orderId: string | undefined;
     order: Order;
     isDeleted: boolean;
     deleterUserId: number | undefined;
@@ -6699,11 +6888,12 @@ export class Order implements IOrder {
     shippedDate: moment.Moment | undefined;
     customerId: string;
     customer: Customer;
-    status: OrderStatus;
+    orderStatus: OrderStatus;
     paymentStatus: PaymentStatus;
     orderDetails: OrderDetail[] | undefined;
     invoices: Invoice[] | undefined;
-    advancePaymentAmount: number | undefined;
+    advancePaid: number | undefined;
+    readonly total: number | undefined;
     isDeleted: boolean;
     deleterUserId: number | undefined;
     deletionTime: moment.Moment | undefined;
@@ -6731,7 +6921,7 @@ export class Order implements IOrder {
             this.shippedDate = _data["shippedDate"] ? moment(_data["shippedDate"].toString()) : <any>undefined;
             this.customerId = _data["customerId"];
             this.customer = _data["customer"] ? Customer.fromJS(_data["customer"]) : <any>undefined;
-            this.status = _data["status"];
+            this.orderStatus = _data["orderStatus"];
             this.paymentStatus = _data["paymentStatus"];
             if (Array.isArray(_data["orderDetails"])) {
                 this.orderDetails = [] as any;
@@ -6743,7 +6933,8 @@ export class Order implements IOrder {
                 for (let item of _data["invoices"])
                     this.invoices.push(Invoice.fromJS(item));
             }
-            this.advancePaymentAmount = _data["advancePaymentAmount"];
+            this.advancePaid = _data["advancePaid"];
+            (<any>this).total = _data["total"];
             this.isDeleted = _data["isDeleted"];
             this.deleterUserId = _data["deleterUserId"];
             this.deletionTime = _data["deletionTime"] ? moment(_data["deletionTime"].toString()) : <any>undefined;
@@ -6775,7 +6966,7 @@ export class Order implements IOrder {
         data["shippedDate"] = this.shippedDate ? this.shippedDate.toISOString() : <any>undefined;
         data["customerId"] = this.customerId;
         data["customer"] = this.customer ? this.customer.toJSON() : <any>undefined;
-        data["status"] = this.status;
+        data["orderStatus"] = this.orderStatus;
         data["paymentStatus"] = this.paymentStatus;
         if (Array.isArray(this.orderDetails)) {
             data["orderDetails"] = [];
@@ -6787,7 +6978,8 @@ export class Order implements IOrder {
             for (let item of this.invoices)
                 data["invoices"].push(item.toJSON());
         }
-        data["advancePaymentAmount"] = this.advancePaymentAmount;
+        data["advancePaid"] = this.advancePaid;
+        data["total"] = this.total;
         data["isDeleted"] = this.isDeleted;
         data["deleterUserId"] = this.deleterUserId;
         data["deletionTime"] = this.deletionTime ? this.deletionTime.toISOString() : <any>undefined;
@@ -6819,11 +7011,12 @@ export interface IOrder {
     shippedDate: moment.Moment | undefined;
     customerId: string;
     customer: Customer;
-    status: OrderStatus;
+    orderStatus: OrderStatus;
     paymentStatus: PaymentStatus;
     orderDetails: OrderDetail[] | undefined;
     invoices: Invoice[] | undefined;
-    advancePaymentAmount: number | undefined;
+    advancePaid: number | undefined;
+    total: number | undefined;
     isDeleted: boolean;
     deleterUserId: number | undefined;
     deletionTime: moment.Moment | undefined;
@@ -6845,8 +7038,9 @@ export class OrderDetail implements IOrderDetail {
     order: Order;
     product: Product;
     metalType: string | undefined;
-    metalCostThisDay: number;
-    subTotal: number;
+    todayMetalCost: number;
+    readonly totalWeight: number;
+    readonly subTotal: number;
 
     constructor(data?: IOrderDetail) {
         if (data) {
@@ -6868,8 +7062,9 @@ export class OrderDetail implements IOrderDetail {
             this.order = _data["order"] ? Order.fromJS(_data["order"]) : <any>undefined;
             this.product = _data["product"] ? Product.fromJS(_data["product"]) : <any>undefined;
             this.metalType = _data["metalType"];
-            this.metalCostThisDay = _data["metalCostThisDay"];
-            this.subTotal = _data["subTotal"];
+            this.todayMetalCost = _data["todayMetalCost"];
+            (<any>this).totalWeight = _data["totalWeight"];
+            (<any>this).subTotal = _data["subTotal"];
         }
     }
 
@@ -6891,7 +7086,8 @@ export class OrderDetail implements IOrderDetail {
         data["order"] = this.order ? this.order.toJSON() : <any>undefined;
         data["product"] = this.product ? this.product.toJSON() : <any>undefined;
         data["metalType"] = this.metalType;
-        data["metalCostThisDay"] = this.metalCostThisDay;
+        data["todayMetalCost"] = this.todayMetalCost;
+        data["totalWeight"] = this.totalWeight;
         data["subTotal"] = this.subTotal;
         return data; 
     }
@@ -6914,7 +7110,8 @@ export interface IOrderDetail {
     order: Order;
     product: Product;
     metalType: string | undefined;
-    metalCostThisDay: number;
+    todayMetalCost: number;
+    totalWeight: number;
     subTotal: number;
 }
 
@@ -7051,8 +7248,7 @@ export class SaleDetailDto implements ISaleDetailDto {
     sale: SaleDto;
     product: Product;
     metalType: string | undefined;
-    metalCostThisDay: number;
-    subPrice: number;
+    todayMetalPrice: number;
 
     constructor(data?: ISaleDetailDto) {
         if (data) {
@@ -7074,8 +7270,7 @@ export class SaleDetailDto implements ISaleDetailDto {
             this.sale = _data["sale"] ? SaleDto.fromJS(_data["sale"]) : <any>undefined;
             this.product = _data["product"] ? Product.fromJS(_data["product"]) : <any>undefined;
             this.metalType = _data["metalType"];
-            this.metalCostThisDay = _data["metalCostThisDay"];
-            this.subPrice = _data["subPrice"];
+            this.todayMetalPrice = _data["todayMetalPrice"];
         }
     }
 
@@ -7097,8 +7292,7 @@ export class SaleDetailDto implements ISaleDetailDto {
         data["sale"] = this.sale ? this.sale.toJSON() : <any>undefined;
         data["product"] = this.product ? this.product.toJSON() : <any>undefined;
         data["metalType"] = this.metalType;
-        data["metalCostThisDay"] = this.metalCostThisDay;
-        data["subPrice"] = this.subPrice;
+        data["todayMetalPrice"] = this.todayMetalPrice;
         return data; 
     }
 
@@ -7120,8 +7314,7 @@ export interface ISaleDetailDto {
     sale: SaleDto;
     product: Product;
     metalType: string | undefined;
-    metalCostThisDay: number;
-    subPrice: number;
+    todayMetalPrice: number;
 }
 
 export class SaleDto implements ISaleDto {
@@ -7133,7 +7326,7 @@ export class SaleDto implements ISaleDto {
     paymentStatus: PaymentStatus;
     saleDetails: SaleDetailDto[] | undefined;
     invoices: InvoiceDto[] | undefined;
-    dueAmount: number | undefined;
+    paidAmouunt: number | undefined;
     id: string;
 
     constructor(data?: ISaleDto) {
@@ -7163,7 +7356,7 @@ export class SaleDto implements ISaleDto {
                 for (let item of _data["invoices"])
                     this.invoices.push(InvoiceDto.fromJS(item));
             }
-            this.dueAmount = _data["dueAmount"];
+            this.paidAmouunt = _data["paidAmouunt"];
             this.id = _data["id"];
         }
     }
@@ -7193,7 +7386,7 @@ export class SaleDto implements ISaleDto {
             for (let item of this.invoices)
                 data["invoices"].push(item.toJSON());
         }
-        data["dueAmount"] = this.dueAmount;
+        data["paidAmouunt"] = this.paidAmouunt;
         data["id"] = this.id;
         return data; 
     }
@@ -7215,7 +7408,7 @@ export interface ISaleDto {
     paymentStatus: PaymentStatus;
     saleDetails: SaleDetailDto[] | undefined;
     invoices: InvoiceDto[] | undefined;
-    dueAmount: number | undefined;
+    paidAmouunt: number | undefined;
     id: string;
 }
 
@@ -7272,160 +7465,6 @@ export class SaleDtoPagedResultDto implements ISaleDtoPagedResultDto {
 export interface ISaleDtoPagedResultDto {
     totalCount: number;
     items: SaleDto[] | undefined;
-}
-
-export class CreateEditSaleDetailDto implements ICreateEditSaleDetailDto {
-    orderId: string;
-    productId: string;
-    quantity: number;
-    weight: number | undefined;
-    makingCharge: number | undefined;
-    wastage: number | undefined;
-    metalType: string | undefined;
-    metalCostThisDay: number;
-    unitPrice: number;
-    totalPrice: number;
-
-    constructor(data?: ICreateEditSaleDetailDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.orderId = _data["orderId"];
-            this.productId = _data["productId"];
-            this.quantity = _data["quantity"];
-            this.weight = _data["weight"];
-            this.makingCharge = _data["makingCharge"];
-            this.wastage = _data["wastage"];
-            this.metalType = _data["metalType"];
-            this.metalCostThisDay = _data["metalCostThisDay"];
-            this.unitPrice = _data["unitPrice"];
-            this.totalPrice = _data["totalPrice"];
-        }
-    }
-
-    static fromJS(data: any): CreateEditSaleDetailDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateEditSaleDetailDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["orderId"] = this.orderId;
-        data["productId"] = this.productId;
-        data["quantity"] = this.quantity;
-        data["weight"] = this.weight;
-        data["makingCharge"] = this.makingCharge;
-        data["wastage"] = this.wastage;
-        data["metalType"] = this.metalType;
-        data["metalCostThisDay"] = this.metalCostThisDay;
-        data["unitPrice"] = this.unitPrice;
-        data["totalPrice"] = this.totalPrice;
-        return data; 
-    }
-
-    clone(): CreateEditSaleDetailDto {
-        const json = this.toJSON();
-        let result = new CreateEditSaleDetailDto();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface ICreateEditSaleDetailDto {
-    orderId: string;
-    productId: string;
-    quantity: number;
-    weight: number | undefined;
-    makingCharge: number | undefined;
-    wastage: number | undefined;
-    metalType: string | undefined;
-    metalCostThisDay: number;
-    unitPrice: number;
-    totalPrice: number;
-}
-
-export class CreateEditSaleDto implements ICreateEditSaleDto {
-    saleNumber: number;
-    customerId: string;
-    saleStatus: SaleStatus;
-    paymentStatus: PaymentStatus;
-    saleDetails: CreateEditSaleDetailDto[] | undefined;
-    DueAmount: number | undefined;
-    id: string;
-
-    constructor(data?: ICreateEditSaleDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.saleNumber = _data["saleNumber"];
-            this.customerId = _data["customerId"];
-            this.saleStatus = _data["saleStatus"];
-            this.paymentStatus = _data["paymentStatus"];
-            if (Array.isArray(_data["saleDetails"])) {
-                this.saleDetails = [] as any;
-                for (let item of _data["saleDetails"])
-                    this.saleDetails.push(CreateEditSaleDetailDto.fromJS(item));
-            }
-            this.DueAmount = _data["advancePaymentAmount"];
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): CreateEditSaleDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateEditSaleDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["saleNumber"] = this.saleNumber;
-        data["customerId"] = this.customerId;
-        data["saleStatus"] = this.saleStatus;
-        data["paymentStatus"] = this.paymentStatus;
-        if (Array.isArray(this.saleDetails)) {
-            data["saleDetails"] = [];
-            for (let item of this.saleDetails)
-                data["saleDetails"].push(item.toJSON());
-        }
-        data["advancePaymentAmount"] = this.DueAmount;
-        data["id"] = this.id;
-        return data; 
-    }
-
-    clone(): CreateEditSaleDto {
-        const json = this.toJSON();
-        let result = new CreateEditSaleDto();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface ICreateEditSaleDto {
-    saleNumber: number;
-    customerId: string;
-    saleStatus: SaleStatus;
-    paymentStatus: PaymentStatus;
-    saleDetails: CreateEditSaleDetailDto[] | undefined;
-    DueAmount: number | undefined;
-    id: string;
 }
 
 export class ApplicationInfoDto implements IApplicationInfoDto {

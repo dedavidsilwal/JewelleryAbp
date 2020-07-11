@@ -8,7 +8,7 @@ import {
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import * as _ from 'lodash';
 import { AppComponentBase } from '@shared/app-component-base';
-import { OrderServiceProxy, CustomerOrderDto } from '@shared/service-proxies/service-proxies';
+import { OrderServiceProxy, CustomerOrderDisplayDto } from '@shared/service-proxies/service-proxies';
 import * as jspdf from 'jspdf';
 
 import html2canvas from 'html2canvas';
@@ -23,7 +23,7 @@ export class OrderDetailComponent extends AppComponentBase implements OnInit {
   id: string;
   loading = new EventEmitter<boolean>();
 
-  order: CustomerOrderDto;
+  order: CustomerOrderDisplayDto;
   todayDateString: string = new Date().toDateString();
 
   AmountDue: number;
@@ -41,8 +41,6 @@ export class OrderDetailComponent extends AppComponentBase implements OnInit {
     this._orderService.fetchOrderDetail(this.id)
       .subscribe(result => {
         this.order = result;
-
-        this.AmountDue = result.totalPrice - result?.advancePayment;
       });
   }
 

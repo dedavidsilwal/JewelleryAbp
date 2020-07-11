@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Abp;
+﻿using Abp;
 using Abp.Authorization.Users;
 using Abp.Events.Bus;
 using Abp.Events.Bus.Entities;
@@ -14,6 +10,10 @@ using Jewellery.EntityFrameworkCore;
 using Jewellery.EntityFrameworkCore.Seed.Host;
 using Jewellery.EntityFrameworkCore.Seed.Tenants;
 using Jewellery.MultiTenancy;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Jewellery.Tests
 {
@@ -43,6 +43,7 @@ namespace Jewellery.Tests
             {
                 NormalizeDbContext(context);
                 new TenantRoleAndUserBuilder(context, 1).Create();
+                new JewelleryDataBuilder(context, 1).Create();
             });
 
             LoginAsDefaultTenantAdmin();

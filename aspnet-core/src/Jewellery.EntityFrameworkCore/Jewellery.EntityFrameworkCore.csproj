@@ -31,6 +31,10 @@
     <Compile Remove="Migrations\20200629165649_alterOrderTable.Designer.cs" />
     <Compile Remove="Migrations\20200701164759_invoice.cs" />
     <Compile Remove="Migrations\20200701164759_invoice.Designer.cs" />
+    <Compile Remove="Migrations\20200711102714_removeSubTotal.cs" />
+    <Compile Remove="Migrations\20200711102714_removeSubTotal.Designer.cs" />
+    <Compile Remove="Migrations\20200711110209_caseCade.cs" />
+    <Compile Remove="Migrations\20200711110209_caseCade.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.4" />

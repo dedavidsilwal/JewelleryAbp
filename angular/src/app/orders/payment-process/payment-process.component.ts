@@ -20,6 +20,7 @@ export class PaymentProcessComponent extends AppComponentBase implements OnInit 
 
   id: string;
 
+  showpartialPayment = false;
 
   paymentProcess: PaymentOrderDto;
 
@@ -39,8 +40,6 @@ export class PaymentProcessComponent extends AppComponentBase implements OnInit 
 
   }
 
-
-
   ngOnInit(): void {
 
     this._orderService
@@ -57,6 +56,9 @@ export class PaymentProcessComponent extends AppComponentBase implements OnInit 
 
     const updatePayment = this.updateForm.value as UpdatePaymentDto;
 
+    if (!this.showpartialPayment) {
+      updatePayment.paidAmount = this.paymentProcess.due;
+    }
     console.log(updatePayment);
 
     this._orderService.updateOrderPayment(updatePayment)

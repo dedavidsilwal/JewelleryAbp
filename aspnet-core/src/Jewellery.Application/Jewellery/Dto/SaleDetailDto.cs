@@ -9,8 +9,7 @@ namespace Jewellery.Jewellery.Dto
 
         public short Quantity { get; set; }
 
-
-
+        
         public decimal? Weight { get; set; }
         public decimal? MakingCharge { get; set; }
         public decimal? Wastage { get; set; }
@@ -21,9 +20,7 @@ namespace Jewellery.Jewellery.Dto
 
 
         public string MetalType { get; set; }
-        public decimal MetalCostThisDay { get; set; }
+        public decimal TodayMetalPrice { get; set; }
 
-
-        public decimal SubPrice { get; set; }
     }
 }

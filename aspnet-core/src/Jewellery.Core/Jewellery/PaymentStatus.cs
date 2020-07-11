@@ -2,8 +2,8 @@
 {
     public enum PaymentStatus
     {
-        Paid,
-        PartialPayment,
-        AdvancePayment
+        None = 0,
+        PartialPaid = 1,
+        Paid = 2
     }
 }

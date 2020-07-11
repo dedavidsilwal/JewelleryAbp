@@ -5,6 +5,7 @@ using Jewellery.Authorization;
 using Jewellery.Jewellery.Dto;
 using Jewellery.Users.Dto;
 using System;
+using System.Threading.Tasks;
 
 namespace Jewellery.Jewellery
 {
@@ -16,5 +17,11 @@ namespace Jewellery.Jewellery
         {
 
         }
+
+        public override Task<SaleDto> CreateAsync(CreateEditSaleDto input)
+        {
+            return base.CreateAsync(input);
+        }
+
     }
 }
