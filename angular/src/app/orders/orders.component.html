@@ -93,7 +93,7 @@
                       {{ "Cancel" | localize }}
                     </button>
 
-                    <button *ngIf="order.Active	 == 'Delivered'"  
+                    <button *ngIf="order.orderStatus == 'Active'"  
                     type="button"
                     class="btn btn-sm bg-secondary mx-2"
                     (click)="paymentProcess(order.id)"

@@ -37,41 +37,41 @@ namespace Jewellery.EntityFrameworkCore
         {
 
 
-            modelBuilder.HasSequence<int>("InvoiceNumbers", schema: "shared")
-                         .StartsAt(0001)
-                         .IncrementsBy(1);
+            //modelBuilder.HasSequence<int>("InvoiceNumbers", schema: "shared")
+            //             .StartsAt(0001)
+            //             .IncrementsBy(1);
 
 
-            modelBuilder.HasSequence<int>("SaleNumbers", schema: "shared")
-                         .StartsAt(0001)
-                         .IncrementsBy(1);
+            //modelBuilder.HasSequence<int>("SaleNumbers", schema: "shared")
+            //             .StartsAt(0001)
+            //             .IncrementsBy(1);
 
-            modelBuilder.Entity<Invoice>()
-                          .Property(o => o.InvoiceNumber)
-                          .HasDefaultValueSql("NEXT VALUE FOR shared.InvoiceNumbers");
+            //modelBuilder.Entity<Invoice>()
+            //              .Property(o => o.InvoiceNumber)
+            //              .HasDefaultValueSql("NEXT VALUE FOR shared.InvoiceNumbers");
 
-            modelBuilder.HasSequence<int>("OrderNumbers", schema: "shared")
-                       .StartsAt(0001)
-                       .IncrementsBy(1);
+            //modelBuilder.HasSequence<int>("OrderNumbers", schema: "shared")
+            //           .StartsAt(0001)
+            //           .IncrementsBy(1);
 
-            modelBuilder.Entity<Order>()
-                          .Property(o => o.OrderNumber)
-                          .HasDefaultValueSql("NEXT VALUE FOR shared.OrderNumbers");
+            //modelBuilder.Entity<Order>()
+            //              .Property(o => o.OrderNumber)
+            //              .HasDefaultValueSql("NEXT VALUE FOR shared.OrderNumbers");
 
-            modelBuilder.Entity<Sale>()
-                   .Property(o => o.SaleNumber)
-                   .HasDefaultValueSql("NEXT VALUE FOR shared.SaleNumbers");
-
-
-            modelBuilder.Entity<Order>().Property(p => p.OrderDate).HasColumnType("DATETIME");
-            modelBuilder.Entity<Order>().Property(p => p.RequiredDate).HasColumnType("DATETIME");
-            modelBuilder.Entity<Order>().Property(p => p.ShippedDate).HasColumnType("DATETIME");
-
-            modelBuilder.Entity<Invoice>().Property(p => p.InvoiceDate).HasColumnType("DATETIME");
+            //modelBuilder.Entity<Sale>()
+            //       .Property(o => o.SaleNumber)
+            //       .HasDefaultValueSql("NEXT VALUE FOR shared.SaleNumbers");
 
 
+            //modelBuilder.Entity<Order>().Property(p => p.OrderDate).HasColumnType("DATETIME");
+            //modelBuilder.Entity<Order>().Property(p => p.RequiredDate).HasColumnType("DATETIME");
+            //modelBuilder.Entity<Order>().Property(p => p.ShippedDate).HasColumnType("DATETIME");
 
-            modelBuilder.Entity<Sale>().Property(p => p.SalesDate).HasColumnType("DATETIME");
+            //modelBuilder.Entity<Invoice>().Property(p => p.InvoiceDate).HasColumnType("DATETIME");
+
+
+
+            //modelBuilder.Entity<Sale>().Property(p => p.SalesDate).HasColumnType("DATETIME");
 
             modelBuilder.Entity<OrderDetail>().HasKey(e => new { e.OrderId, e.ProductId });
 

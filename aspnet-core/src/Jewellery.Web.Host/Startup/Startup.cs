@@ -60,24 +60,24 @@ namespace Jewellery.Web.Host.Startup
             services.AddSignalR();
 
             // Configure CORS for angular2 UI
-            //services.AddCors(
-            //    options => options.AddPolicy(
-            //        _defaultCorsPolicyName,
-            //        builder => builder
-            //            .WithOrigins(
-            //                // App:CorsOrigins in appsettings.json can contain more than one address separated by comma.
-            //                _appConfiguration["App:CorsOrigins"]
-            //                    .Split(",", StringSplitOptions.RemoveEmptyEntries)
-            //                    .Select(o => o.RemovePostFix("/"))
-            //                    .ToArray()
-            //            )
-            //            .AllowAnyHeader()
-            //            .AllowAnyMethod()
-            //            .AllowCredentials()
-            //    )
-            //);
+            services.AddCors(
+                options => options.AddPolicy(
+                    _defaultCorsPolicyName,
+                    builder => builder
+                        .WithOrigins(
+                            // App:CorsOrigins in appsettings.json can contain more than one address separated by comma.
+                            _appConfiguration["App:CorsOrigins"]
+                                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                                .Select(o => o.RemovePostFix("/"))
+                                .ToArray()
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                )
+            );
 
-            services.AddCors();
+            //services.AddCors();
 
 
             // Swagger - Enable this line and the related lines in Configure method to enable swagger UI
@@ -131,12 +131,6 @@ namespace Jewellery.Web.Host.Startup
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            app.UseCors(x => x
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .SetIsOriginAllowed(origin => true) // allow any origin
-                        .AllowCredentials()); // allow credentials
 
             app.UseAuthentication();
 

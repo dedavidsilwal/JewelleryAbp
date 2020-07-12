@@ -7,12 +7,12 @@ namespace Jewellery.EntityFrameworkCore
     {
         public static void Configure(DbContextOptionsBuilder<JewelleryDbContext> builder, string connectionString)
         {
-            builder.UseSqlServer(connectionString);
+            builder.UseNpgsql(connectionString);
         }
 
         public static void Configure(DbContextOptionsBuilder<JewelleryDbContext> builder, DbConnection connection)
         {
-            builder.UseSqlServer(connection);
+            builder.UseNpgsql(connection);
         }
     }
 }

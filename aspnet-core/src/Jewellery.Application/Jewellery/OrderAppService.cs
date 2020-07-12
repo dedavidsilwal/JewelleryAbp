@@ -128,7 +128,7 @@ namespace Jewellery.Jewellery
         {
             var builder = new DbContextOptionsBuilder<JewelleryDbContext>();
             var conn = _configuration.GetConnectionString("Default");
-            builder.UseSqlServer(conn);
+            builder.UseNpgsql(conn);
 
             using var context = new JewelleryDbContext(builder.Options);
             using var transaction = context.Database.BeginTransaction();
