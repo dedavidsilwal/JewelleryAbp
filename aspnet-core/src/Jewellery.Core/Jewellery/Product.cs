@@ -10,11 +10,11 @@ namespace Jewellery.Jewellery
         public Product()
         {
             OrderDetails = new HashSet<OrderDetail>();
+            SaleDetails = new HashSet<SaleDetail>();
         }
 
         public string ProductName { get; set; }
 
-        public short? UnitsInStock { get; set; }
         public string Photo { get; set; }
 
         public Guid MetalTypeId { get; set; }
@@ -23,6 +23,8 @@ namespace Jewellery.Jewellery
         public decimal? EstimatedWeight { get; set; }
         public decimal? EstimatedCost { get; set; }
 
+
         public ICollection<OrderDetail> OrderDetails { get; private set; }
+        public ICollection<SaleDetail> SaleDetails { get; private set; }
     }
 }

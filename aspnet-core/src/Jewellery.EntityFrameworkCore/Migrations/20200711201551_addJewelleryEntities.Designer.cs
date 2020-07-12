@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jewellery.Migrations
 {
     [DbContext(typeof(JewelleryDbContext))]
-    [Migration("20200628094611_JewelleryEntity")]
-    partial class JewelleryEntity
+    [Migration("20200711201551_addJewelleryEntities")]
+    partial class addJewelleryEntities
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -19,6 +19,9 @@ namespace Jewellery.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("Relational:Sequence:shared.InvoiceNumbers", "'InvoiceNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
+                .HasAnnotation("Relational:Sequence:shared.OrderNumbers", "'OrderNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
+                .HasAnnotation("Relational:Sequence:shared.SaleNumbers", "'SaleNumbers', 'shared', '1', '1', '', '', 'Int32', 'False'")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Abp.Application.Editions.Edition", b =>
@@ -1576,6 +1579,11 @@ namespace Jewellery.Migrations
                     b.Property<DateTime>("InvoiceDate")
                         .HasColumnType("DATETIME");
 
+                    b.Property<int>("InvoiceNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("NEXT VALUE FOR shared.InvoiceNumbers");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1585,20 +1593,14 @@ namespace Jewellery.Migrations
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<Guid>("OrderId")
+                    b.Property<Guid?>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("PaidAmount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PaymentStatus")
-                        .HasColumnType("int");
+                    b.Property<decimal>("PaidAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid?>("SaleId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("TotalPaymentAmount")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1656,7 +1658,7 @@ namespace Jewellery.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal?>("AdvancePaymentAmount")
+                    b.Property<decimal?>("AdvancePaid")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreationTime")
@@ -1686,14 +1688,22 @@ namespace Jewellery.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("DATETIME");
 
+                    b.Property<int>("OrderNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("NEXT VALUE FOR shared.OrderNumbers");
+
+                    b.Property<int>("OrderStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("RequiredDate")
                         .HasColumnType("DATETIME");
 
                     b.Property<DateTime?>("ShippedDate")
                         .HasColumnType("DATETIME");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -1713,19 +1723,13 @@ namespace Jewellery.Migrations
                     b.Property<decimal?>("MakingCharge")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("MetalCostThisDay")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("MetalType")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<short>("Quantity")
                         .HasColumnType("smallint");
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("UnitPrice")
+                    b.Property<decimal>("TodayMetalCost")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("Wastage")
@@ -1783,9 +1787,6 @@ namespace Jewellery.Migrations
                     b.Property<string>("ProductName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<short?>("UnitsInStock")
-                        .HasColumnType("smallint");
-
                     b.HasKey("Id");
 
                     b.HasIndex("MetalTypeId");
@@ -1798,9 +1799,6 @@ namespace Jewellery.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal?>("AdvancePaymentAmount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
@@ -1826,8 +1824,16 @@ namespace Jewellery.Migrations
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
 
+                    b.Property<decimal?>("PaidAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("int");
+
+                    b.Property<int>("SaleNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("NEXT VALUE FOR shared.SaleNumbers");
 
                     b.Property<int>("SaleStatus")
                         .HasColumnType("int");
@@ -1853,22 +1859,13 @@ namespace Jewellery.Migrations
                     b.Property<decimal?>("MakingCharge")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("MetalCostThisDay")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("MetalType")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ProductId1")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<short>("Quantity")
                         .HasColumnType("smallint");
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("UnitPrice")
+                    b.Property<decimal>("TodayMetalPrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("Wastage")
@@ -1880,8 +1877,6 @@ namespace Jewellery.Migrations
                     b.HasKey("SaleId", "ProductId");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("ProductId1");
 
                     b.ToTable("SaleDetails");
                 });
@@ -2149,11 +2144,9 @@ namespace Jewellery.Migrations
                 {
                     b.HasOne("Jewellery.Jewellery.Order", "Order")
                         .WithMany("Invoices")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OrderId");
 
-                    b.HasOne("Jewellery.Jewellery.Sale", null)
+                    b.HasOne("Jewellery.Jewellery.Sale", "Sale")
                         .WithMany("Invoices")
                         .HasForeignKey("SaleId");
                 });
@@ -2202,16 +2195,16 @@ namespace Jewellery.Migrations
 
             modelBuilder.Entity("Jewellery.Jewellery.SaleDetail", b =>
                 {
-                    b.HasOne("Jewellery.Jewellery.Sale", "Sale")
+                    b.HasOne("Jewellery.Jewellery.Product", "Product")
                         .WithMany("SaleDetails")
                         .HasForeignKey("ProductId")
                         .HasConstraintName("FK_Sale_Details_Products")
                         .IsRequired();
 
-                    b.HasOne("Jewellery.Jewellery.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId1")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Jewellery.Jewellery.Sale", "Sale")
+                        .WithMany("SaleDetails")
+                        .HasForeignKey("SaleId")
+                        .HasConstraintName("FK_Sale_Details_Sales")
                         .IsRequired();
                 });
 

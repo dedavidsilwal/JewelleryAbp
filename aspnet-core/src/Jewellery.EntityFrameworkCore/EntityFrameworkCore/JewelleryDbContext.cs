@@ -39,9 +39,9 @@ namespace Jewellery.EntityFrameworkCore
 
             modelBuilder.HasSequence<int>("InvoiceNumbers", schema: "shared")
                          .StartsAt(0001)
-                         .IncrementsBy(1);    
-            
-            
+                         .IncrementsBy(1);
+
+
             modelBuilder.HasSequence<int>("SaleNumbers", schema: "shared")
                          .StartsAt(0001)
                          .IncrementsBy(1);
@@ -70,25 +70,21 @@ namespace Jewellery.EntityFrameworkCore
             modelBuilder.Entity<Invoice>().Property(p => p.InvoiceDate).HasColumnType("DATETIME");
 
 
+
+            modelBuilder.Entity<Sale>().Property(p => p.SalesDate).HasColumnType("DATETIME");
+
             modelBuilder.Entity<OrderDetail>().HasKey(e => new { e.OrderId, e.ProductId });
 
-            modelBuilder.Entity<OrderDetail>().HasOne(d => d.Order)
+
+            modelBuilder.Entity<SaleDetail>().HasKey(e => new { e.SaleId, e.ProductId });
+
+
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(d => d.Order)
                    .WithMany(p => p.OrderDetails)
                    .HasForeignKey(d => d.OrderId)
                    .OnDelete(DeleteBehavior.ClientSetNull)
                    .HasConstraintName("FK_Order_Details_Orders");
-
-            modelBuilder.Entity<OrderDetail>(
-                ).HasOne(d => d.Product)
-                .WithMany(p => p.OrderDetails)
-                .HasForeignKey(d => d.ProductId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Order_Details_Products");
-
-
-            modelBuilder.Entity<Sale>().Property(p => p.SalesDate).HasColumnType("DATETIME");
-        
-            modelBuilder.Entity<SaleDetail>().HasKey(e => new { e.SaleId, e.ProductId });
 
             modelBuilder.Entity<SaleDetail>()
                 .HasOne(d => d.Sale)
@@ -97,7 +93,17 @@ namespace Jewellery.EntityFrameworkCore
                    .OnDelete(DeleteBehavior.ClientSetNull)
                    .HasConstraintName("FK_Sale_Details_Sales");
 
-            modelBuilder.Entity<SaleDetail>().HasOne(d => d.Sale)
+
+
+            modelBuilder.Entity<OrderDetail>()
+                .HasOne(d => d.Product)
+                .WithMany(p => p.OrderDetails)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Order_Details_Products");
+
+            modelBuilder.Entity<SaleDetail>()
+                .HasOne(d => d.Product)
                 .WithMany(p => p.SaleDetails)
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -106,7 +112,7 @@ namespace Jewellery.EntityFrameworkCore
             modelBuilder.Entity<Product>()
              .Property(e => e.Photo);
 
-            
+
             base.OnModelCreating(modelBuilder);
         }
 

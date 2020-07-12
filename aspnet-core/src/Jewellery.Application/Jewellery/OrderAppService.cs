@@ -57,14 +57,14 @@ namespace Jewellery.Jewellery
         }
 
 
-        public async Task<OrderDto[]> NearOrderDeliver()
+        public async Task<OrderDashboardDto[]> NearOrderDeliver()
         {
             var query = _repository
                 .GetAll()
                 .OrderBy(s => s.RequiredDate)
                 .Take(5);
 
-            return await ObjectMapper.ProjectTo<OrderDto>(query).ToArrayAsync();
+            return await ObjectMapper.ProjectTo<OrderDashboardDto>(query).ToArrayAsync();
         }
 
         public async Task<int> TotalOrderCount() =>
@@ -80,7 +80,8 @@ namespace Jewellery.Jewellery
                 .Include(o => o.OrderDetails)
                 .Include(c => c.Customer)
                 .Skip(input.SkipCount)
-                .Take(input.MaxResultCount).Select(s => ObjectMapper.Map<OrderDto>(s))
+                .Take(input.MaxResultCount)
+                .Select(s => ObjectMapper.Map<OrderDto>(s))
                 .ToListAsync();
 
             return new PagedResultDto<OrderDto>() { Items = query, TotalCount = query.Count };

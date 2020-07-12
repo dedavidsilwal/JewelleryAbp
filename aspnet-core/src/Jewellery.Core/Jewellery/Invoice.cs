@@ -15,8 +15,8 @@ namespace Jewellery.Jewellery
         public Guid? OrderId { get; set; }
         public Order Order { get; set; }
 
-        //public Guid? SaleId { get; set; }
-        //public Sale Sale { get; set; }
+        public Guid? SaleId { get; set; }
+        public Sale Sale { get; set; }
 
     }
 }

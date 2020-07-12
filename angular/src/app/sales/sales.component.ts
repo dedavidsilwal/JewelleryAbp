@@ -10,6 +10,7 @@ import {
 import { SaleDto, SaleServiceProxy, SaleDtoPagedResultDto } from '../../shared/service-proxies/service-proxies';
 import { CreateSaleComponent } from './create-sale/create-sale.component';
 import { EditSaleComponent } from './edit-sale/edit-sale.component';
+import { SaleDetailComponent } from './sale-detail/sale-detail.component';
 
 class PagedSalerequestDto extends PagedRequestDto {
   keyword: string;
@@ -71,6 +72,42 @@ export class SalesComponent extends PagedListingComponentBase<SaleDto> {
       }
     );
   }
+
+  cancel(id: string): void {
+    abp.message.confirm(
+      this.l('RoleDeleteWarningMessage', id),
+      undefined,
+      (result: boolean) => {
+        if (result) {
+          this._saleService
+            .cancel(id)
+            .pipe(
+              finalize(() => {
+                abp.notify.success(this.l('SuccessfullyDeleted'));
+                this.refresh();
+              })
+            )
+            .subscribe(() => {
+
+            });
+        }
+      }
+    );
+  }
+
+  SaleReport(id: string): void {
+    let saleReportDialog: BsModalRef;
+
+    saleReportDialog = this._modalService.show(
+      SaleDetailComponent,
+      {
+        class: 'modal-lg',
+        initialState: {
+          id: id,
+        }
+      });
+  }
+
 
   create(): void {
     this.showCreateOrEditDialog();

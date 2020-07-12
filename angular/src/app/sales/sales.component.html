@@ -45,9 +45,9 @@
                 <th>{{ "saleNumber" | localize }}</th>
                 <th>{{ "saleDate" | localize }}</th>
                 <th>{{ "customerName" | localize }}</th>
-                <th>{{ "paymentStatus" | localize }}</th>
                 <th>{{ "saleStatus" | localize }}</th>
-                <th>{{ "dueAmount" | localize }}</th>
+                <th>{{ "paymentStatus" | localize }}</th>
+                <th>{{ "paidAmouunt" | localize }}</th>
                 <th style="width: 200px;">{{ "Actions" | localize }}</th>
               </tr>
             </thead>
@@ -67,12 +67,13 @@
               >
                 <td>{{ sale.saleNumber }}</td>
                 <td>{{ sale.salesDate.format("D MMM YYYY, h:mm:ss a") }}</td>
-                <td>{{ sale.customer.customerName }}</td>
-                <td>{{ sale.paymentStatus }}</td>
+                <td>{{ sale.customer }}</td>
                 <td>{{ sale.saleStatus }}</td>
-                <td>{{ sale.dueAmount }}</td>
+                <td>{{ sale.paymentStatus }}</td>
+                <td>{{ sale.paidAmouunt }}</td>
                 <td>
                   <button
+                    *ngIf="sale.saleStatus == 'Sold'"
                     type="button"
                     class="btn btn-sm bg-secondary"
                     (click)="edit(sale)"
@@ -82,14 +83,23 @@
                   </button>
 
                   <button
+                    *ngIf="sale.saleStatus == 'Sold'"
                     type="button"
                     class="btn btn-sm bg-danger mx-2"
-                    (click)="delete(sale)"
+                    (click)="cancel(sale.id)"
                   >
                     <i class="fas fa-trash"></i>
-                    {{ "Delete" | localize }}
-                  </button>          
-  
+                    {{ "Cancel" | localize }}
+                  </button>
+
+                  <button
+                  type="button"
+                  class="btn btn-sm bg-success mx-2"
+                  (click)="SaleReport(sale.id)"
+                >
+                  <i class="fas fa-eye"></i>
+                  {{ "Detail" | localize }}
+                </button>
                 </td>
               </tr>
             </tbody>

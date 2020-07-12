@@ -162,7 +162,14 @@ export class NewOrderComponent extends AppComponentBase implements OnInit {
 
     const todayPrice = parseFloat(orderEntry.get('metalCostThisDay').value);
     const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
-    const totalPrice = totalWeight * todayPrice + makingCharge;
+
+    let totalPrice = totalWeight * todayPrice + makingCharge;
+
+    const quanitity = parseFloat(orderEntry.get('quantity').value) || 0;
+
+    if (quanitity > 0) {
+      totalPrice = quanitity * totalPrice;
+    }
 
     orderEntry.get('totalPrice').setValue(totalPrice);
 

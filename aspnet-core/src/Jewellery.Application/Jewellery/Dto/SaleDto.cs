@@ -1,36 +1,22 @@
 ﻿using Abp.Application.Services.Dto;
 using System;
-using System.Collections.Generic;
 
 namespace Jewellery.Jewellery.Dto
 {
     public class SaleDto : EntityDto<Guid>
     {
-        public SaleDto()
-        {
-            SaleDetails = new HashSet<SaleDetailDto>();
-        }
-
         public int SaleNumber { get; set; }
 
 
         public DateTime SalesDate { get; set; }
 
 
-        public Guid CustomerId { get; set; }
+        public string Customer { get; set; }
 
-        public CustomerDto Customer { get; set; }
+        public string SaleStatus { get; set; }
 
-        public SaleStatus SaleStatus { get; set; }
+        public string PaymentStatus { get; set; }
 
-        public PaymentStatus PaymentStatus { get; set; }
-
-
-        public ICollection<SaleDetailDto> SaleDetails { get; set; }
-
-        public ICollection<InvoiceDto> Invoices { get; set; }
-
-        
         public decimal? PaidAmouunt { get; set; }
 
     }

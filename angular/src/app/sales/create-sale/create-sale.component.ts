@@ -77,7 +77,7 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
       weight: '',
       wastage: '',
       metalType: '',
-      todayMetalPrice: '',
+      todayMetalCost: '',
       totalWeight: '',
       totalPrice: '',
     });
@@ -102,24 +102,16 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
 
     this.buildForm();
-    this.orderDetailsFormArray
-      .valueChanges
-      .subscribe(() => {
-      });
 
     this.orderDetailsFormArray.push(this.orderDetailsFormGroup);
 
-    this.orderDetailsFormArray.valueChanges.subscribe(() => this.calculateTotalAmount());
+    this.orderDetailsFormArray.valueChanges.
+      subscribe(() => this.calculateTotalAmount());
 
     this.form.get('paidAmount').valueChanges.subscribe((val) => {
-
       this.calculateTotalAmount();
-
-      if (this.totalPrice > 0) {
-        val = val || 0;
-        this.dueAmount = this.totalPrice - val;
-      }
     });
+
   }
 
   buildForm(): void {
@@ -142,24 +134,26 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
       const price = parseFloat(element.get('totalPrice').value) || 0;
       Amount = Amount + price;
-      console.log(price);
-
     }
     this.totalPrice = Amount;
+
+    if (this.totalPrice > 0) {
+      const paid = parseFloat(this.form.get('paidAmount').value) || 0;
+
+      this.dueAmount = this.totalPrice - paid;
+    }
+
   }
 
   selectedCustomer(e: TypeaheadMatch) {
-    console.log(e.item.id);
     this.form.get('customerId').setValue(e.item.id);
   }
 
   selectedProduct(e: TypeaheadMatch, index: number) {
     const product = e.item as ProductDto;
-    console.log(product);
 
 
     const orderEntry = (this.form.get('saleDetails') as FormArray).controls[index];
-    console.log(orderEntry);
 
     orderEntry.get('productId').setValue(product.id);
 
@@ -169,7 +163,7 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
     this._metalTypeService
       .fetchTodayMetalPrice(product.metalType)
-      .subscribe((price: number) => orderEntry.get('todayMetalPrice').setValue(price));
+      .subscribe((price: number) => orderEntry.get('todayMetalCost').setValue(price));
 
     orderEntry.get('totalWeight').setValue(product.estimatedWeight);
     orderEntry.get('totalPrice').setValue(product.estimatedCost);
@@ -186,7 +180,7 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
     orderEntry.get('totalWeight').setValue(totalWeight);
 
-    const todayPrice = parseFloat(orderEntry.get('todayMetalPrice').value);
+    const todayPrice = parseFloat(orderEntry.get('todayMetalCost').value);
     const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
     const totalPrice = totalWeight * todayPrice + makingCharge;
 
@@ -223,8 +217,6 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
     this.saving = true;
 
     const sale: CreateEditSaleDto = this.form.value as CreateEditSaleDto;
-
-    console.log(sale);
 
     if (!this.showPartialPayment) {
       sale.paidAmount = this.totalPrice;

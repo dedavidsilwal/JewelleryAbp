@@ -14,7 +14,7 @@
         <div class="col-lg-3 col-6">
           <div class="small-box bg-success">
             <div class="inner">
-              <h3>Rs. 1200</h3>
+              <h3>Rs. 0</h3>
               <p>Credited</p>
             </div>
             <div class="icon">
@@ -33,7 +33,7 @@
         <div class="col-lg-3 col-6">
           <div class="small-box bg-info">
             <div class="inner">
-              <h3>Rs. 5000</h3>
+              <h3>Rs. 0</h3>
               <p>Credited A Week</p>
             </div>
             <div class="icon">
@@ -52,7 +52,7 @@
         <div class="col-lg-3 col-6">
           <div class="small-box bg-warning">
             <div class="inner">
-              <h3>Rs. 1500</h3>
+              <h3>Rs. 0</h3>
               <p>Credited A Month</p>
             </div>
             <div class="icon">
@@ -71,7 +71,7 @@
         <div class="col-lg-3 col-6">
           <div class="small-box bg-primary">
             <div class="inner">
-              <h3>17000</h3>
+              <h3>0</h3>
               <p>Due (Remaining Amount)</p>
             </div>
             <div class="icon">
@@ -95,9 +95,9 @@
               <i class="fas fa-plus-circle"></i>
             </span>
             <div class="info-box-content">
-              <span class="info-box-text">Total Order</span>
+              <span class="info-box-text">Active Order</span>
               <span class="info-box-number">
-                17
+                {{totalActiveOrder}}
               </span>
             </div>
           </div>
@@ -110,7 +110,7 @@
             <div class="info-box-content">
               <span class="info-box-text">Today Order Delivered</span>
               <span class="info-box-number">
-                5
+                0
               </span>
             </div>
           </div>
@@ -124,7 +124,7 @@
             <div class="info-box-content">
               <span class="info-box-text">Total Sale</span>
               <span class="info-box-number">
-                5
+                {{totalSale}}
               </span>
             </div>
           </div>
@@ -137,7 +137,7 @@
             <div class="info-box-content">
               <span class="info-box-text">Pending Order</span>
               <span class="info-box-number">
-                5
+                0
               </span>
             </div>
           </div>
@@ -155,20 +155,20 @@
                 <thead class="bg-light">
                   <tr>
                     <th>orderNumber</th>
-                    <th class="w-25">customerId</th>
-                    <th class="w-25">Status</th>
-                    <th>advancePaymentAmount</th>
-                    <th>Total Price</th>
+                    <th>orderDate</th>
+                    <th>requiredDate</th>
+                    <th class="w-25">customerName</th>
+                    <th class="w-25">advancePaid</th>
+                    <th>total</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let order of orders">
                     <td>{{ order.orderNumber }}</td>
                     <td>{{ order.orderDate }}</td>
-                    <td>{{ order.customerId }}</td>
-                    <td>{{ order.status }}</td>
-                    <td>{{ order.advancePaymentAmount }}</td>
-                    <td>{{ order.advancePaymentAmount }}</td>
+                    <td>{{ order.requiredDate }}</td>
+                    <td>{{ order.customerName }}</td>
+                    <td>{{ order.advancePaid }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -186,77 +186,18 @@
               <table class="table table-hover text-nowrap">
                 <thead class="bg-light">
                   <tr>
-                    <th>Id</th>
-                    <th class="w-25">Title</th>
-                    <th class="w-25">Labels</th>
-                    <th>Date</th>
-                    <th>Opened by</th>
+                    <th>saleNumber</th>
+                    <th class="w-25">customerName</th>
+                    <th class="w-25">saleDate</th>
+                    <th>totalAmount</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      <a
-                        href="https://github.com/aspnetboilerplate/aspnetboilerplate/issues/5452"
-                        target="_blank"
-                      >
-                        5452
-                      </a>
-                    </td>
-                    <td>Angular UI migration to AdminLTE 3</td>
-                    <td>
-                      <span class="badge badge-secondary mx-1">
-                        module-zero-core-template
-                      </span>
-                      <span class="badge badge-primary mx-1">
-                        feature
-                      </span>
-                    </td>
-                    <td>11 days ago</td>
-                    <td>iyilm4z</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a
-                        href="https://github.com/aspnetboilerplate/aspnetboilerplate/issues/5391"
-                        target="_blank"
-                      >
-                        5391
-                      </a>
-                    </td>
-                    <td>
-                      AbpCacheBase should lock the same object for sync and
-                      async
-                    </td>
-                    <td>
-                      <span class="badge badge-danger mx-1">
-                        bug
-                      </span>
-                      <span class="badge badge-success mx-1">
-                        pull request candidate
-                      </span>
-                    </td>
-                    <td>26 days ago</td>
-                    <td>acjh</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a
-                        href="https://github.com/aspnetboilerplate/aspnetboilerplate/issues/5390"
-                        target="_blank"
-                      >
-                        5390
-                      </a>
-                    </td>
-                    <td>AbpCache sliding/absolute expire time</td>
-                    <td>
-                      <span class="badge badge-warning mx-1">
-                        breaking-change
-                      </span>
-                      <span class="badge badge-info mx-1">enhancement</span>
-                    </td>
-                    <td>27 days ago</td>
-                    <td>ryancyq</td>
+                  <tr *ngFor="let sale of sales">
+                    <td>{{ sale?.saleNumber }}</td>
+                    <td>{{ sale?.customerName }}</td>
+                    <td>{{ sale?.saleDate }}</td>
+                    <td>0</td>
                   </tr>
                 </tbody>
               </table>
@@ -264,7 +205,6 @@
           </div>
         </div>
       </div>
-   
     </div>
   </section>
 </div>

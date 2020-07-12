@@ -16,7 +16,7 @@ namespace Jewellery.Jewellery.Dto
 
 
         public string MetalType { get; set; }
-        public decimal TodayMetalPrice { get; set; }
+        public decimal TodayMetalCost { get; set; }
 
     }
 

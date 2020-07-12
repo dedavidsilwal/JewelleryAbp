@@ -1785,9 +1785,6 @@ namespace Jewellery.Migrations
                     b.Property<string>("ProductName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<short?>("UnitsInStock")
-                        .HasColumnType("smallint");
-
                     b.HasKey("Id");
 
                     b.HasIndex("MetalTypeId");
@@ -1860,19 +1857,13 @@ namespace Jewellery.Migrations
                     b.Property<decimal?>("MakingCharge")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("MetalCostThisDay")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("MetalType")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ProductId1")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<short>("Quantity")
                         .HasColumnType("smallint");
 
-                    b.Property<decimal>("SubTotal")
+                    b.Property<decimal>("TodayMetalCost")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal?>("Wastage")
@@ -1884,8 +1875,6 @@ namespace Jewellery.Migrations
                     b.HasKey("SaleId", "ProductId");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("ProductId1");
 
                     b.ToTable("SaleDetails");
                 });
@@ -2155,7 +2144,7 @@ namespace Jewellery.Migrations
                         .WithMany("Invoices")
                         .HasForeignKey("OrderId");
 
-                    b.HasOne("Jewellery.Jewellery.Sale", null)
+                    b.HasOne("Jewellery.Jewellery.Sale", "Sale")
                         .WithMany("Invoices")
                         .HasForeignKey("SaleId");
                 });
@@ -2204,16 +2193,16 @@ namespace Jewellery.Migrations
 
             modelBuilder.Entity("Jewellery.Jewellery.SaleDetail", b =>
                 {
-                    b.HasOne("Jewellery.Jewellery.Sale", "Sale")
+                    b.HasOne("Jewellery.Jewellery.Product", "Product")
                         .WithMany("SaleDetails")
                         .HasForeignKey("ProductId")
                         .HasConstraintName("FK_Sale_Details_Products")
                         .IsRequired();
 
-                    b.HasOne("Jewellery.Jewellery.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId1")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Jewellery.Jewellery.Sale", "Sale")
+                        .WithMany("SaleDetails")
+                        .HasForeignKey("SaleId")
+                        .HasConstraintName("FK_Sale_Details_Sales")
                         .IsRequired();
                 });
 

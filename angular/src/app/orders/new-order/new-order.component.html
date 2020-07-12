@@ -113,6 +113,7 @@
                 placeholder="quantity"
                 type="text"
                 formControlName="quantity"
+                (change)="metalWeightChanged($event, i)"
               />
             </td>
             <td>
@@ -135,6 +136,8 @@
                 placeholder="makingCharge"
                 type="text"
                 formControlName="makingCharge"
+                (change)="metalWeightChanged($event, i)"
+
               />
             </td>
             <td>

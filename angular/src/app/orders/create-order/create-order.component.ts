@@ -42,7 +42,8 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
 
   metaltypes = new MetalTypeDto();
 
-  totalPrice: number;
+  totalPrice = 0;
+  dueAmount = 0;
 
   public Customers: CustomerDto[] = [];
   public Products: ProductDto[] = [];
@@ -110,14 +111,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
     this.orderDetailsFormArray.valueChanges.subscribe(() => this.calculateTotalAmount());
 
     this.form.get('advancePaid').valueChanges.subscribe((val) => {
-
       this.calculateTotalAmount();
-
-      if (this.totalPrice > 0) {
-        val = val || 0;
-        this.totalPrice -= val;
-      }
-
     });
 
   }
@@ -136,6 +130,12 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
 
     }
     this.totalPrice = Amount;
+
+    if (this.totalPrice > 0) {
+      const advancePaid = parseFloat(this.form.get('advancePaid').value) || 0;
+
+      this.dueAmount = this.totalPrice - advancePaid;
+    }
   }
 
   selectedCustomer(e: TypeaheadMatch) {
@@ -156,6 +156,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
     orderEntry.get('quantity').setValue(1);
 
     orderEntry.get('metalType').setValue(product.metalType);
+    orderEntry.get('weight').setValue(product.estimatedWeight);
 
     this._metalTypeService
       .fetchTodayMetalPrice(product.metalType)

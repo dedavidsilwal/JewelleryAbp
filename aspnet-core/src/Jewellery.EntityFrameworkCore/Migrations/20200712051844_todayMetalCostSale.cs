@@ -2,17 +2,17 @@
 
 namespace Jewellery.Migrations
 {
-    public partial class todayMetalCost : Migration
+    public partial class todayMetalCostSale : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "MetalCostThisDay",
-                table: "OrderDetails");
+                name: "TodayMetalPrice",
+                table: "SaleDetails");
 
             migrationBuilder.AddColumn<decimal>(
                 name: "TodayMetalCost",
-                table: "OrderDetails",
+                table: "SaleDetails",
                 nullable: false,
                 defaultValue: 0m);
         }
@@ -21,11 +21,11 @@ namespace Jewellery.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "TodayMetalCost",
-                table: "OrderDetails");
+                table: "SaleDetails");
 
             migrationBuilder.AddColumn<decimal>(
-                name: "MetalCostThisDay",
-                table: "OrderDetails",
+                name: "TodayMetalPrice",
+                table: "SaleDetails",
                 type: "decimal(18,2)",
                 nullable: false,
                 defaultValue: 0m);

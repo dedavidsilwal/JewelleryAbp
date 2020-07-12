@@ -3,10 +3,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Jewellery.Migrations
 {
-    public partial class JewelleryEntity : Migration
+    public partial class addJewelleryEntities : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "shared");
+
+            migrationBuilder.CreateSequence<int>(
+                name: "InvoiceNumbers",
+                schema: "shared");
+
+            migrationBuilder.CreateSequence<int>(
+                name: "OrderNumbers",
+                schema: "shared");
+
+            migrationBuilder.CreateSequence<int>(
+                name: "SaleNumbers",
+                schema: "shared");
+
             migrationBuilder.CreateTable(
                 name: "Customers",
                 columns: table => new
@@ -61,12 +76,14 @@ namespace Jewellery.Migrations
                     IsDeleted = table.Column<bool>(nullable: false),
                     DeleterUserId = table.Column<long>(nullable: true),
                     DeletionTime = table.Column<DateTime>(nullable: true),
+                    OrderNumber = table.Column<int>(nullable: false, defaultValueSql: "NEXT VALUE FOR shared.OrderNumbers"),
                     OrderDate = table.Column<DateTime>(type: "DATETIME", nullable: false),
                     RequiredDate = table.Column<DateTime>(type: "DATETIME", nullable: true),
                     ShippedDate = table.Column<DateTime>(type: "DATETIME", nullable: true),
                     CustomerId = table.Column<Guid>(nullable: false),
-                    Status = table.Column<int>(nullable: false),
-                    AdvancePaymentAmount = table.Column<decimal>(nullable: true)
+                    OrderStatus = table.Column<int>(nullable: false),
+                    PaymentStatus = table.Column<int>(nullable: false),
+                    AdvancePaid = table.Column<decimal>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -91,11 +108,12 @@ namespace Jewellery.Migrations
                     IsDeleted = table.Column<bool>(nullable: false),
                     DeleterUserId = table.Column<long>(nullable: true),
                     DeletionTime = table.Column<DateTime>(nullable: true),
+                    SaleNumber = table.Column<int>(nullable: false, defaultValueSql: "NEXT VALUE FOR shared.SaleNumbers"),
                     SalesDate = table.Column<DateTime>(type: "DATETIME", nullable: false),
                     CustomerId = table.Column<Guid>(nullable: false),
                     SaleStatus = table.Column<int>(nullable: false),
                     PaymentStatus = table.Column<int>(nullable: false),
-                    AdvancePaymentAmount = table.Column<decimal>(nullable: true)
+                    PaidAmount = table.Column<decimal>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -121,7 +139,6 @@ namespace Jewellery.Migrations
                     DeleterUserId = table.Column<long>(nullable: true),
                     DeletionTime = table.Column<DateTime>(nullable: true),
                     ProductName = table.Column<string>(nullable: true),
-                    UnitsInStock = table.Column<short>(nullable: true),
                     Photo = table.Column<string>(nullable: true),
                     MetalTypeId = table.Column<Guid>(nullable: false),
                     EstimatedWeight = table.Column<decimal>(nullable: true),
@@ -150,11 +167,10 @@ namespace Jewellery.Migrations
                     IsDeleted = table.Column<bool>(nullable: false),
                     DeleterUserId = table.Column<long>(nullable: true),
                     DeletionTime = table.Column<DateTime>(nullable: true),
+                    InvoiceNumber = table.Column<int>(nullable: false, defaultValueSql: "NEXT VALUE FOR shared.InvoiceNumbers"),
                     InvoiceDate = table.Column<DateTime>(type: "DATETIME", nullable: false),
-                    PaymentStatus = table.Column<int>(nullable: false),
-                    PaidAmount = table.Column<int>(nullable: false),
-                    TotalPaymentAmount = table.Column<int>(nullable: false),
-                    OrderId = table.Column<Guid>(nullable: false),
+                    PaidAmount = table.Column<decimal>(nullable: false),
+                    OrderId = table.Column<Guid>(nullable: true),
                     SaleId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
@@ -165,7 +181,7 @@ namespace Jewellery.Migrations
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Invoices_Sales_SaleId",
                         column: x => x.SaleId,
@@ -185,9 +201,7 @@ namespace Jewellery.Migrations
                     MakingCharge = table.Column<decimal>(nullable: true),
                     Wastage = table.Column<decimal>(nullable: true),
                     MetalType = table.Column<string>(nullable: true),
-                    MetalCostThisDay = table.Column<decimal>(nullable: false),
-                    UnitPrice = table.Column<decimal>(nullable: false),
-                    TotalPrice = table.Column<decimal>(nullable: false)
+                    TodayMetalCost = table.Column<decimal>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -216,11 +230,8 @@ namespace Jewellery.Migrations
                     Weight = table.Column<decimal>(nullable: true),
                     MakingCharge = table.Column<decimal>(nullable: true),
                     Wastage = table.Column<decimal>(nullable: true),
-                    ProductId1 = table.Column<Guid>(nullable: false),
                     MetalType = table.Column<string>(nullable: true),
-                    MetalCostThisDay = table.Column<decimal>(nullable: false),
-                    UnitPrice = table.Column<decimal>(nullable: false),
-                    TotalPrice = table.Column<decimal>(nullable: false)
+                    TodayMetalPrice = table.Column<decimal>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -228,15 +239,15 @@ namespace Jewellery.Migrations
                     table.ForeignKey(
                         name: "FK_Sale_Details_Products",
                         column: x => x.ProductId,
-                        principalTable: "Sales",
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_SaleDetails_Products_ProductId1",
-                        column: x => x.ProductId1,
-                        principalTable: "Products",
+                        name: "FK_Sale_Details_Sales",
+                        column: x => x.SaleId,
+                        principalTable: "Sales",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -270,11 +281,6 @@ namespace Jewellery.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SaleDetails_ProductId1",
-                table: "SaleDetails",
-                column: "ProductId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Sales_CustomerId",
                 table: "Sales",
                 column: "CustomerId");
@@ -295,16 +301,28 @@ namespace Jewellery.Migrations
                 name: "Orders");
 
             migrationBuilder.DropTable(
+                name: "Products");
+
+            migrationBuilder.DropTable(
                 name: "Sales");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "MetalTypes");
 
             migrationBuilder.DropTable(
                 name: "Customers");
 
-            migrationBuilder.DropTable(
-                name: "MetalTypes");
+            migrationBuilder.DropSequence(
+                name: "InvoiceNumbers",
+                schema: "shared");
+
+            migrationBuilder.DropSequence(
+                name: "OrderNumbers",
+                schema: "shared");
+
+            migrationBuilder.DropSequence(
+                name: "SaleNumbers",
+                schema: "shared");
         }
     }
 }
