@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Jewellery.Jewellery.Dto
 {
@@ -15,13 +16,14 @@ namespace Jewellery.Jewellery.Dto
 
         public DateTime? RequiredDate { get; set; }
 
-        public Guid CustomerId { get; set; }
+        public string CustomerName { get; set; }
 
-        public OrderStatus Status { get; set; }
 
         public ICollection<CreateEditOrderDetailDto> OrderDetails { get; set; }
 
-        public decimal? AdvancePaymentAmount { get; set; }
+        public decimal? AdvancePaid { get; set; }
+
+
 
     }
 

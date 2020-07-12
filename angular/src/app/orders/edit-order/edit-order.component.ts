@@ -33,7 +33,8 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
   metaltypes = new MetalTypeDto();
 
-  totalPrice: number;
+  totalPrice = 0;
+  dueAmount = 0;
 
   id: string;
 
@@ -70,7 +71,7 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
       weight: '',
       wastage: '',
       metalType: '',
-      metalCostThisDay: '',
+      todayMetalCost: '',
       totalWeight: '',
       totalPrice: ''
     });
@@ -87,20 +88,23 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
     this.orderDetailsFormArray.push(this.orderDetailsFormGroup);
 
     this._orderService.fetchOrderWithDetails(this.id)
-      .subscribe(result => {
+      .subscribe((result: EditOrderDto) => {
+
+        if (result.advancePaid > 0) {
+
+          this.showAdvancePayment = true;
+          this.form.patchValue({ 'advancePaid': result.advancePaid });
+        }
 
         this.form.patchValue(result);
+        this.form.patchValue({ 'customerName': result.customerName });
+
         this.form.patchValue({ 'requiredDate': new Date(result.requiredDate?.toString()) });
 
         this.orderDetailsFormArray.patchValue(result.orderDetails);
 
       });
 
-    this._customerService.fetchAllCustomers()
-      //  .pipe(publishReplay(CACHE_SIZE))
-      .subscribe((result: CustomerDto[]) => {
-        this.Customers = result;
-      });
 
     this._productService.fetchAll()
       // .pipe(publishReplay(CACHE_SIZE))
@@ -108,13 +112,10 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
         this.Products = result;
       });
 
-    this.form.controls['customerId']
-      .valueChanges
-      .subscribe(val => {
-        const cs = this.Customers.find(s => s.id.match(val))?.customerName;
-        this.form.get('customerName').setValue(cs);
-      });
 
+    this.form.get('advancePaid').valueChanges.subscribe((val) => {
+      this.calculateTotalAmount();
+    });
 
     this.orderDetailsFormArray.controls.forEach(element => {
 
@@ -143,7 +144,7 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
       element.get('totalWeight').valueChanges.subscribe(val => {
 
-        const todayPrice = parseFloat(element.get('metalCostThisDay').value);
+        const todayPrice = parseFloat(element.get('todayMetalCost').value);
         const makingCharge = parseFloat(element.get('makingCharge').value) || 0;
         const totalPrice = val * todayPrice + makingCharge;
 
@@ -159,9 +160,31 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
       customerId: '',
       customerName: '',
       requiredDate: '',
-      advancePaymentAmount: '',
+      advancePaid: '',
       orderDetails: this.fb.array([])
     });
+  }
+
+  calculateTotalAmount(): void {
+
+    const orderDetailFormArray = (this.form.get('orderDetails') as FormArray);
+
+    let Amount = 0;
+    for (let index = 0; index < orderDetailFormArray.length; index++) {
+      const element = orderDetailFormArray.controls[index];
+
+      const price = parseFloat(element.get('totalPrice').value) || 0;
+      Amount = Amount + price;
+      console.log(price);
+
+    }
+    this.totalPrice = Amount;
+
+    if (this.totalPrice > 0) {
+      const advancePaid = parseFloat(this.form.get('advancePaid').value) || 0;
+
+      this.dueAmount = this.totalPrice - advancePaid;
+    }
   }
 
   metalWeightChanged(index: number): void {
@@ -175,7 +198,7 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
     orderEntry.get('totalWeight').setValue(totalWeight);
 
-    const todayPrice = parseFloat(orderEntry.get('metalCostThisDay').value);
+    const todayPrice = parseFloat(orderEntry.get('todayMetalCost').value);
     const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
     const totalPrice = totalWeight * todayPrice + makingCharge;
 
@@ -215,7 +238,7 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
     this._metalTypeService
       .fetchTodayMetalPrice(product.metalType)
-      .subscribe((price: number) => orderEntry.get('metalCostThisDay').setValue(price));
+      .subscribe((price: number) => orderEntry.get('todayMetalCost').setValue(price));
 
     orderEntry.get('totalWeight').setValue(product.estimatedWeight);
     orderEntry.get('totalPrice').setValue(product.estimatedCost);

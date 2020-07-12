@@ -87,12 +87,31 @@ namespace Jewellery.Jewellery
             return new PagedResultDto<OrderDto>() { Items = query, TotalCount = query.Count };
         }
 
-        public async Task<EditOrderDto> FetchOrderWithDetails(Guid orderId) =>
-          await _repository.GetAll()
-            .Include(p => p.OrderDetails)
-            .Where(x => x.Id == orderId)
-            .Select(x => ObjectMapper.Map<EditOrderDto>(x)).FirstOrDefaultAsync();
+        public async Task<EditOrderDto> FetchOrderWithDetails(Guid orderId)
+        {
+            return await _repository.GetAll()
+                        .Include(p => p.OrderDetails)
+                        .Where(x => x.Id == orderId)
+                        .Select(x => new EditOrderDto
+                        {
+                            AdvancePaid = x.AdvancePaid,
+                            CustomerName = x.Customer.CustomerName,
+                            OrderNumber = x.OrderNumber,
+                            Id = x.Id,
+                            RequiredDate = x.RequiredDate,
+                            OrderDetails = x.OrderDetails.Select(y => new CreateEditOrderDetailDto
+                            {
+                                MakingCharge = y.MakingCharge,
+                                Wastage = y.Wastage,
+                                Weight = y.Weight,
+                                TodayMetalCost = y.TodayMetalCost,
+                                MetalType = y.MetalType,
+                                ProductId = y.ProductId,
+                                Quantity = y.Quantity
+                            }).ToList()
 
+                        }).FirstOrDefaultAsync();
+        }
 
         public async Task CancelAsync(Guid id)
         {
@@ -104,7 +123,7 @@ namespace Jewellery.Jewellery
         }
 
 
-     
+
         public override async Task<OrderDto> UpdateAsync(EditOrderDto input)
         {
             var builder = new DbContextOptionsBuilder<JewelleryDbContext>();

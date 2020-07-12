@@ -138,6 +138,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
     }
   }
 
+  
   selectedCustomer(e: TypeaheadMatch) {
     console.log(e.item.id);
     this.form.get('customerId').setValue(e.item.id);
