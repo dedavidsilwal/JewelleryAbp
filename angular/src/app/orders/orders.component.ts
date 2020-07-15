@@ -15,6 +15,7 @@ import { CreateOrderComponent } from './create-order/create-order.component';
 import { EditOrderComponent } from './edit-order/edit-order.component';
 import { PaymentProcessComponent } from './payment-process/payment-process.component';
 import { OrderDetailComponent } from './order-detail/order-detail.component';
+import { NewOrderComponent } from './new-order/new-order.component';
 
 class PagedMetalTypeRequestDto extends PagedRequestDto {
   keyword: string;
@@ -137,7 +138,8 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
     let createOrEditDialog: BsModalRef;
     if (!id) {
       createOrEditDialog = this._modalService.show(
-        CreateOrderComponent,
+        // NewOrderComponent,
+       CreateOrderComponent,
         {
           class: 'modal-xl',
         }

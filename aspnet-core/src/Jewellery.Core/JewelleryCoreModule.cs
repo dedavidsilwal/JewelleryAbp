@@ -23,6 +23,7 @@ namespace Jewellery
             Configuration.Modules.Zero().EntityTypes.Tenant = typeof(Tenant);
             Configuration.Modules.Zero().EntityTypes.Role = typeof(Role);
             Configuration.Modules.Zero().EntityTypes.User = typeof(User);
+            Configuration.Modules.Zero().LanguageManagement.EnableDbLocalization();
 
             JewelleryLocalizationConfigurer.Configure(Configuration.Localization);
 

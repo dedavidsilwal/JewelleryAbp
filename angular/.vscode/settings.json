@@ -6,5 +6,24 @@
         ".vscode{,/**}"
     ],
     "appService.showBuildDuringDeployPrompt": false,
-    "appService.defaultWebAppToDeploy": "/subscriptions/61c96c39-5af7-4993-9cc4-99a09d91393f/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/jewellery-store1"
+    "appService.defaultWebAppToDeploy": "/subscriptions/61c96c39-5af7-4993-9cc4-99a09d91393f/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/jewellery-store1",
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#deef59",
+        "activityBar.activeBorder": "#119dae",
+        "activityBar.background": "#deef59",
+        "activityBar.foreground": "#15202b",
+        "activityBar.inactiveForeground": "#15202b99",
+        "activityBarBadge.background": "#119dae",
+        "activityBarBadge.foreground": "#e7e7e7",
+        "statusBar.background": "#d5ea2b",
+        "statusBar.border": "#d5ea2b",
+        "statusBar.foreground": "#15202b",
+        "statusBarItem.hoverBackground": "#b9ce14",
+        "titleBar.activeBackground": "#d5ea2b",
+        "titleBar.activeForeground": "#15202b",
+        "titleBar.border": "#d5ea2b",
+        "titleBar.inactiveBackground": "#d5ea2b99",
+        "titleBar.inactiveForeground": "#15202b99"
+    },
+    "peacock.color": "#d5ea2b"
 }

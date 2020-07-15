@@ -35,7 +35,6 @@ import { SalesComponent } from './sales/sales.component';
                     {
                         path: 'orders', children: [
                             { path: '', component: OrdersComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
-                            { path: 'new', component: NewOrderComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] }
                         ]
                     },
 

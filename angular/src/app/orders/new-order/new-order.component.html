@@ -1,179 +1,206 @@
 <form
+  *ngIf="orderForm"
   (ngSubmit)="save()"
   class="form-horizontal"
   autocomplete="off"
-  [formGroup]="form"
+  [formGroup]="orderForm"
 >
   <abp-modal-header
     [title]="'CreateOrder' | localize"
+    (onCloseClick)="bsModalRef.hide()"
   >
   </abp-modal-header>
   <div class="modal-body">
+    <!--   begin of form  -->
+
     <div class="form-group row required">
-      <label class="col-md-3 col-form-label" for="customerId">
-        {{ "customerId" | localize }}
+      <label class="col-sm-2 col-form-label">
+        {{ "customerName" | localize }}
       </label>
 
-      <input
-        formControlName="customerName"
-        [typeahead]="Customers"
-        (typeaheadOnSelect)="selectedCustomer($event)"
-        typeaheadOptionField="customerName"
-        [typeaheadItemTemplate]="customItemTemplate"
-        class="form-control"
-      />
-
-      <ng-template #customItemTemplate let-model="item">
-        <span
-          ><strong>{{ model.customerName }}</strong> - {{ model.address }}</span
-        >
-      </ng-template>
-    </div>
-
-    <div class="form-group row">
-      <label class="col-md-3 col-form-label" for="requiredDate">
-        {{ "requiredDate" | localize }}
-      </label>
-
-      <div class="col-md-9">
-          <input type="text" class="form-control" formControlName="requiredDate"
-          #datepickerYMD="bsDatepicker"
-        bsDatepicker [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY, h:mm:ss a' }"
-          />
-
-        <span
-          class="text-danger"
-          *ngIf="
-            (orderFormControl.requiredDate.touched || save) &&
-            orderFormControl.requiredDate.errors?.requiredDate
-          "
-        >
-          requiredDate is required
-        </span>
-        <span
-          class="text-danger"
-          *ngIf="
-            orderFormControl.requiredDate.touched &&
-            orderFormControl.requiredDate.errors?.requiredDate
-          "
-        >
-          Enter a valid requiredDate
-        </span>
+      <div class="col-sm-10">
+        <input
+          formControlName="customerName"
+          type="text"
+          class="form-control"
+        />
       </div>
     </div>
 
-    <button (click)="createOderDetail($event)" class="btn btn-primary">
+    <div class="form-group row required">
+      <label class="col-sm-2 col-form-label" for="requiredDate">
+        {{ "requiredDate" | localize }}
+      </label>
+
+      <div class="col-md-10">
+        <input
+          type="text"
+          class="form-control"
+          formControlName="requiredDate"
+          #datepickerYMD="bsDatepicker"
+          bsDatepicker
+          [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY, h:mm:ss a' }"
+        />
+
+        <div
+          class="text-danger"
+          *ngIf="
+            orderForm.get('requiredDate').touched ||
+            (save &&
+              orderForm.get('requiredDate').errors &&
+              orderForm.get('requiredDate').dirty)
+          "
+        >
+          <span *ngIf="orderForm.get('requiredDate').errors">
+            Required Date is required.
+          </span>
+          <!-- Enter a valid requiredDate -->
+        </div>
+      </div>
+    </div>
+
+    <button
+      (click)="AddOrderItem($event); (false)"
+      class="btn btn-primary addButton"
+    >
       Add
     </button>
 
-    <div class="table-responsive">
-      <table class="table table-bordered" width="50%">
+    <div class="inline-table-form form-horizontal table-responsive">
+      <table
+        class="table table-bordered table-striped table-highlight"
+        width="50%"
+      >
         <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">productName</th>
-            <th scope="col">quantity</th>
-            <th scope="col">metalType</th>
-            <th scope="col">metalCostThisDay</th>
-            <th scope="col">makingCharge</th>
-            <th scope="col">weight</th>
-            <th scope="col">wastage</th>
-            <th scope="col">totalWeight</th>
-            <th scope="col">totalPrice</th>
-            <th scope="col">Action</th>
-          </tr>
+          <th>#</th>
+          <th>productName</th>
+          <th>quantity</th>
+          <th>metalType</th>
+          <th>metalCost</th>
+          <th>makingCharge</th>
+          <th>weight</th>
+          <th>wastage</th>
+          <th>totalWeight</th>
+          <th>SubTotal</th>
+          <th>Action</th>
         </thead>
         <tbody>
+          <!-- orderDetails -->
+          <!-- formArrayName="orderItem" -->
+
           <tr
-            *ngFor="let item of orderDetailsFormArray.controls; let i = index"
+            *ngFor="
+              let item of orderItem.controls;
+              let i = index
+            "
             [formGroup]="item"
           >
             <th scope="row">{{ i }}</th>
             <td>
               <input
                 formControlName="productName"
-                [typeahead]="Products"
-                (typeaheadOnSelect)="selectedProduct($event, i)"
-                typeaheadOptionField="productName"
-                [typeaheadItemTemplate]="customItemTemplate"
+                type="text"
                 class="form-control"
               />
-
-              <ng-template #customItemTemplate let-model="item">
-                <span
-                  ><strong>{{ model.productName }}</strong> -
-                  {{ model.metalType.name }} - Rs.{{
-                    model.estimatedCost
-                  }}</span
-                >
-              </ng-template>
+              <span *ngIf="item.get('productName').errors?.required"
+                >required</span
+              >
             </td>
             <td>
               <input
-                placeholder="quantity"
-                type="text"
+                type="number"
+                required
+                oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+                min="0"
                 formControlName="quantity"
-                (change)="metalWeightChanged($event, i)"
+                class="form-control"
+                (change)="calculateOrderItem(item, i)"
               />
             </td>
             <td>
               <input
-                placeholder="metalType"
+                required
+                readonly
                 type="text"
                 formControlName="metalType"
+                class="form-control"
+                (change)="calculateOrderItem(item, i)"
+
               />
             </td>
             <td>
               <input
-                placeholder="metalCostThisDay"
-                type="text"
-                formControlName="metalCostThisDay"
+                required
+                readonly
+                type="number"
+                oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+                min="0"
+                formControlName="todayMetalCost"
+                class="form-control"
+                (change)="calculateOrderItem(item, i)"
               />
             </td>
 
             <td>
               <input
-                placeholder="makingCharge"
-                type="text"
+                type="number"
+                oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+                min="0"
                 formControlName="makingCharge"
-                (change)="metalWeightChanged($event, i)"
-
+                class="form-control"
+                (change)="calculateOrderItem(item, i)"
               />
             </td>
             <td>
               <input
-                placeholder="weight"
-                type="text"
+                required
+                type="number"
+                oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+                min="0"
                 formControlName="weight"
-                (change)="metalWeightChanged($event, i)"
+                class="form-control"
+                (change)="calculateOrderItem(item, i)"
+
               />
             </td>
 
             <td>
               <input
-                placeholder="wastage"
-                type="text"
+                type="number"
+                oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+                min="0"
                 formControlName="wastage"
-                (change)="metalWeightChanged($event, i)"
+                class="form-control"
+                (change)="calculateOrderItem(item, i)"
+
               />
             </td>
             <td>
               <input
-                placeholder="totalWeight"
-                type="text"
+                required
+                readonly
+                type="number"
+                #totalWeight
                 formControlName="totalWeight"
+
               />
             </td>
             <td>
               <input
-                placeholder="totalPrice"
-                type="text"
-                formControlName="totalPrice"
-                (change)="calculateTotalAmount()"
+                readonly
+                required
+                type="number"
+                oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+                min="0"
+                formControlName="subTotal"
+                class="form-control"
               />
             </td>
             <td>
-              <button (click)="DeleteOrderDetail(i)" class="btn btn-danger">
+              <button
+                (click)="RemoveOrderItem(i)"
+                class="btn btn-danger form-control"
+              >
                 Del
               </button>
             </td>
@@ -182,58 +209,56 @@
       </table>
     </div>
 
-    Total Price : {{ totalPrice }}
-    <br />
+    <!-- <div class="form-group row">
+        <label class="col-sm-2 col-form-label">
+          {{ "TotalPrice" | localize }}
+        </label>
+  
+        <div class="col-sm-10">
 
-    <button (click)="showAdvancePayment = !showAdvancePayment;false;">
-      {{ showAdvancePayment ? "No pay Advance" : "Pay Advance" }}
-    </button>
-    <br />
-    <div *ngIf="showAdvancePayment" class="row">
-      Advance Payment :<input
-        placeholder="advancePaymentAmount"
-        type="number"
-        formControlName="advancePaymentAmount"
+        </div>
+      </div> -->
+
+    <!-- 
+
+    <div class="form-group form-check row">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        (change)="showAdvancePayment = !showAdvancePayment"
       />
+      <label class="form-check-label" style="font-weight: 700;">
+        {{ "AdvancePayment" | localize }}
+      </label>
     </div>
+    <div *ngIf="showAdvancePayment" class="form-group row">
+      <label class="col-sm-2 col-form-label">Advance Amount</label>
+      <div class="col-sm-10">
+        <input
+          type="number"
+          oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+          min="0"
+          placeholder="advancePaymentAmount"
+          formControlName="advancePaid"
+        />
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">
+        {{ "dueAmount" | localize }}
+      </label>
+
+      <div class="col-sm-10">
+        {{ dueAmount }}
+      </div>
+    </div> -->
+    <!--   end of body  -->
   </div>
-  <!--   end of body  -->
 
   <abp-modal-footer
     [cancelDisabled]="saving"
-    [saveDisabled]="!form.valid || saving"
+    [saveDisabled]="!orderForm.valid || saving"
+    (onCancelClick)="bsModalRef.hide()"
   ></abp-modal-footer>
 </form>
-
-<style>
-  .ta-results.list-group {
-    max-width: 400px;
-    overflow: auto;
-    max-height: 75vh;
-    border: 1px solid #ccc;
-  }
-
-  .typeahead-wrap .list-group-item {
-    width: 100%;
-    text-align: left;
-    position: relative;
-    display: block;
-    padding: 5px 10px;
-    margin-bottom: -1px;
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.125);
-  }
-
-  .typeahead-wrap .list-group-item {
-    width: 100%;
-    text-align: left;
-  }
-
-  .typeahead-wrap .list-group-item.active {
-    background-color: #ccc;
-  }
-
-  .typeahead-wrap .list-group-item .item-name {
-    font-weight: bold;
-  }
-</style>

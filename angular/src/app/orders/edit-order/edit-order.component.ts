@@ -103,6 +103,8 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
         this.orderDetailsFormArray.patchValue(result.orderDetails);
 
+        this.calculateTotalAmount();
+
       });
 
 
@@ -187,6 +189,18 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
     }
   }
 
+  quantityChanged(index: number): void {
+
+    const orderEntry = (this.form.get('orderDetails') as FormArray).controls[index];
+
+    const todayPrice = parseFloat(orderEntry.get('todayMetalCost').value);
+    const quantity = parseFloat(orderEntry.get('quantity').value) || 1;
+
+    const totalPrice = todayPrice * quantity;
+
+    orderEntry.get('totalPrice').setValue(totalPrice);
+  }
+
   metalWeightChanged(index: number): void {
 
     const orderEntry = (this.form.get('orderDetails') as FormArray).controls[index];
@@ -200,7 +214,7 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
     const todayPrice = parseFloat(orderEntry.get('todayMetalCost').value);
     const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
-    const totalPrice = totalWeight * todayPrice + makingCharge;
+    const totalPrice = (totalWeight * todayPrice) + makingCharge;
 
     orderEntry.get('totalPrice').setValue(totalPrice);
 
@@ -209,13 +223,15 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
   makingChargeChanged(index: number): void {
 
     const orderEntry = (this.form.get('orderDetails') as FormArray).controls[index];
-    let totalPrice = parseFloat(orderEntry.get('totalPrice').value) || 0;
-    const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
 
-    totalPrice += makingCharge;
+    const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
+    const totalWeight = parseFloat(orderEntry.get('totalWeight').value) || 0;
+    const todayPrice = parseFloat(orderEntry.get('todayMetalCost').value);
+
+    const totalPrice = (totalWeight * todayPrice) + makingCharge;
+
     orderEntry.get('totalPrice').setValue(totalPrice);
   }
-
   selectedCustomer(e: TypeaheadMatch) {
     console.log(e.item.id);
     this.form.get('customerId').setValue(e.item.id);

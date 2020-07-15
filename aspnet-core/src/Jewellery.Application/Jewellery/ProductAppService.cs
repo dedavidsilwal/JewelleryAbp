@@ -2,6 +2,7 @@ using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Runtime.Caching;
 using Jewellery.Authorization;
 using Jewellery.Jewellery.Dto;
 using Jewellery.Users.Dto;
@@ -19,20 +20,25 @@ namespace Jewellery.Jewellery
     {
         private readonly IRepository<Product, Guid> _repository;
         private readonly IRepository<MetalType, Guid> _metalTypeRepository;
+        private readonly ICacheManager cacheManager;
 
         public ProductAppService(
             IRepository<Product, Guid> repository,
-            IRepository<MetalType, Guid> metalTypeRepository
+            IRepository<MetalType, Guid> metalTypeRepository,
+            ICacheManager cacheManager
             ) : base(repository)
         {
             _repository = repository;
             _metalTypeRepository = metalTypeRepository;
+            this.cacheManager = cacheManager;
         }
               
 
+
         public override async Task<PagedResultDto<ProductDto>> GetAllAsync(PagedUserResultRequestDto input)
         {
-            var query = await (from p in _repository.GetAll()
+
+           var query = await (from p in _repository.GetAll()
                          join m in _metalTypeRepository.GetAll() on p.MetalTypeId equals m.Id
                          select new ProductDto
                          {

@@ -1,12 +1,15 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Jewellery.Jewellery.Dto
 {
     public class OrderDetailDto
     {
+        
         public Guid OrderId { get; set; }
         public Guid ProductId { get; set; }
-
+       
+        [Required]
         public short Quantity { get; set; }
 
 
@@ -18,7 +21,8 @@ namespace Jewellery.Jewellery.Dto
         public OrderDto Order { get; set; }
         public ProductDto Product { get; set; }
 
-
+        [Required]
+        [StringLength(1000)]
         public string MetalType { get; set; }
         public decimal TodayMetalCost { get; set; }
 

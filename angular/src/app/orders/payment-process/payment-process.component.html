@@ -88,7 +88,7 @@
 
   <abp-modal-footer
     [cancelDisabled]="saving"
-    [saveDisabled]="!updateForm.valid || saving ||   paymentProcess.due <= updateForm.get('paidAmount').value || showpartialPayment"
+    [saveDisabled]="!updateForm.valid || saving"
     (onCancelClick)="bsModalRef.hide()"
   ></abp-modal-footer>
 </form>

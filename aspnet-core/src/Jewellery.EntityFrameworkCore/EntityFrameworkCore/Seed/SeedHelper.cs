@@ -10,6 +10,7 @@ using Jewellery.EntityFrameworkCore.Seed.Tenants;
 
 namespace Jewellery.EntityFrameworkCore.Seed
 {
+    
     public static class SeedHelper
     {
         public static void SeedHostDb(IIocResolver iocResolver)

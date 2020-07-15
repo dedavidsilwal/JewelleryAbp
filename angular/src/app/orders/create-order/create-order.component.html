@@ -123,7 +123,7 @@
                 min="0"
                 formControlName="quantity"
                 class="form-control"
-
+                (change)="quantityChanged(i)"
               />
             </td>
             <td>
@@ -166,6 +166,7 @@
                 type="number"
                 oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
                 min="0"
+                step="0.1"
                 formControlName="weight"
                 (change)="metalWeightChanged(i)"
                 class="form-control"
@@ -178,6 +179,7 @@
                 type="number"
                 oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
                 min="0"
+                step="0.1"
                 formControlName="wastage"
                 (change)="metalWeightChanged(i)"
                 class="form-control"
@@ -246,7 +248,6 @@
         type="number"
         oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
         min="0"
-        placeholder="advancePaymentAmount"
         formControlName="advancePaid"
       />
       </div>

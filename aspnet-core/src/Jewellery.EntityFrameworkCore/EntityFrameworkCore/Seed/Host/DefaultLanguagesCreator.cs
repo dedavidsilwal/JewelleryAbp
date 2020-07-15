@@ -17,8 +17,8 @@ namespace Jewellery.EntityFrameworkCore.Seed.Host
             var tenantId = JewelleryConsts.MultiTenancyEnabled ? null : (int?)MultiTenancyConsts.DefaultTenantId;
             return new List<ApplicationLanguage>
             {
-                new ApplicationLanguage(tenantId, "en", "English", "famfamfam-flags us")
-
+                new ApplicationLanguage(tenantId, "en", "English", "famfamfam-flags us"),
+                new ApplicationLanguage(tenantId, "ne", "Nepal", "famfamfam-flags np")
             };
         }
 

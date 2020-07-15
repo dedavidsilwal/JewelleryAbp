@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Jewellery.Jewellery.Dto
 {
@@ -11,6 +12,7 @@ namespace Jewellery.Jewellery.Dto
             SaleDetails = new HashSet<CreateEditSaleDetailDto>();
         }
 
+        [Required]
         public Guid CustomerId { get; set; }
 
 

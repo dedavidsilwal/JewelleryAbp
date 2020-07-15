@@ -1,11 +1,14 @@
 ﻿using Abp.Application.Services.Dto;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Jewellery.Jewellery.Dto
 {
     public class CreateEditProductDto : EntityDto<Guid>
     {
 
+        [Required]
+        [StringLength(100)]
         public string ProductName { get; set; }
 
         public string Photo { get; set; }
