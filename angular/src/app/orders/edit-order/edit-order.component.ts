@@ -108,17 +108,18 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
       });
 
 
-    this._productService.fetchAll()
-      // .pipe(publishReplay(CACHE_SIZE))
-      .subscribe((result: ProductDto[]) => {
-        this.Products = result;
-      });
+   
 
 
     this.form.get('advancePaid').valueChanges.subscribe((val) => {
       this.calculateTotalAmount();
     });
 
+    this._productService.fetchAll()
+    .subscribe((result: ProductDto[]) => {
+      this.Products = result;
+    });
+    
     this.orderDetailsFormArray.controls.forEach(element => {
 
       this.form.controls['orderDetails']
@@ -159,7 +160,6 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
   buildForm(): void {
     this.form = this.fb.group({
-      customerId: '',
       customerName: '',
       requiredDate: '',
       advancePaid: '',

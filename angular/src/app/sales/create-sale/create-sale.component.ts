@@ -188,18 +188,30 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
   }
 
-
   makingChargeChanged(index: number): void {
 
     const orderEntry = (this.form.get('saleDetails') as FormArray).controls[index];
-    let totalPrice = parseFloat(orderEntry.get('totalPrice').value) || 0;
-    const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
 
-    totalPrice += makingCharge;
+    const makingCharge = parseFloat(orderEntry.get('makingCharge').value) || 0;
+    const totalWeight = parseFloat(orderEntry.get('totalWeight').value) || 0;
+    const todayPrice = parseFloat(orderEntry.get('todayMetalCost').value);
+
+    const totalPrice = (totalWeight * todayPrice) + makingCharge;
+
     orderEntry.get('totalPrice').setValue(totalPrice);
   }
 
+  quantityChanged(index: number): void {
 
+    const orderEntry = (this.form.get('saleDetails') as FormArray).controls[index];
+
+    const todayPrice = parseFloat(orderEntry.get('todayMetalCost').value);
+    const quantity = parseFloat(orderEntry.get('quantity').value) || 1;
+
+    const totalPrice = todayPrice * quantity;
+
+    orderEntry.get('totalPrice').setValue(totalPrice);
+  }
 
   DeleteOrderDetail(index: number): void {
     this.orderDetailsFormArray.removeAt(index);

@@ -5,7 +5,8 @@ namespace Jewellery.Jewellery.Dto
 {
     public class InvoiceDto : EntityDto<Guid>
     {
-        public Guid OrderId { get; set; }
+        public Guid? OrderId { get; set; }
+        public Guid? SaleId { get; set; }
         public int InvoiceNumber { get; set; }
 
         public DateTime InvoiceDate { get; set; }
@@ -13,6 +14,9 @@ namespace Jewellery.Jewellery.Dto
         public decimal PaidAmount { get; set; }
 
         public string CustomerName { get; set; }
+
+
+        public string InvoiceType => OrderId != null ? "Order" : "Sale";
 
     }
 }

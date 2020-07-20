@@ -3,10 +3,15 @@ using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Extensions;
+using Abp.Linq.Extensions;
+using Abp.UI;
 using Jewellery.Authorization;
 using Jewellery.EntityFrameworkCore;
 using Jewellery.Jewellery.Dto;
 using Jewellery.Users.Dto;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -44,47 +49,116 @@ namespace Jewellery.Jewellery
             _unitOfWorkManager = unitOfWorkManager;
         }
 
+
+        protected override IQueryable<Order> CreateFilteredQuery(PagedUserResultRequestDto input)
+        {
+            var query = Repository.GetAllIncluding(x => x.Customer)
+                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.Customer.DisplayName.Contains(input.Keyword));
+            return query;
+        }
+
         public override async Task<OrderDto> CreateAsync(CreateOrderDto input)
         {
+            using var uow = _unitOfWorkManager.Begin();
+
             var order = ObjectMapper.Map<Order>(input);
 
+            var orderResult = await _repository.InsertAsync(order);
+
             if (order.AdvancePaid.HasValue)
+            {
                 order.PaymentStatus = PaymentStatus.PartialPaid;
 
-            var orderResult = await _repository.InsertAsync(order);
+                var invoice = new Invoice
+                {
+                    InvoiceDate = DateTime.Now,
+                    OrderId = order.Id,
+                    Order = order,
+                    PaidAmount = order.AdvancePaid.Value
+                };
+
+                await _invoiceRepository.InsertAsync(invoice);
+            }
+
+            await uow.CompleteAsync();
 
             return ObjectMapper.Map<OrderDto>(orderResult);
         }
 
+        public Task UploadFile([FromForm] IFormFile file)
+        {
+            // Checking if files are sent to this app service.
+            if (file.Length == 0)
+                throw new UserFriendlyException("No files given.");
+
+            return Task.CompletedTask;
+
+        }
 
         public async Task<OrderDashboardDto[]> NearOrderDeliver()
         {
             var query = _repository
                 .GetAll()
+                .Where(s => s.OrderStatus == OrderStatus.Active)
+                .Include(s=>s.OrderDetails)
                 .OrderBy(s => s.RequiredDate)
+                .Include(c => c.Customer)
+                .Select(x => new OrderDashboardDto
+                {
+                    OrderNumber =x.OrderNumber,
+                    AdvancePaid = x.AdvancePaid,
+                    CustomerName = x.Customer.DisplayName,
+                    OrderDate = x.OrderDate,
+                    Id = x.Id,
+                    RequiredDate = x.RequiredDate,
+                    TotalAmount = x.Total,
+                    TotalWeight = x.TotalWeight
+
+                })
                 .Take(5);
 
-            return await ObjectMapper.ProjectTo<OrderDashboardDto>(query).ToArrayAsync();
+            return await query.ToArrayAsync();
         }
 
-        public async Task<int> TotalOrderCount() =>
+        public async Task<int> ActiveOrderCount() =>
             await _repository
             .GetAll()
             .Where(s => s.OrderStatus == OrderStatus.Active)
             .CountAsync();
 
+        public async Task<int> TodayOrderPendingDeliveryCount() =>
+                      await _repository
+                      .GetAll()
+                      .Where(s => s.OrderStatus == OrderStatus.Active && s.RequiredDate.HasValue && s.RequiredDate.Value.Date == DateTime.Today.Date)
+                      .CountAsync();
+
+        public async Task<decimal?> TodayAdvanceTaken() =>
+              await _repository
+              .GetAll()
+              .Where(s => s.OrderStatus == OrderStatus.Active && s.OrderDate.Date == DateTime.Today.Date && s.AdvancePaid.HasValue)
+              .SumAsync(s => s.AdvancePaid);
+
+        public async Task<int> TodayTookOrderCount() =>
+                      await _repository
+                      .GetAll()
+                      .Where(s => s.OrderStatus == OrderStatus.Active && s.OrderDate.Date == DateTime.Today.Date)
+                      .CountAsync();
+
         public override async Task<PagedResultDto<OrderDto>> GetAllAsync(PagedUserResultRequestDto input)
         {
+            //orderby date desc
 
             var query = await _repository.GetAll()
                 .Include(o => o.OrderDetails)
                 .Include(c => c.Customer)
                 .Skip(input.SkipCount)
                 .Take(input.MaxResultCount)
+                .OrderByDescending(s=>s.OrderDate)
                 .Select(s => ObjectMapper.Map<OrderDto>(s))
+
                 .ToListAsync();
 
-            return new PagedResultDto<OrderDto>() { Items = query, TotalCount = query.Count };
+            return new PagedResultDto<OrderDto>() { Items = query, TotalCount = await _repository.CountAsync() };
         }
 
         public async Task<EditOrderDto> FetchOrderWithDetails(Guid orderId)
@@ -95,7 +169,7 @@ namespace Jewellery.Jewellery
                         .Select(x => new EditOrderDto
                         {
                             AdvancePaid = x.AdvancePaid,
-                            CustomerName = x.Customer.CustomerName,
+                            CustomerName = x.Customer.DisplayName,
                             OrderNumber = x.OrderNumber,
                             Id = x.Id,
                             RequiredDate = x.RequiredDate,
@@ -115,11 +189,20 @@ namespace Jewellery.Jewellery
 
         public async Task CancelAsync(Guid id)
         {
+
+            using var uow = _unitOfWorkManager.Begin();
+
             var order = _repository.Get(id);
             order.OrderStatus = OrderStatus.Canceled;
             order.PaymentStatus = PaymentStatus.None;
 
+
+            //if invoiced  delete
+
+            var invoice = await _invoiceRepository.GetAll().Where(s => s.OrderId == id).FirstOrDefaultAsync();
+            await _invoiceRepository.DeleteAsync(invoice);
             await _repository.UpdateAsync(order);
+            await uow.CompleteAsync();
         }
 
 
@@ -185,8 +268,8 @@ namespace Jewellery.Jewellery
             return new PaymentOrderDto
             {
                 AdvancePaid = order?.AdvancePaid,
-                OrderNumber = order.OrderNumber,
-                CustomerName = (await _customerRepository.GetAll().FirstOrDefaultAsync(s => s.Id == order.CustomerId))?.CustomerName,
+                //OrderNumber = order.OrderNumber,
+                CustomerName = (await _customerRepository.GetAll().FirstOrDefaultAsync(s => s.Id == order.CustomerId))?.DisplayName,
                 OrderId = order.Id,
                 TotalAmount = order.OrderDetails.Sum(s => s.SubTotal)
             };
@@ -257,7 +340,7 @@ namespace Jewellery.Jewellery
             var result = new CustomerOrderDisplayDto
             {
 
-                CustomerName = _customerRepository.Get(query.CustomerId)?.CustomerName,
+                CustomerName = _customerRepository.Get(query.CustomerId)?.DisplayName,
                 CustomerAddress = _customerRepository.Get(query.CustomerId)?.Address,
                 PhoneNumber = _customerRepository.Get(query.CustomerId)?.PhoneNumber,
                 OrderDate = query.OrderDate,

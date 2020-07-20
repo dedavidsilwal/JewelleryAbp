@@ -10,6 +10,16 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200712132936_initialSchema.cs" />
     <Compile Remove="Migrations\20200712132936_initialSchema.Designer.cs" />
+    <Compile Remove="Migrations\20200717154451_SeqNumber.cs" />
+    <Compile Remove="Migrations\20200717154451_SeqNumber.Designer.cs" />
+    <Compile Remove="Migrations\20200717154922_SeqNumber.cs" />
+    <Compile Remove="Migrations\20200717154922_SeqNumber.Designer.cs" />
+    <Compile Remove="Migrations\20200717155051_SeqNumber.cs" />
+    <Compile Remove="Migrations\20200717155051_SeqNumber.Designer.cs" />
+    <Compile Remove="Migrations\20200717155154_SeqNumber.cs" />
+    <Compile Remove="Migrations\20200717155154_SeqNumber.Designer.cs" />
+    <Compile Remove="Migrations\20200720123358_ComputedColumn.cs" />
+    <Compile Remove="Migrations\20200720123358_ComputedColumn.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.4">
@@ -20,6 +30,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="3.1.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
   </ItemGroup>
   <ItemGroup>

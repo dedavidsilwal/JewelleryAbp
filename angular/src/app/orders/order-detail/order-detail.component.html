@@ -1,5 +1,5 @@
 <!-- Main content -->
-<div class="invoice p-3 mb-3">
+<div class="invoice p-3 mb-3 doNotPrint">
   <div #invoice id="invoice">
     <!-- title row -->
     <div class="row">
@@ -14,18 +14,6 @@
     <!-- info row -->
     <div class="row invoice-info">
       <div class="col-sm-4 invoice-col">
-        From
-        <address>
-          <strong>Jewellery.</strong><br />
-          Kantipath Hetauda<br />
-          Makawanpur, Hetauda<br />
-          Phone: (804) 123-5432<br />
-          Email: info@almasaeedstudio.com PAN : 5557854
-        </address>
-      </div>
-      <!-- /.col -->
-      <div class="col-sm-4 invoice-col">
-        To
         <address>
           <strong>{{ order?.customerName }}</strong
           ><br />
@@ -33,6 +21,7 @@
           Phone: {{ order?.phoneNumber }}<br />
         </address>
       </div>
+
       <!-- /.col -->
       <div class="col-sm-4 invoice-col">
         <b>order Number # {{ order?.orderNumber }}</b
@@ -92,6 +81,7 @@
             <tr>
               <th style="width: 50%;">Total Price:</th>
               <td>Nrs. {{ order?.totalPrice }}</td>
+              <td>{{ order?.totalPrice | numberToWordsPipe }}</td>
             </tr>
           </table>
         </div>
@@ -100,6 +90,7 @@
     </div>
     <!-- /.row -->
   </div>
+
   <!-- this row will not appear when printing -->
   <div class="row no-print">
     <div class="col-12">
@@ -107,7 +98,7 @@
         rel="noopener"
         target="_blank"
         class="btn btn-default"
-        (click)="downloadAsPDF()"
+        (click)="Print()"
         ><i class="fas fa-print"></i> Print</a
       >
 
@@ -123,3 +114,49 @@
   </div>
 </div>
 <!-- /.invoice -->
+
+<div class="print-section" style="display: none;">
+  <!-- <body style="width: 21cm; height: 18cm;"> -->
+  <div class="date">
+    <h2>{{ todayDateString }}</h2>
+  </div>
+
+  <div style="margin-top: -90px;">
+    <h2 class="name">{{ order?.customerName }}</h2>
+    <h2 class="address">{{ order?.customerAddress }}</h2>
+  </div>
+
+  <table class="table" style="font-size: 22px;">
+    <thead>
+      <tr style="display: none;">
+        <td>SN</td>
+        <td>Particular</td>
+        <td>Quantity</td>
+        <td>Was</td>
+        <td>Weight</td>
+        <td>Total Weight</td>
+        <td>Making Chargess</td>
+        <td>Stones</td>
+        <td>Rs.</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of order?.orderDetails; let i = index">
+        <td style="width: 25px;">{{ +(+i) }}</td>
+        <td style="width: 235px;">{{ item?.productName }}</td>
+        <td style="width: 60px;">{{ item?.quantity }}</td>
+        <td style="width: 60px;">{{ item?.wastage }}</td>
+        <td style="width: 60px;">{{ item?.weight }}</td>
+        <td style="width: 70px;">{{ item?.totalWeight }}</td>
+        <td style="width: 80px;"></td>
+        <td style="width: 70px;">{{ item?.makingCharge }}</td>
+        <td style="width: 50px;">{{ item?.subTotal }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div>
+    <h2 class="in-words">{{ order?.totalPrice | numberToWordsPipe }}</h2>
+    <h2 class="total">{{ order?.totalPrice }}</h2>
+  </div>
+</div>

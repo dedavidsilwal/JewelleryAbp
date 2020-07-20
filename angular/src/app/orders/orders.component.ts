@@ -8,7 +8,7 @@ import {
   PagedRequestDto
 } from '@shared/paged-listing-component-base';
 import {
-  OrderServiceProxy, OrderDto, OrderDtoPagedResultDto
+  OrderServiceProxy, OrderDto, OrderDtoPagedResultDto, CustomerOrderDisplayDto
 } from '@shared/service-proxies/service-proxies';
 
 import { CreateOrderComponent } from './create-order/create-order.component';
@@ -121,6 +121,8 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
     });
   }
 
+
+
   DisplayOrderDetail(id: string): void {
     let OrderDisplayDialog: BsModalRef;
 
@@ -139,7 +141,7 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
     if (!id) {
       createOrEditDialog = this._modalService.show(
         // NewOrderComponent,
-       CreateOrderComponent,
+        CreateOrderComponent,
         {
           class: 'modal-xl',
         }
@@ -160,4 +162,5 @@ export class OrdersComponent extends PagedListingComponentBase<OrderDto> {
       this.refresh();
     });
   }
+
 }

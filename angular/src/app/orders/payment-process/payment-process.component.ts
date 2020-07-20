@@ -26,7 +26,7 @@ export class PaymentProcessComponent extends AppComponentBase implements OnInit 
 
   updateForm = this.formbuilder.group({
     orderId: ['', Validators.required],
-    paidAmount: ['', Validators.required],
+    paidAmount: [''],
   });
 
   constructor(

@@ -1,13 +1,14 @@
 using Abp.Application.Services;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
+using Abp.Linq.Extensions;
 using Jewellery.Authorization;
 using Jewellery.Jewellery.Dto;
 using Jewellery.Users.Dto;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Jewellery.Jewellery
@@ -20,14 +21,18 @@ namespace Jewellery.Jewellery
         {
         }
 
-        public async Task<CustomerDto[]> FetchAllCustomers() => 
-        await Repository.GetAll().Select(x => ObjectMapper.Map<CustomerDto>(x)).ToArrayAsync();
+        public async Task<CustomerDto[]> FetchAllCustomers() =>
+            await Repository.GetAll().Select(x => ObjectMapper.Map<CustomerDto>(x)).ToArrayAsync();
 
-        public async Task<CustomerDto[]> SearchQueryCustomers(string search) =>
-            await Repository.GetAll()
-            .Where(x => x.CustomerName.Contains(search))
-            .Select(x => ObjectMapper.Map<CustomerDto>(x))
-            .ToArrayAsync();
+
+        protected override IQueryable<Customer> CreateFilteredQuery(PagedUserResultRequestDto input)
+        {
+            var query = Repository.GetAll()
+                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.Address.Contains(input.Keyword) || x.DisplayName.Contains(input.Keyword) || x.PhoneNumber.Contains(input.Keyword));
+            return query;
+        }
+
+
     }
 
 

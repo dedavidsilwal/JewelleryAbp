@@ -5,7 +5,7 @@ namespace Jewellery.Jewellery.Dto
 {
     public class CreateEditSaleDetailDto
     {
-        public Guid OrderId { get; set; }
+        public Guid SaleId { get; set; }
         public Guid ProductId { get; set; }
 
         [Required]
@@ -20,6 +20,11 @@ namespace Jewellery.Jewellery.Dto
 
         public string MetalType { get; set; }
         public decimal TodayMetalCost { get; set; }
+
+
+        public decimal TotalWeight => (Weight.HasValue ? Weight.Value : 0) + (Wastage.HasValue ? Wastage.Value : 0);
+
+        public decimal SubTotal => (TotalWeight * TodayMetalCost) + (MakingCharge.HasValue ? MakingCharge.Value : 0);
 
     }
 

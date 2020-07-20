@@ -44,7 +44,8 @@ namespace Jewellery.EntityFrameworkCore.Seed.Tenants
             {
                 _context.Customers.Add(new Customer
                 {
-                    CustomerName = "David Silwal",
+                    FirstName = "David",
+                    LastName = "Silwal",
                     PhoneNumber = "9849861177",
                     Address = "Hetauda"
                 });

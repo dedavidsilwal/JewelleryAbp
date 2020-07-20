@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Jewellery.Jewellery
 {
@@ -37,6 +38,12 @@ namespace Jewellery.Jewellery
 
 
         public decimal? PaidAmount { get; set; }
+
+        public decimal TotalAmount => SaleDetails.Sum(s => s.SubTotal);
+        public decimal TotalWeight => SaleDetails.Sum(s => s.TotalWeight);
+
+        public decimal TotalPaidAmount => Invoices.Sum(s => s.PaidAmount);
+
 
     }
 }

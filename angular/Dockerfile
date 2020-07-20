@@ -4,7 +4,7 @@ ARG NPM_TOKEN
 WORKDIR /src
 COPY . .
 
-RUN npm install && npm run build
+RUN npm install && npm run build-prod
 
 FROM nginx:alpine
 COPY nginx.conf /etc/nginx/nginx.conf

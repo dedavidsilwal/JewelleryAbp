@@ -10,25 +10,49 @@
   ></abp-modal-header>
   <div class="modal-body">
     <div class="form-group row required">
-        <label class="col-md-3 col-form-label" for="customerName">
-          {{ "customerName" | localize }}
+        <label class="col-md-3 col-form-label" for="firstName">
+          {{ "firstName" | localize }}
         </label>
         <div class="col-md-9">
           <input
             type="text"
             class="form-control"
-            name="customerName"
-            id="customerName"
+            name="firstName"
+            id="firstName"
             required
             minlength="2"
             maxlength="32"
-            [(ngModel)]="customer.customerName"
+            [(ngModel)]="customer.firstName"
             #nameModel="ngModel"
             #nameEl
           />
           <abp-validation-summary
             [control]="nameModel"
             [controlEl]="nameEl"
+          ></abp-validation-summary>
+        </div>
+      </div>
+
+      <div class="form-group row required">
+        <label class="col-md-3 col-form-label" for="lastName">
+          {{ "lastName" | localize }}
+        </label>
+        <div class="col-md-9">
+          <input
+            type="text"
+            class="form-control"
+            name="lastName"
+            id="lastName"
+            required
+            minlength="2"
+            maxlength="32"
+            [(ngModel)]="customer.lastName"
+            #lastnameModel="ngModel"
+            #lastnameEl
+          />
+          <abp-validation-summary
+            [control]="lastnameModel"
+            [controlEl]="lastnameEl"
           ></abp-validation-summary>
         </div>
       </div>

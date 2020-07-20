@@ -17,7 +17,10 @@ namespace Jewellery.Migrations
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                 .HasAnnotation("ProductVersion", "3.1.4")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
+                .HasAnnotation("Relational:Sequence:.InvoiceNumbers", "'InvoiceNumbers', '', '1', '1', '', '', 'Int32', 'False'")
+                .HasAnnotation("Relational:Sequence:.OrderNumbers", "'OrderNumbers', '', '1', '1', '', '', 'Int32', 'False'")
+                .HasAnnotation("Relational:Sequence:.SaleNumbers", "'SaleNumbers', '', '1', '1', '', '', 'Int32', 'False'");
 
             modelBuilder.Entity("Abp.Application.Editions.Edition", b =>
                 {
@@ -1525,14 +1528,19 @@ namespace Jewellery.Migrations
                     b.Property<long?>("CreatorUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("CustomerName")
-                        .HasColumnType("text");
-
                     b.Property<long?>("DeleterUserId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("DisplayName")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("text")
+                        .HasComputedColumnSql("\"FirstName\" || ' ' || \"LastName\"");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -1542,6 +1550,9 @@ namespace Jewellery.Migrations
 
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text");
@@ -1573,7 +1584,9 @@ namespace Jewellery.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("InvoiceNumber")
-                        .HasColumnType("integer");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValueSql("nextval('\"InvoiceNumbers\"')");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -1680,7 +1693,9 @@ namespace Jewellery.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("OrderNumber")
-                        .HasColumnType("integer");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValueSql("nextval('\"OrderNumbers\"')");
 
                     b.Property<int>("OrderStatus")
                         .HasColumnType("integer");
@@ -1718,8 +1733,18 @@ namespace Jewellery.Migrations
                     b.Property<short>("Quantity")
                         .HasColumnType("smallint");
 
+                    b.Property<decimal>("SubTotal")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("numeric")
+                        .HasComputedColumnSql("(((\"Wastage\"+\"Weight\") * \"TodayMetalCost\") + \"MakingCharge\")*\"Quantity\"");
+
                     b.Property<decimal>("TodayMetalCost")
                         .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalWeight")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("numeric")
+                        .HasComputedColumnSql("\"Wastage\"+\"Weight\"");
 
                     b.Property<decimal?>("Wastage")
                         .HasColumnType("numeric");
@@ -1820,7 +1845,9 @@ namespace Jewellery.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("SaleNumber")
-                        .HasColumnType("integer");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValueSql("nextval('\"SaleNumbers\"')");
 
                     b.Property<int>("SaleStatus")
                         .HasColumnType("integer");
@@ -1852,8 +1879,18 @@ namespace Jewellery.Migrations
                     b.Property<short>("Quantity")
                         .HasColumnType("smallint");
 
+                    b.Property<decimal>("SubTotal")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("numeric")
+                        .HasComputedColumnSql("(((\"Wastage\"+\"Weight\") * \"TodayMetalCost\") + \"MakingCharge\")*\"Quantity\"");
+
                     b.Property<decimal>("TodayMetalCost")
                         .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalWeight")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("numeric")
+                        .HasComputedColumnSql("\"Wastage\"+\"Weight\"");
 
                     b.Property<decimal?>("Wastage")
                         .HasColumnType("numeric");

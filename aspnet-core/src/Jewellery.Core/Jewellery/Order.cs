@@ -38,7 +38,11 @@ namespace Jewellery.Jewellery
         public decimal? AdvancePaid { get; set; }
 
 
-        public decimal? Total => OrderDetails?.Sum(s => s.SubTotal);
+        public decimal Total => OrderDetails.Sum(s => s.SubTotal);
+
+        public decimal TotalWeight => OrderDetails.Sum(s => s.TotalWeight);
+
+        public decimal TotalPaidAmount => Invoices.Sum(s => s.PaidAmount);
 
     }
 }

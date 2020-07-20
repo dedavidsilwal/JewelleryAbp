@@ -15,6 +15,8 @@ import { CustomersComponent } from './customers/customers.component';
 import { InvoicesComponent } from './invoices/invoices.component';
 import { NewOrderComponent } from './orders/new-order/new-order.component';
 import { SalesComponent } from './sales/sales.component';
+import { DuesComponent } from './dues/dues.component';
+import { SaleDuesComponent } from './sale-dues/sale-dues.component';
 
 
 @NgModule({
@@ -40,6 +42,8 @@ import { SalesComponent } from './sales/sales.component';
 
                     { path: 'customers', component: CustomersComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
                     { path: 'invoices', component: InvoicesComponent, data: { permission: 'Pages.Orders' }, canActivate: [AppRouteGuard] },
+                    { path: 'dues', component: DuesComponent, data: { permission: 'Pages.Orders' }, canActivate: [AppRouteGuard] },
+                    { path: 'saledues', component: SaleDuesComponent, data: { permission: 'Pages.Orders' }, canActivate: [AppRouteGuard] },
                     { path: 'update-password', component: ChangePasswordComponent }
                 ]
             }

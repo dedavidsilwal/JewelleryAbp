@@ -18,6 +18,7 @@ using Abp.Dependency;
 using Abp.Json;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
+using Jewellery.Filters;
 
 namespace Jewellery.Web.Host.Startup
 {
@@ -101,6 +102,7 @@ namespace Jewellery.Web.Host.Startup
                         Url = new Uri("https://github.com/aspnetboilerplate/aspnetboilerplate/blob/dev/LICENSE"),
                     }
                 });
+                options.OperationFilter<FormFileSwaggerFilter>();
                 options.DocInclusionPredicate((docName, description) => true);
 
                 // Define the BearerAuth scheme that's in use

@@ -3,6 +3,7 @@ using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Zero.EntityFrameworkCore;
 using Jewellery.EntityFrameworkCore.Seed;
+using Microsoft.Extensions.Logging;
 
 namespace Jewellery.EntityFrameworkCore
 {
@@ -16,6 +17,12 @@ namespace Jewellery.EntityFrameworkCore
 
         public bool SkipDbSeed { get; set; }
 
+        public static readonly LoggerFactory MyLoggerFactory
+                    = new LoggerFactory(new[]
+                    {
+                        new Log4NetProvider("log4net.config")
+                    });
+
         public override void PreInitialize()
         {
             if (!SkipDbContextRegistration)
@@ -24,6 +31,8 @@ namespace Jewellery.EntityFrameworkCore
                 {
                     options.DbContextOptions.EnableDetailedErrors();
                     options.DbContextOptions.EnableSensitiveDataLogging();
+
+                    options.DbContextOptions.UseLoggerFactory(MyLoggerFactory);
 
                     if (options.ExistingConnection != null)
                     {

@@ -24,9 +24,12 @@ namespace Jewellery.Jewellery
         public string MetalType { get; set; }
         public decimal TodayMetalCost { get; set; }
 
-        public decimal TotalWeight => (Weight.HasValue ? Weight.Value : 0) + (Wastage.HasValue ? Wastage.Value : 0);
+        public decimal TotalWeight { get; private set; }
+        public decimal SubTotal { get; private set; }
 
-        public decimal SubTotal => (TotalWeight * TodayMetalCost) + (MakingCharge.HasValue ? MakingCharge.Value : 0);
+        //public decimal TotalWeight => (Weight.HasValue ? Weight.Value : 0) + (Wastage.HasValue ? Wastage.Value : 0);
+
+        //public decimal SubTotal => (TotalWeight * TodayMetalCost) + (MakingCharge.HasValue ? MakingCharge.Value : 0);
 
 
     }

@@ -14,7 +14,8 @@ namespace Jewellery.Jewellery.Dto
 
         public decimal? AdvancePaid { get; set; }
 
-        public decimal? Total { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public decimal? TotalWeight { get; set; }
 
     }
 }

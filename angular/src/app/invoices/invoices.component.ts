@@ -10,6 +10,7 @@ import { CustomerServiceProxy, CustomerDtoPagedResultDto, InvoiceDto, InvoiceSer
 
 import { debug } from 'console';
 import { OrderDetailComponent } from '@app/orders/order-detail/order-detail.component';
+import { SaleDetailComponent } from '../sales/sale-detail/sale-detail.component';
 
 class PagedInvoiceRequestDto extends PagedRequestDto {
   keyword: string;
@@ -49,22 +50,37 @@ export class InvoicesComponent extends PagedListingComponentBase<InvoiceDto> {
       )
       .subscribe((result: InvoiceDtoPagedResultDto) => {
         this.invoices = result.items;
+        console.log(this.invoices);
         this.showPaging(result, pageNumber);
       });
 
   }
 
-  DisplayOrderDetail(id: string): void {
+  DisplayDetail(invoice: InvoiceDto): void {
     let OrderDisplayDialog: BsModalRef;
 
-    OrderDisplayDialog = this._modalService.show(
-      OrderDetailComponent,
-      {
-        class: 'modal-lg',
-        initialState: {
-          id: id,
-        }
-      });
+    if (invoice.invoiceType === 'Sale') {
+      OrderDisplayDialog = this._modalService.show(
+        SaleDetailComponent,
+        {
+          class: 'modal-lg',
+          initialState: {
+            id: invoice.saleId,
+          }
+        });
+    } else {
+      OrderDisplayDialog = this._modalService.show(
+        OrderDetailComponent,
+        {
+          class: 'modal-lg',
+          initialState: {
+            id: invoice.orderId,
+          }
+        });
+    }
+
+
+
 
     OrderDisplayDialog.content.onSave.subscribe(() => {
       this.refresh();
@@ -73,6 +89,6 @@ export class InvoicesComponent extends PagedListingComponentBase<InvoiceDto> {
 
   protected delete(entity: InvoiceDto): void {
     throw new Error('Method not implemented.');
-  } 
+  }
 
 }

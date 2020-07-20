@@ -14,8 +14,8 @@
         <div class="col-lg-3 col-6">
           <div class="small-box bg-success">
             <div class="inner">
-              <h3>Rs. 0</h3>
-              <p>Credited</p>
+              <h3>Rs. {{ todayInvoice }}</h3>
+              <p>Today Invoiced</p>
             </div>
             <div class="icon">
               <i class="fas fa-star"></i>
@@ -33,8 +33,8 @@
         <div class="col-lg-3 col-6">
           <div class="small-box bg-info">
             <div class="inner">
-              <h3>Rs. 0</h3>
-              <p>Credited A Week</p>
+              <h3>Rs. {{ todayAdvanceTaken }}</h3>
+              <p>Today Advance Took</p>
             </div>
             <div class="icon">
               <i class="fas fa-users"></i>
@@ -53,7 +53,7 @@
           <div class="small-box bg-warning">
             <div class="inner">
               <h3>Rs. 0</h3>
-              <p>Credited A Month</p>
+              <p>A month Invoiced</p>
             </div>
             <div class="icon">
               <i class="fas fa-tools"></i>
@@ -71,8 +71,8 @@
         <div class="col-lg-3 col-6">
           <div class="small-box bg-primary">
             <div class="inner">
-              <h3>0</h3>
-              <p>Due (Remaining Amount)</p>
+              <h3>Rs. {{ todaySaleAmount }}</h3>
+              <p>Today Sale Amount</p>
             </div>
             <div class="icon">
               <i class="fas fa-code"></i>
@@ -95,9 +95,9 @@
               <i class="fas fa-plus-circle"></i>
             </span>
             <div class="info-box-content">
-              <span class="info-box-text">Active Order</span>
+              <span class="info-box-text">Pending Order</span>
               <span class="info-box-number">
-                {{totalActiveOrder}}
+                {{ pendingOrder }}
               </span>
             </div>
           </div>
@@ -108,9 +108,9 @@
               <i class="fas fa-exclamation-triangle"></i>
             </span>
             <div class="info-box-content">
-              <span class="info-box-text">Today Order Delivered</span>
+              <span class="info-box-text">Today Order Delivery</span>
               <span class="info-box-number">
-                0
+                {{ TodayOrderneedDeliver }}
               </span>
             </div>
           </div>
@@ -122,9 +122,9 @@
               <i class="fas fa-tag"></i>
             </span>
             <div class="info-box-content">
-              <span class="info-box-text">Total Sale</span>
+              <span class="info-box-text">Today Order Taken</span>
               <span class="info-box-number">
-                {{totalSale}}
+                {{ TodayOrderTook }}
               </span>
             </div>
           </div>
@@ -135,9 +135,9 @@
               <i class="fas fa-eye"></i>
             </span>
             <div class="info-box-content">
-              <span class="info-box-text">Pending Order</span>
+              <span class="info-box-text">Today Sale</span>
               <span class="info-box-number">
-                0
+                {{ todaySale }}
               </span>
             </div>
           </div>
@@ -159,16 +159,19 @@
                     <th>requiredDate</th>
                     <th class="w-25">customerName</th>
                     <th class="w-25">advancePaid</th>
-                    <th>total</th>
+                    <th>totalWeight</th>
+                    <th>totalAmount</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let order of orders">
-                    <td>{{ order.orderNumber }}</td>
-                    <td>{{ order.orderDate }}</td>
-                    <td>{{ order.requiredDate }}</td>
-                    <td>{{ order.customerName }}</td>
-                    <td>{{ order.advancePaid }}</td>
+                    <td>{{ order?.orderNumber }}</td>
+                    <td>{{ order?.orderDate.format("D MMM") }}</td>
+                    <td>{{ order?.requiredDate.format("D MMM") }}</td>
+                    <td>{{ order?.customerName }}</td>
+                    <td>{{ order?.advancePaid }}</td>
+                    <td>{{ order?.totalWeight }}</td>
+                    <td>{{ order?.totalAmount }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -189,15 +192,15 @@
                     <th>saleNumber</th>
                     <th class="w-25">customerName</th>
                     <th class="w-25">saleDate</th>
-                    <th>totalAmount</th>
+                    <th>PaidAmount</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let sale of sales">
                     <td>{{ sale?.saleNumber }}</td>
                     <td>{{ sale?.customerName }}</td>
-                    <td>{{ sale?.saleDate }}</td>
-                    <td>0</td>
+                    <td>{{ sale?.saleDate.format("D MMM h:mm:ss") }}</td>
+                    <td>{{ sale?.paidAmount }}</td>
                   </tr>
                 </tbody>
               </table>

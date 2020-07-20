@@ -1,0 +1,39 @@
+@media print {
+  .doNotPrint {
+    display:  none !important;
+  }
+  .print-section {
+    display: inline !important;
+  }
+  .body{ margin:0; padding:0; font-size:100%; line-height:1; }
+  .date {
+    margin-left: 642px;
+    margin-top: 65px;
+  }
+  .name {
+    margin-left: 1.5cm;
+    display: inline-block;
+  }
+  .address {
+    margin-top: 75px;
+    margin-left: 312px;
+    display: inline-block;
+  }
+  .table {
+    font-size: 22px;
+    margin-left: 23px;
+    margin-top: 11px;
+  }
+  .in-words {
+    margin-left: 97px;
+    display: inline-block;
+    margin-top: 294px;
+  }
+  .total {
+    margin-left: 301px;
+    display: inline-block;
+    margin-top: -38px;
+  }
+
+  
+}

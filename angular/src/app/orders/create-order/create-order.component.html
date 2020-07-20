@@ -22,7 +22,7 @@
           formControlName="customerName"
           [typeahead]="Customers"
           (typeaheadOnSelect)="selectedCustomer($event)"
-          typeaheadOptionField="customerName"
+          typeaheadOptionField="displayName"
           [typeaheadItemTemplate]="customItemTemplate"
           class="form-control"
         />
@@ -30,7 +30,7 @@
 
       <ng-template #customItemTemplate let-model="item">
         <span
-          ><strong>{{ model.customerName }}</strong> - {{ model.address }}</span
+          ><strong>{{ model.displayName }}</strong> - {{ model.address }} - {{model.phoneNumber}}</span
         >
       </ng-template>
     </div>
@@ -108,10 +108,11 @@
 
               <ng-template #customItemTemplate let-model="item">
                 <span
-                  ><strong>{{ model.productName }}</strong> -
-                  {{ model.metalType.name }} - Rs.{{
+                  >
+                  <strong>{{ model.productName }}</strong>( {{ model.metalType }} ) ;Rs.{{
                     model.estimatedCost
-                  }}</span
+                  }}
+                  </span
                 >
               </ng-template>
             </td>

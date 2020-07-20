@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Extensions;
+using Abp.Linq.Extensions;
 using Jewellery.Authorization;
 using Jewellery.Jewellery.Dto;
 using Jewellery.Users.Dto;
@@ -18,6 +20,13 @@ namespace Jewellery.Jewellery
     {
         public MetalTypeAppService(IRepository<MetalType, Guid> repository) : base(repository)
         {
+        }
+
+        protected override IQueryable<MetalType> CreateFilteredQuery(PagedUserResultRequestDto input)
+        {
+            var query = Repository.GetAll()
+                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.Name.Contains(input.Keyword));
+            return query;
         }
 
         public async Task<MetalTypeDto[]> FetchAllMetalTypes() => await Repository

@@ -37,30 +37,47 @@ namespace Jewellery.EntityFrameworkCore
         {
 
 
-            //modelBuilder.HasSequence<int>("InvoiceNumbers", schema: "shared")
-            //             .StartsAt(0001)
-            //             .IncrementsBy(1);
+            modelBuilder.HasSequence<int>("InvoiceNumbers")
+                        .StartsAt(0001)
+                        .IncrementsBy(1);
 
 
-            //modelBuilder.HasSequence<int>("SaleNumbers", schema: "shared")
-            //             .StartsAt(0001)
-            //             .IncrementsBy(1);
+            modelBuilder.HasSequence<int>("OrderNumbers")
+               .StartsAt(0001)
+               .IncrementsBy(1);
 
-            //modelBuilder.Entity<Invoice>()
-            //              .Property(o => o.InvoiceNumber)
-            //              .HasDefaultValueSql("NEXT VALUE FOR shared.InvoiceNumbers");
+            modelBuilder.HasSequence<int>("SaleNumbers")
+                   .StartsAt(0001)
+                   .IncrementsBy(1);
 
-            //modelBuilder.HasSequence<int>("OrderNumbers", schema: "shared")
-            //           .StartsAt(0001)
-            //           .IncrementsBy(1);
+            modelBuilder.Entity<Invoice>()
+                         .Property(o => o.InvoiceNumber)
+                         .HasDefaultValueSql("nextval('\"InvoiceNumbers\"')");
 
-            //modelBuilder.Entity<Order>()
-            //              .Property(o => o.OrderNumber)
-            //              .HasDefaultValueSql("NEXT VALUE FOR shared.OrderNumbers");
+            modelBuilder.Entity<Order>()
+                         .Property(o => o.OrderNumber)
+                         .HasDefaultValueSql("nextval('\"OrderNumbers\"')");
 
-            //modelBuilder.Entity<Sale>()
-            //       .Property(o => o.SaleNumber)
-            //       .HasDefaultValueSql("NEXT VALUE FOR shared.SaleNumbers");
+            modelBuilder.Entity<Sale>()
+                  .Property(o => o.SaleNumber)
+                  .HasDefaultValueSql("nextval('\"SaleNumbers\"')");
+
+            modelBuilder.Entity<Customer>().Property(p => p.DisplayName)
+                      .HasComputedColumnSql(@"""FirstName"" || ' ' || ""LastName""");
+
+
+            modelBuilder.Entity<OrderDetail>().Property(p => p.TotalWeight)
+                .HasComputedColumnSql("\"Wastage\"+\"Weight\"");
+
+            modelBuilder.Entity<OrderDetail>().Property(p => p.SubTotal)
+                .HasComputedColumnSql("(((\"Wastage\"+\"Weight\") * \"TodayMetalCost\") + \"MakingCharge\")*\"Quantity\"");
+
+
+            modelBuilder.Entity<SaleDetail>().Property(p => p.TotalWeight)
+            .HasComputedColumnSql("\"Wastage\"+\"Weight\"");
+
+            modelBuilder.Entity<SaleDetail>().Property(p => p.SubTotal)
+                .HasComputedColumnSql("(((\"Wastage\"+\"Weight\") * \"TodayMetalCost\") + \"MakingCharge\")*\"Quantity\"");
 
 
             //modelBuilder.Entity<Order>().Property(p => p.OrderDate).HasColumnType("DATETIME");
@@ -68,7 +85,6 @@ namespace Jewellery.EntityFrameworkCore
             //modelBuilder.Entity<Order>().Property(p => p.ShippedDate).HasColumnType("DATETIME");
 
             //modelBuilder.Entity<Invoice>().Property(p => p.InvoiceDate).HasColumnType("DATETIME");
-
 
 
             //modelBuilder.Entity<Sale>().Property(p => p.SalesDate).HasColumnType("DATETIME");

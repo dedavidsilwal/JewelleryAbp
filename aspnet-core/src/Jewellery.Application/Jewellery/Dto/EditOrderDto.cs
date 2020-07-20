@@ -12,7 +12,7 @@ namespace Jewellery.Jewellery.Dto
         {
             OrderDetails = new HashSet<CreateEditOrderDetailDto>();
         }
-        public int OrderNumber { get; set; }
+        public int? OrderNumber { get; set; }
 
         [Required]
         public DateTime? RequiredDate { get; set; }

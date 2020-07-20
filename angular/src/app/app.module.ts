@@ -65,6 +65,9 @@ import { SalesComponent } from './sales/sales.component';
 import { CreateSaleComponent } from './sales/create-sale/create-sale.component';
 import { EditSaleComponent } from './sales/edit-sale/edit-sale.component';
 import { SaleDetailComponent } from './sales/sale-detail/sale-detail.component';
+import { NumberToWordsPipePipe } from './number-to-words-pipe.pipe';
+import { DuesComponent } from './dues/dues.component';
+import { SaleDuesComponent } from './sale-dues/sale-dues.component';
 
 
 @NgModule({
@@ -115,7 +118,10 @@ import { SaleDetailComponent } from './sales/sale-detail/sale-detail.component';
     SalesComponent,
     CreateSaleComponent,
     EditSaleComponent,
-    SaleDetailComponent
+    SaleDetailComponent,
+    NumberToWordsPipePipe,
+    DuesComponent,
+    SaleDuesComponent
   ],
   imports: [
     CommonModule,
@@ -153,4 +159,4 @@ import { SaleDetailComponent } from './sales/sale-detail/sale-detail.component';
 
   ],
 })
-export class AppModule {}
+export class AppModule { }

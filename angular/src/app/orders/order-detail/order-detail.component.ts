@@ -4,6 +4,7 @@ import {
   OnInit,
   EventEmitter,
   Output,
+  ViewChild,
 } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import * as _ from 'lodash';
@@ -28,6 +29,7 @@ export class OrderDetailComponent extends AppComponentBase implements OnInit {
 
   AmountDue: number;
 
+
   constructor(
     private _orderService: OrderServiceProxy,
     injector: Injector,
@@ -44,6 +46,10 @@ export class OrderDetailComponent extends AppComponentBase implements OnInit {
       });
   }
 
+
+  Print(): void {
+    window.print();
+  }
 
   downloadAsPDF(): void {
 
@@ -62,5 +68,6 @@ export class OrderDetailComponent extends AppComponentBase implements OnInit {
       pdf.save(this.order.customerName + ' ' + this.todayDateString); // Generated PDF   
     });
   }
+
 
 }
