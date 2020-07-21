@@ -14,6 +14,7 @@ import {
 } from '@shared/service-proxies/service-proxies';
 import { CreateProductComponent } from './create-product/create-product.component';
 import { EditProductComponent } from './edit-product/edit-product.component';
+import { AppConsts } from '@shared/AppConsts';
 
 class PagedMetalTypeRequestDto extends PagedRequestDto {
   keyword: string;
@@ -43,7 +44,7 @@ export class ProductsComponent extends PagedListingComponentBase<ProductDto> {
     request.keyword = this.keyword;
 
     this._productService
-      .getAll(request.keyword, false,request.skipCount, request.maxResultCount)
+      .getAll(request.keyword, false, request.skipCount, request.maxResultCount)
       .pipe(
         finalize(() => {
           finishedCallback();
@@ -53,8 +54,12 @@ export class ProductsComponent extends PagedListingComponentBase<ProductDto> {
         this.products = result.items;
         this.showPaging(result, pageNumber);
       });
-    }
-      
+  }
+
+  getImageUrl = (relativeImagePath: string) =>
+    `${AppConsts.remoteServiceBaseUrl}/Images/${relativeImagePath}.jpg`
+
+
   delete(product: ProductDto): void {
     abp.message.confirm(
       this.l('RoleDeleteWarningMessage', product.productName),
@@ -69,7 +74,7 @@ export class ProductsComponent extends PagedListingComponentBase<ProductDto> {
                 this.refresh();
               })
             )
-            .subscribe(() => {});
+            .subscribe(() => { });
         }
       }
     );

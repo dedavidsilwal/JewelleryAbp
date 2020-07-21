@@ -36,6 +36,10 @@ namespace Jewellery.Jewellery
         }
 
 
+        public override Task<ProductDto> CreateAsync(CreateEditProductDto input)
+        {
+            return base.CreateAsync(input);
+        }
 
 
         public override async Task<PagedResultDto<ProductDto>> GetAllAsync(PagedUserResultRequestDto input)
@@ -50,6 +54,7 @@ namespace Jewellery.Jewellery
                                    EstimatedWeight = p.EstimatedWeight,
                                    EstimatedCost = p.EstimatedCost,
                                    MetalType = m.Name,
+                                   Photo = p.Photo
                                })
                               .Skip(input.SkipCount)
                               .Take(input.MaxResultCount)
@@ -66,6 +71,7 @@ namespace Jewellery.Jewellery
             return query;
         }
 
+        //TODO: compiled query
         public async Task<ProductDto[]> FetchAll() =>
             await Repository
             .GetAll()

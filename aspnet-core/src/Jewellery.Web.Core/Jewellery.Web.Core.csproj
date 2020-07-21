@@ -28,4 +28,7 @@
     <PackageReference Include="Abp.ZeroCore" Version="5.9.0" />
     <PackageReference Include="Abp.AspNetCore.SignalR" Version="5.9.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Filters\" />
+  </ItemGroup>
 </Project>

@@ -43,6 +43,7 @@
               <thead class="bg-light">
                 <tr>
                   <th>{{ "productName" | localize }}</th>
+                  <th>{{ "photo" | localize }}</th>
                   <th>{{ "metalType" | localize }}</th>
                   <th>{{ "estimatedWeight" | localize }}</th>
                   <th>{{ "estimatedCost" | localize }}</th>
@@ -63,6 +64,7 @@
                   "
                 >
                   <td>{{ products.productName }}</td>
+                  <td> <img [src]="getImageUrl(products.photo)" height="50px" width="50px;" /> </td>
                   <td>{{ products.metalType }}</td>
                   <td>{{ products.estimatedWeight }}</td>
                   <td>{{ products.estimatedCost }}</td>

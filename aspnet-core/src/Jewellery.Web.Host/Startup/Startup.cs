@@ -1,24 +1,26 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
+﻿using Abp.AspNetCore;
+using Abp.AspNetCore.Mvc.Antiforgery;
+using Abp.AspNetCore.SignalR.Hubs;
+using Abp.Castle.Logging.Log4Net;
+using Abp.Dependency;
+using Abp.Extensions;
+using Abp.Json;
+using Castle.Facilities.Logging;
+using Jewellery.Configuration;
+using Jewellery.Filters;
+using Jewellery.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using Castle.Facilities.Logging;
-using Abp.AspNetCore;
-using Abp.AspNetCore.Mvc.Antiforgery;
-using Abp.Castle.Logging.Log4Net;
-using Abp.Extensions;
-using Jewellery.Configuration;
-using Jewellery.Identity;
-using Abp.AspNetCore.SignalR.Hubs;
-using Abp.Dependency;
-using Abp.Json;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
-using Jewellery.Filters;
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace Jewellery.Web.Host.Startup
 {
@@ -47,8 +49,8 @@ namespace Jewellery.Web.Host.Startup
             {
                 options.SerializerSettings.ContractResolver = new AbpMvcContractResolver(IocManager.Instance)
                 {
-                    NamingStrategy = new CamelCaseNamingStrategy(),                   
-                   
+                    NamingStrategy = new CamelCaseNamingStrategy(),
+
                 };
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
@@ -102,7 +104,7 @@ namespace Jewellery.Web.Host.Startup
                         Url = new Uri("https://github.com/aspnetboilerplate/aspnetboilerplate/blob/dev/LICENSE"),
                     }
                 });
-                options.OperationFilter<FormFileSwaggerFilter>();
+                options.OperationFilter<SwaggerFileOperationFilter>();
                 options.DocInclusionPredicate((docName, description) => true);
 
                 // Define the BearerAuth scheme that's in use
@@ -124,13 +126,28 @@ namespace Jewellery.Web.Host.Startup
             );
         }
 
-        public void Configure(IApplicationBuilder app,  ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IWebHostEnvironment env)
         {
             app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
 
             app.UseCors(_defaultCorsPolicyName); // Enable CORS!
 
-            app.UseStaticFiles();
+            // app.UseStaticFiles();
+
+
+            string imageFolder = Path.Combine(env.ContentRootPath, "Images");
+           
+            if (!Directory.Exists(imageFolder))
+            {
+                Directory.CreateDirectory(imageFolder);
+            }
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                        imageFolder),
+                RequestPath = "/Images"
+            });
 
             app.UseRouting();
 
@@ -138,7 +155,7 @@ namespace Jewellery.Web.Host.Startup
 
             app.UseAbpRequestLocalization();
 
-          
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<AbpCommonHub>("/signalr");

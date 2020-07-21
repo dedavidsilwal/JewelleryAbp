@@ -21,7 +21,7 @@ import * as ApiServiceProxies from './service-proxies';
         ApiServiceProxies.JewelleryServiceProxy,
         ApiServiceProxies.SaleServiceProxy,
         ApiServiceProxies.DuesServiceProxy,
-
+        ApiServiceProxies.ImageServiceProxy,
         { provide: HTTP_INTERCEPTORS, useClass: AbpHttpInterceptor, multi: true }
     ]
 })
