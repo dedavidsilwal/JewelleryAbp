@@ -20,6 +20,8 @@ namespace Jewellery.Jewellery.Dto
         [Required]
         public string CustomerName { get; set; }
 
+        [Required]
+        public Guid CustomerId { get; set; }
 
         public ICollection<CreateEditOrderDetailDto> OrderDetails { get; set; }
 

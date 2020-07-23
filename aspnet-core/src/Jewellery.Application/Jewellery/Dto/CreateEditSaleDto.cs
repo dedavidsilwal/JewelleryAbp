@@ -22,7 +22,7 @@ namespace Jewellery.Jewellery.Dto
         public decimal? PaidAmount { get; set; }
 
 
-        public decimal? TotalAmount => SaleDetails.Sum(s => s.SubTotal);
+        public decimal? TotalAmount { get; set; }
 
     }
 
@@ -35,6 +35,7 @@ namespace Jewellery.Jewellery.Dto
 
         [Required]
         public string CustomerName { get; set; }
+        public Guid CustomerId { get; set; }
 
         public int SaleNumber { get; set; }
 
@@ -44,7 +45,7 @@ namespace Jewellery.Jewellery.Dto
         public decimal? PaidAmount { get; set; }
 
 
-        public decimal? TotalAmount => SaleDetails.Sum(s => s.SubTotal);
+        public decimal? TotalAmount => SaleDetails.Sum(s => s.TotalPrice);
 
     }
 

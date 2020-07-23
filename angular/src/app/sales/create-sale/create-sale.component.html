@@ -18,14 +18,16 @@
       </label>
 
       <div class="col-sm-10">
+        
         <input
-          formControlName="customerName"
-          [typeahead]="Customers"
-          (typeaheadOnSelect)="selectedCustomer($event)"
-          typeaheadOptionField="displayName"
-          [typeaheadItemTemplate]="customItemTemplate"
-          class="form-control"
-        />
+        formControlName="customerName"
+        typeaheadOptionField="displayName"
+        [typeahead]="suggestionCustomers$"
+        [typeaheadAsync]="true"
+        class="form-control"
+        (typeaheadOnSelect)="selectedCustomer($event)"
+        placeholder="Enter Customer Name"
+      />
       </div>
 
       <ng-template #customItemTemplate let-model="item">
@@ -59,16 +61,20 @@
             *ngFor="let item of orderDetailsFormArray.controls; let i = index"
             [formGroup]="item"
           >
-            <th scope="row">{{ i }}</th>
-            <td>
+          <th scope="row">{{ i+1 }}</th>
+          <td>
+
               <input
-                formControlName="productName"
-                [typeahead]="Products"
-                (typeaheadOnSelect)="selectedProduct($event, i)"
-                typeaheadOptionField="productName"
-                [typeaheadItemTemplate]="customItemTemplate"
-                class="form-control"
-              />
+              #productKeyword
+              (input)="searchProductKeyword = productKeyword.value"
+              formControlName="productName"
+              typeaheadOptionField="productName"
+              [typeahead]="suggestionProducts$"
+              [typeaheadAsync]="true"
+              class="form-control"
+              (typeaheadOnSelect)="selectedProduct($event, i)"
+              placeholder="Enter Product Name"
+            />
 
               <ng-template #customItemTemplate let-model="item">
                 <span

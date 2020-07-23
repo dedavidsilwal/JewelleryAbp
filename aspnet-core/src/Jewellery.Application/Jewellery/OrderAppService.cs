@@ -164,24 +164,28 @@ namespace Jewellery.Jewellery
         public async Task<EditOrderDto> FetchOrderWithDetails(Guid orderId)
         {
             return await _repository.GetAll()
-                        .Include(p => p.OrderDetails)
+                        .Include(p => p.OrderDetails).ThenInclude(p=>p.Product)
                         .Where(x => x.Id == orderId)
                         .Select(x => new EditOrderDto
                         {
                             AdvancePaid = x.AdvancePaid,
                             CustomerName = x.Customer.DisplayName,
+                            CustomerId = x.CustomerId,
                             OrderNumber = x.OrderNumber,
                             Id = x.Id,
                             RequiredDate = x.RequiredDate,
                             OrderDetails = x.OrderDetails.Select(y => new CreateEditOrderDetailDto
                             {
+                                ProductName = y.Product.ProductName,
                                 MakingCharge = y.MakingCharge,
                                 Wastage = y.Wastage,
                                 Weight = y.Weight,
                                 TodayMetalCost = y.TodayMetalCost,
                                 MetalType = y.MetalType,
                                 ProductId = y.ProductId,
-                                Quantity = y.Quantity
+                                Quantity = y.Quantity,
+                                TotalPrice = y.SubTotal,
+                                TotalWeight = y.TotalWeight
                             }).ToList()
 
                         }).FirstOrDefaultAsync();
@@ -219,6 +223,9 @@ namespace Jewellery.Jewellery
 
             var existingOrder = await context.Orders.Include(s => s.OrderDetails).FirstOrDefaultAsync(x => x.Id == input.Id);
 
+            orderEntity.OrderNumber = existingOrder.OrderNumber;
+            orderEntity.OrderStatus = existingOrder.OrderStatus;
+            orderEntity.PaymentStatus = existingOrder.PaymentStatus;
 
             context.Entry(existingOrder).CurrentValues.SetValues(orderEntity);
 

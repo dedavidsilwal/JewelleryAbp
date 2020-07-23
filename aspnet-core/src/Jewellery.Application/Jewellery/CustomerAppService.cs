@@ -32,6 +32,16 @@ namespace Jewellery.Jewellery
             return query;
         }
 
+        public async Task<CustomerSearchResultDto[]> SearchCustomerQuery(string keyword) =>
+                       await Repository.GetAll()
+                .WhereIf(!keyword.IsNullOrWhiteSpace(), x => x.DisplayName.Contains(keyword))
+                .Select(x => new CustomerSearchResultDto
+                {
+                    Id = x.Id,
+                    DisplayName = x.DisplayName,
+                    Address = x.Address,
+                    PhoneNumber = x.PhoneNumber
+                }).ToArrayAsync();
 
     }
 

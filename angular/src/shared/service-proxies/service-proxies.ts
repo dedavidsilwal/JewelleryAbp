@@ -271,6 +271,64 @@ export class CustomerServiceProxy {
     }
 
     /**
+     * @param keyword (optional) 
+     * @return Success
+     */
+    searchCustomerQuery(keyword: string | null | undefined): Observable<CustomerSearchResultDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/Customer/SearchCustomerQuery?";
+        if (keyword !== undefined && keyword !== null)
+            url_ += "keyword=" + encodeURIComponent("" + keyword) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSearchCustomerQuery(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSearchCustomerQuery(<any>response_);
+                } catch (e) {
+                    return <Observable<CustomerSearchResultDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CustomerSearchResultDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processSearchCustomerQuery(response: HttpResponseBase): Observable<CustomerSearchResultDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200.push(CustomerSearchResultDto.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<CustomerSearchResultDto[]>(<any>null);
+    }
+
+    /**
      * @param id (optional) 
      * @return Success
      */
@@ -2562,6 +2620,64 @@ export class ProductServiceProxy {
             }));
         }
         return _observableOf<ProductDto[]>(<any>null);
+    }
+
+    /**
+     * @param keyword (optional) 
+     * @return Success
+     */
+    searchProductQuery(keyword: string | null | undefined): Observable<ProductSearchResultDto[]> {
+        let url_ = this.baseUrl + "/api/services/app/Product/SearchProductQuery?";
+        if (keyword !== undefined && keyword !== null)
+            url_ += "keyword=" + encodeURIComponent("" + keyword) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSearchProductQuery(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSearchProductQuery(<any>response_);
+                } catch (e) {
+                    return <Observable<ProductSearchResultDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ProductSearchResultDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processSearchProductQuery(response: HttpResponseBase): Observable<ProductSearchResultDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200.push(ProductSearchResultDto.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ProductSearchResultDto[]>(<any>null);
     }
 
     /**
@@ -5169,6 +5285,61 @@ export interface ICustomerDto {
     id: string;
 }
 
+export class CustomerSearchResultDto implements ICustomerSearchResultDto {
+    displayName: string | undefined;
+    address: string | undefined;
+    phoneNumber: string | undefined;
+    id: string;
+
+    constructor(data?: ICustomerSearchResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.displayName = _data["displayName"];
+            this.address = _data["address"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): CustomerSearchResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CustomerSearchResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["displayName"] = this.displayName;
+        data["address"] = this.address;
+        data["phoneNumber"] = this.phoneNumber;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): CustomerSearchResultDto {
+        const json = this.toJSON();
+        let result = new CustomerSearchResultDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICustomerSearchResultDto {
+    displayName: string | undefined;
+    address: string | undefined;
+    phoneNumber: string | undefined;
+    id: string;
+}
+
 export class CustomerDtoPagedResultDto implements ICustomerDtoPagedResultDto {
     totalCount: number;
     items: CustomerDto[] | undefined;
@@ -6177,12 +6348,15 @@ export interface IOrderDtoPagedResultDto {
 export class CreateEditOrderDetailDto implements ICreateEditOrderDetailDto {
     orderId: string;
     productId: string;
+    productName: string | undefined;
     quantity: number;
     weight: number | undefined;
     makingCharge: number | undefined;
     wastage: number | undefined;
     metalType: string;
     todayMetalCost: number;
+    totalWeight: number;
+    totalPrice: number;
 
     constructor(data?: ICreateEditOrderDetailDto) {
         if (data) {
@@ -6197,12 +6371,15 @@ export class CreateEditOrderDetailDto implements ICreateEditOrderDetailDto {
         if (_data) {
             this.orderId = _data["orderId"];
             this.productId = _data["productId"];
+            this.productName = _data["productName"];
             this.quantity = _data["quantity"];
             this.weight = _data["weight"];
             this.makingCharge = _data["makingCharge"];
             this.wastage = _data["wastage"];
             this.metalType = _data["metalType"];
             this.todayMetalCost = _data["todayMetalCost"];
+            this.totalWeight = _data["totalWeight"];
+            this.totalPrice = _data["totalPrice"];
         }
     }
 
@@ -6217,12 +6394,15 @@ export class CreateEditOrderDetailDto implements ICreateEditOrderDetailDto {
         data = typeof data === 'object' ? data : {};
         data["orderId"] = this.orderId;
         data["productId"] = this.productId;
+        data["productName"] = this.productName;
         data["quantity"] = this.quantity;
         data["weight"] = this.weight;
         data["makingCharge"] = this.makingCharge;
         data["wastage"] = this.wastage;
         data["metalType"] = this.metalType;
         data["todayMetalCost"] = this.todayMetalCost;
+        data["totalWeight"] = this.totalWeight;
+        data["totalPrice"] = this.totalPrice;
         return data; 
     }
 
@@ -6237,18 +6417,22 @@ export class CreateEditOrderDetailDto implements ICreateEditOrderDetailDto {
 export interface ICreateEditOrderDetailDto {
     orderId: string;
     productId: string;
+    productName: string | undefined;
     quantity: number;
     weight: number | undefined;
     makingCharge: number | undefined;
     wastage: number | undefined;
     metalType: string;
     todayMetalCost: number;
+    totalWeight: number;
+    totalPrice: number;
 }
 
 export class EditOrderDto implements IEditOrderDto {
     orderNumber: number | undefined;
     requiredDate: moment.Moment;
     customerName: string;
+    customerId: string;
     orderDetails: CreateEditOrderDetailDto[] | undefined;
     advancePaid: number | undefined;
     id: string;
@@ -6267,6 +6451,7 @@ export class EditOrderDto implements IEditOrderDto {
             this.orderNumber = _data["orderNumber"];
             this.requiredDate = _data["requiredDate"] ? moment(_data["requiredDate"].toString()) : <any>undefined;
             this.customerName = _data["customerName"];
+            this.customerId = _data["customerId"];
             if (Array.isArray(_data["orderDetails"])) {
                 this.orderDetails = [] as any;
                 for (let item of _data["orderDetails"])
@@ -6289,6 +6474,7 @@ export class EditOrderDto implements IEditOrderDto {
         data["orderNumber"] = this.orderNumber;
         data["requiredDate"] = this.requiredDate ? this.requiredDate.toISOString() : <any>undefined;
         data["customerName"] = this.customerName;
+        data["customerId"] = this.customerId;
         if (Array.isArray(this.orderDetails)) {
             data["orderDetails"] = [];
             for (let item of this.orderDetails)
@@ -6311,6 +6497,7 @@ export interface IEditOrderDto {
     orderNumber: number | undefined;
     requiredDate: moment.Moment;
     customerName: string;
+    customerId: string;
     orderDetails: CreateEditOrderDetailDto[] | undefined;
     advancePaid: number | undefined;
     id: string;
@@ -6779,6 +6966,77 @@ export class ProductDtoPagedResultDto implements IProductDtoPagedResultDto {
 export interface IProductDtoPagedResultDto {
     totalCount: number;
     items: ProductDto[] | undefined;
+}
+
+export class ProductSearchResultDto implements IProductSearchResultDto {
+    productName: string | undefined;
+    metalTypeId: string;
+    metalType: string | undefined;
+    todayMetalCost: number;
+    estimatedWeight: number | undefined;
+    estimatedCost: number | undefined;
+    photo: string | undefined;
+    id: string;
+
+    constructor(data?: IProductSearchResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.productName = _data["productName"];
+            this.metalTypeId = _data["metalTypeId"];
+            this.metalType = _data["metalType"];
+            this.todayMetalCost = _data["todayMetalCost"];
+            this.estimatedWeight = _data["estimatedWeight"];
+            this.estimatedCost = _data["estimatedCost"];
+            this.photo = _data["photo"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): ProductSearchResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProductSearchResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["productName"] = this.productName;
+        data["metalTypeId"] = this.metalTypeId;
+        data["metalType"] = this.metalType;
+        data["todayMetalCost"] = this.todayMetalCost;
+        data["estimatedWeight"] = this.estimatedWeight;
+        data["estimatedCost"] = this.estimatedCost;
+        data["photo"] = this.photo;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone(): ProductSearchResultDto {
+        const json = this.toJSON();
+        let result = new ProductSearchResultDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IProductSearchResultDto {
+    productName: string | undefined;
+    metalTypeId: string;
+    metalType: string | undefined;
+    todayMetalCost: number;
+    estimatedWeight: number | undefined;
+    estimatedCost: number | undefined;
+    photo: string | undefined;
+    id: string;
 }
 
 export class CreateRoleDto implements ICreateRoleDto {
@@ -7374,14 +7632,15 @@ export interface IRoleDtoPagedResultDto {
 export class CreateEditSaleDetailDto implements ICreateEditSaleDetailDto {
     saleId: string;
     productId: string;
+    productName: string | undefined;
     quantity: number;
     weight: number | undefined;
     makingCharge: number | undefined;
     wastage: number | undefined;
     metalType: string;
     todayMetalCost: number;
-    readonly totalWeight: number;
-    readonly subTotal: number;
+    totalWeight: number;
+    totalPrice: number;
 
     constructor(data?: ICreateEditSaleDetailDto) {
         if (data) {
@@ -7396,14 +7655,15 @@ export class CreateEditSaleDetailDto implements ICreateEditSaleDetailDto {
         if (_data) {
             this.saleId = _data["saleId"];
             this.productId = _data["productId"];
+            this.productName = _data["productName"];
             this.quantity = _data["quantity"];
             this.weight = _data["weight"];
             this.makingCharge = _data["makingCharge"];
             this.wastage = _data["wastage"];
             this.metalType = _data["metalType"];
             this.todayMetalCost = _data["todayMetalCost"];
-            (<any>this).totalWeight = _data["totalWeight"];
-            (<any>this).subTotal = _data["subTotal"];
+            this.totalWeight = _data["totalWeight"];
+            this.totalPrice = _data["totalPrice"];
         }
     }
 
@@ -7418,6 +7678,7 @@ export class CreateEditSaleDetailDto implements ICreateEditSaleDetailDto {
         data = typeof data === 'object' ? data : {};
         data["saleId"] = this.saleId;
         data["productId"] = this.productId;
+        data["productName"] = this.productName;
         data["quantity"] = this.quantity;
         data["weight"] = this.weight;
         data["makingCharge"] = this.makingCharge;
@@ -7425,7 +7686,7 @@ export class CreateEditSaleDetailDto implements ICreateEditSaleDetailDto {
         data["metalType"] = this.metalType;
         data["todayMetalCost"] = this.todayMetalCost;
         data["totalWeight"] = this.totalWeight;
-        data["subTotal"] = this.subTotal;
+        data["totalPrice"] = this.totalPrice;
         return data; 
     }
 
@@ -7440,6 +7701,7 @@ export class CreateEditSaleDetailDto implements ICreateEditSaleDetailDto {
 export interface ICreateEditSaleDetailDto {
     saleId: string;
     productId: string;
+    productName: string | undefined;
     quantity: number;
     weight: number | undefined;
     makingCharge: number | undefined;
@@ -7447,14 +7709,14 @@ export interface ICreateEditSaleDetailDto {
     metalType: string;
     todayMetalCost: number;
     totalWeight: number;
-    subTotal: number;
+    totalPrice: number;
 }
 
 export class CreateEditSaleDto implements ICreateEditSaleDto {
     customerId: string;
     saleDetails: CreateEditSaleDetailDto[] | undefined;
     paidAmount: number | undefined;
-    readonly totalAmount: number | undefined;
+    totalAmount: number | undefined;
     id: string;
 
     constructor(data?: ICreateEditSaleDto) {
@@ -7475,7 +7737,7 @@ export class CreateEditSaleDto implements ICreateEditSaleDto {
                     this.saleDetails.push(CreateEditSaleDetailDto.fromJS(item));
             }
             this.paidAmount = _data["paidAmount"];
-            (<any>this).totalAmount = _data["totalAmount"];
+            this.totalAmount = _data["totalAmount"];
             this.id = _data["id"];
         }
     }
@@ -7704,6 +7966,7 @@ export interface ISaleDtoPagedResultDto {
 
 export class EditSaleDto implements IEditSaleDto {
     customerName: string;
+    customerId: string;
     saleNumber: number;
     saleDetails: CreateEditSaleDetailDto[] | undefined;
     paidAmount: number | undefined;
@@ -7722,6 +7985,7 @@ export class EditSaleDto implements IEditSaleDto {
     init(_data?: any) {
         if (_data) {
             this.customerName = _data["customerName"];
+            this.customerId = _data["customerId"];
             this.saleNumber = _data["saleNumber"];
             if (Array.isArray(_data["saleDetails"])) {
                 this.saleDetails = [] as any;
@@ -7744,6 +8008,7 @@ export class EditSaleDto implements IEditSaleDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["customerName"] = this.customerName;
+        data["customerId"] = this.customerId;
         data["saleNumber"] = this.saleNumber;
         if (Array.isArray(this.saleDetails)) {
             data["saleDetails"] = [];
@@ -7766,6 +8031,7 @@ export class EditSaleDto implements IEditSaleDto {
 
 export interface IEditSaleDto {
     customerName: string;
+    customerId: string;
     saleNumber: number;
     saleDetails: CreateEditSaleDetailDto[] | undefined;
     paidAmount: number | undefined;

@@ -21,4 +21,14 @@ namespace Jewellery.Jewellery.Dto
         public string DisplayName { get; private set; }
 
     }
+
+
+    public class CustomerSearchResultDto : EntityDto<Guid>
+    {
+        public string DisplayName { get;  set; }
+
+        public string Address { get; set; }
+        public string PhoneNumber { get; set; }
+
+    }
 }

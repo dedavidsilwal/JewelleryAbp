@@ -8,6 +8,9 @@ namespace Jewellery.Jewellery.Dto
         public Guid OrderId { get; set; }
         public Guid ProductId { get; set; }
 
+        public string ProductName { get; set; }
+
+
         [Required]
         public short Quantity { get; set; }
 
@@ -18,6 +21,10 @@ namespace Jewellery.Jewellery.Dto
         [Required]
         public string MetalType { get; set; }
         public decimal TodayMetalCost { get; set; }
+
+        public decimal TotalWeight { get; set; }
+        public decimal TotalPrice { get; set; }
+
 
     }
 }

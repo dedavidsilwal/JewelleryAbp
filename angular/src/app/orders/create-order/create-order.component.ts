@@ -17,12 +17,15 @@ import {
   CustomerServiceProxy,
   CustomerDto,
   ProductServiceProxy,
-  ProductDto
+  ProductDto,
+  CustomerSearchResultDto
 } from '@shared/service-proxies/service-proxies';
-import { finalize } from 'rxjs/operators';
+import { finalize, switchMap, map, tap } from 'rxjs/operators';
 import { TypeaheadMatch } from 'ngx-bootstrap/typeahead';
 import { debug } from 'console';
-
+import { query } from '@angular/animations';
+import { noop, Observable, Observer, of } from 'rxjs';
+import { ProductSearchResultDto } from '../../../shared/service-proxies/service-proxies';
 
 @Component({
   templateUrl: './create-order.component.html',
@@ -45,10 +48,14 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
   totalPrice = 0;
   dueAmount = 0;
 
-  public Customers: CustomerDto[] = [];
   public Products: ProductDto[] = [];
 
   showAdvancePayment = false;
+
+  suggestionCustomers$: Observable<CustomerSearchResultDto[]>;
+  suggestionProducts$: Observable<ProductSearchResultDto[]>;
+
+  searchProductKeyword: string;
 
   constructor(
     private _orderService: OrderServiceProxy,
@@ -88,18 +95,6 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
   }
 
   ngOnInit(): void {
-
-    this._customerService.fetchAllCustomers()
-      .subscribe((result: CustomerDto[]) => {
-        this.Customers = result;
-      });
-
-    this._productService.fetchAll()
-      .subscribe((result: ProductDto[]) => {
-        this.Products = result;
-      });
-
-
     this.buildForm();
     this.orderDetailsFormArray
       .valueChanges
@@ -113,6 +108,49 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
     this.form.get('advancePaid').valueChanges.subscribe((val) => {
       this.calculateTotalAmount();
     });
+
+
+    this.suggestionCustomers$ = new Observable((observer: Observer<string>) => {
+      observer.next(this.form.get('customerName').value);
+    }).pipe(
+      // tslint:disable-next-line: no-shadowed-variable
+      switchMap((query: string) => {
+        if (query) {
+          return this._customerService.searchCustomerQuery(query).pipe(
+            map((data: CustomerSearchResultDto[]) => {
+              return data && data || [];
+            }),
+            tap(() => noop, err => {
+              // in case of http error
+              // this.errorMessage = err && err.message || 'Something goes wrong';
+            })
+          );
+        }
+
+        return of([]);
+      })
+    );
+
+    this.suggestionProducts$ = new Observable((observer: Observer<string>) => {
+      observer.next(this.searchProductKeyword);
+    }).pipe(
+      // tslint:disable-next-line: no-shadowed-variable
+      switchMap((query: string) => {
+        if (query) {
+          return this._productService.searchProductQuery(query).pipe(
+            map((data: ProductSearchResultDto[]) => {
+              return data && data || [];
+            }),
+            tap(() => noop, err => {
+              // in case of http error
+              // this.errorMessage = err && err.message || 'Something goes wrong';
+            })
+          );
+        }
+
+        return of([]);
+      })
+    );
 
   }
 
@@ -141,7 +179,7 @@ export class CreateOrderComponent extends AppComponentBase implements OnInit {
 
   selectedCustomer(e: TypeaheadMatch) {
     console.log(e.item.id);
-    this.form.get('customerId').setValue(e.item.id);
+    this.form.patchValue({ 'customerId': e.item.id });
   }
 
   selectedProduct(e: TypeaheadMatch, index: number) {

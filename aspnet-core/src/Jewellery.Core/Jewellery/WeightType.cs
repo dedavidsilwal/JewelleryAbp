@@ -4,10 +4,9 @@ namespace Jewellery.Jewellery
 {
     public enum WeightType
     {
-        [Display(Name = "gm")]
-        Gram = 0,
-
         [Display(Name = "tola")]
-        Tola = 1
+        Tola = 0,
+        [Display(Name = "gm")]
+        Gram = 1
     }
 }

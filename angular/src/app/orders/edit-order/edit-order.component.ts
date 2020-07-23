@@ -8,12 +8,11 @@ import {
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import * as _ from 'lodash';
 import { AppComponentBase } from '@shared/app-component-base';
-import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
-import { OrderServiceProxy, CreateOrderDto, MetalTypeServiceProxy, MetalTypeDto, CustomerServiceProxy, CustomerDto, ProductServiceProxy, ProductDto, EditOrderDto, OrderDetailDto } from '@shared/service-proxies/service-proxies';
-import { Observable, of, Subject, Subscription, fromEvent } from 'rxjs';
-import { map, filter, debounceTime, distinctUntilChanged, switchAll, tap, finalize, publishReplay } from 'rxjs/operators';
+import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
+import { OrderServiceProxy, MetalTypeServiceProxy, MetalTypeDto,  ProductServiceProxy, ProductDto,  ProductSearchResultDto, EditOrderDto } from '@shared/service-proxies/service-proxies';
+import { Observable, of, Observer, noop } from 'rxjs';
+import { map, tap, finalize, switchMap } from 'rxjs/operators';
 import { TypeaheadMatch } from 'ngx-bootstrap/typeahead';
-const CACHE_SIZE = 1;
 
 
 @Component({
@@ -38,15 +37,13 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
   id: string;
 
-  public Customers: CustomerDto[] = [];
-  public Products: ProductDto[] = [];
-
   showAdvancePayment = false;
 
+  searchProductKeyword: string;
+  suggestionProducts$: Observable<ProductSearchResultDto[]>;
 
   constructor(
     private _orderService: OrderServiceProxy,
-    private _customerService: CustomerServiceProxy,
     private _metalTypeService: MetalTypeServiceProxy,
     private _productService: ProductServiceProxy,
     injector: Injector,
@@ -85,10 +82,10 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
     this.buildForm();
 
-    this.orderDetailsFormArray.push(this.orderDetailsFormGroup);
-
     this._orderService.fetchOrderWithDetails(this.id)
       .subscribe((result: EditOrderDto) => {
+
+        console.log(result);
 
         if (result.advancePaid > 0) {
 
@@ -101,6 +98,10 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
         this.form.patchValue({ 'requiredDate': new Date(result.requiredDate?.toString()) });
 
+        for (let index = 0; index < result.orderDetails.length; index++) {
+          this.orderDetailsFormArray.push(this.orderDetailsFormGroup);
+        }
+
         this.orderDetailsFormArray.patchValue(result.orderDetails);
 
         this.calculateTotalAmount();
@@ -108,32 +109,25 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
       });
 
 
-   
-
-
-    this.form.get('advancePaid').valueChanges.subscribe((val) => {
+    this.form.get('advancePaid').valueChanges.subscribe(() => {
       this.calculateTotalAmount();
     });
 
-    this._productService.fetchAll()
-    .subscribe((result: ProductDto[]) => {
-      this.Products = result;
-    });
-    
+
     this.orderDetailsFormArray.controls.forEach(element => {
 
       this.form.controls['orderDetails']
         .valueChanges
-        .subscribe((orderEntry: OrderDetailDto[]) => {
+        .subscribe(() => {
           // this.totalPrice = orderEntry.map(c => c.totalPrice).reduce((sum, current) => sum + current);
 
         });
 
-      element.get('productId').valueChanges.subscribe(val => {
-        element.get('productName').setValue(this.Products.find(s => s.id.match(val))?.productName);
-      });
+      // element.get('productId').valueChanges.subscribe(val => {
+      //   element.get('productName').setValue(this.Products.find(s => s.id.match(val))?.productName);
+      // });
 
-      element.get('weight').valueChanges.subscribe(val => {
+      element.get('weight').valueChanges.subscribe(() => {
 
         const weight = parseFloat(element.get('weight').value) || 0;
         const wastage = parseFloat(element.get('wastage').value) || 0;
@@ -155,12 +149,36 @@ export class EditOrderComponent extends AppComponentBase implements OnInit {
 
       });
     });
+
+    this.suggestionProducts$ = new Observable((observer: Observer<string>) => {
+      observer.next(this.searchProductKeyword);
+    }).pipe(
+      // tslint:disable-next-line: no-shadowed-variable
+      switchMap((query: string) => {
+        if (query) {
+          return this._productService.searchProductQuery(query).pipe(
+            map((data: ProductSearchResultDto[]) => {
+              return data && data || [];
+            }),
+            tap(() => noop, () => {
+              // in case of http error
+              // this.errorMessage = err && err.message || 'Something goes wrong';
+            })
+          );
+        }
+
+        return of([]);
+      })
+    );
+
+
   }
 
 
   buildForm(): void {
     this.form = this.fb.group({
       customerName: '',
+      customerId: '',
       requiredDate: '',
       advancePaid: '',
       orderDetails: this.fb.array([])

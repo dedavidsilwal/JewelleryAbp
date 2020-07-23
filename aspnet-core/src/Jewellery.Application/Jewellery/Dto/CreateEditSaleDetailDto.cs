@@ -7,6 +7,7 @@ namespace Jewellery.Jewellery.Dto
     {
         public Guid SaleId { get; set; }
         public Guid ProductId { get; set; }
+        public string ProductName { get; set; }
 
         [Required]
         public short Quantity { get; set; }
@@ -22,12 +23,9 @@ namespace Jewellery.Jewellery.Dto
         public decimal TodayMetalCost { get; set; }
 
 
-        public decimal TotalWeight => (Weight.HasValue ? Weight.Value : 0) + (Wastage.HasValue ? Wastage.Value : 0);
+        public decimal TotalWeight { get; set; }
 
-        public decimal SubTotal => (TotalWeight * TodayMetalCost) + (MakingCharge.HasValue ? MakingCharge.Value : 0);
+        public decimal TotalPrice { get; set; }
 
     }
-
-
-
 }

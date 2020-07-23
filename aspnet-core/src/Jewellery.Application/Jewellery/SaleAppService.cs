@@ -127,7 +127,7 @@ namespace Jewellery.Jewellery
                     SaleStatus = x.SaleStatus.ToString(),
                     PaidAmouunt = x.PaidAmount
                 })
-                .OrderByDescending(s => s.SalesDate)
+                .OrderByDescending(s => s.SaleNumber)
                 .ToListAsync();
 
             return new PagedResultDto<SaleDto>() { Items = query, TotalCount = await _saleRepository.CountAsync() };
@@ -136,13 +136,13 @@ namespace Jewellery.Jewellery
 
         public async Task<EditSaleDto> FetchSaleWithDetails(Guid saleId) =>
            await _saleRepository.GetAll()
-            .Include(p => p.SaleDetails)
+            .Include(p => p.SaleDetails).ThenInclude(p => p.Product)
             .Include(c => c.Customer)
-
              .Where(x => x.Id == saleId)
              .Select(x => new EditSaleDto
              {
                  CustomerName = x.Customer.DisplayName,
+                 CustomerId = x.CustomerId,
                  PaidAmount = x.PaidAmount,
                  Id = x.Id,
                  SaleNumber = x.SaleNumber,
@@ -152,10 +152,13 @@ namespace Jewellery.Jewellery
                      MetalType = y.MetalType,
                      SaleId = y.SaleId,
                      ProductId = y.ProductId,
+                     ProductName = y.Product.ProductName,
                      Quantity = y.Quantity,
                      TodayMetalCost = y.TodayMetalCost,
                      Wastage = y.Wastage,
-                     Weight = y.Weight
+                     Weight = y.Weight,
+                     TotalPrice = y.SubTotal,
+                     TotalWeight = y.TotalWeight
                  }).ToList()
 
              })

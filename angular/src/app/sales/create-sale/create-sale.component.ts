@@ -16,11 +16,14 @@ import {
   CustomerServiceProxy,
   CustomerDto,
   ProductServiceProxy,
-  ProductDto
+  ProductDto,
+  CustomerSearchResultDto,
+  ProductSearchResultDto
 } from '@shared/service-proxies/service-proxies';
-import { finalize } from 'rxjs/operators';
+import { finalize, switchMap, map, tap } from 'rxjs/operators';
 import { TypeaheadMatch } from 'ngx-bootstrap/typeahead';
 import { SaleServiceProxy, CreateEditSaleDto } from '../../../shared/service-proxies/service-proxies';
+import { Observable, Observer, noop, of } from 'rxjs';
 
 
 @Component({
@@ -43,8 +46,10 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
   totalPrice = 0;
 
-  public Customers: CustomerDto[] = [];
-  public Products: ProductDto[] = [];
+  suggestionCustomers$: Observable<CustomerSearchResultDto[]>;
+  suggestionProducts$: Observable<ProductSearchResultDto[]>;
+
+  searchProductKeyword: string;
 
   showPartialPayment = false;
 
@@ -90,17 +95,6 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
 
   ngOnInit(): void {
 
-    this._customerService.fetchAllCustomers()
-      .subscribe((result: CustomerDto[]) => {
-        this.Customers = result;
-      });
-
-    this._productService.fetchAll()
-      .subscribe((result: ProductDto[]) => {
-        this.Products = result;
-      });
-
-
     this.buildForm();
 
     this.orderDetailsFormArray.push(this.orderDetailsFormGroup);
@@ -111,6 +105,49 @@ export class CreateSaleComponent extends AppComponentBase implements OnInit {
     this.form.get('paidAmount').valueChanges.subscribe((val) => {
       this.calculateTotalAmount();
     });
+
+
+    this.suggestionCustomers$ = new Observable((observer: Observer<string>) => {
+      observer.next(this.form.get('customerName').value);
+    }).pipe(
+      // tslint:disable-next-line: no-shadowed-variable
+      switchMap((query: string) => {
+        if (query) {
+          return this._customerService.searchCustomerQuery(query).pipe(
+            map((data: CustomerSearchResultDto[]) => {
+              return data && data || [];
+            }),
+            tap(() => noop, err => {
+              // in case of http error
+              // this.errorMessage = err && err.message || 'Something goes wrong';
+            })
+          );
+        }
+
+        return of([]);
+      })
+    );
+
+    this.suggestionProducts$ = new Observable((observer: Observer<string>) => {
+      observer.next(this.searchProductKeyword);
+    }).pipe(
+      // tslint:disable-next-line: no-shadowed-variable
+      switchMap((query: string) => {
+        if (query) {
+          return this._productService.searchProductQuery(query).pipe(
+            map((data: ProductSearchResultDto[]) => {
+              return data && data || [];
+            }),
+            tap(() => noop, err => {
+              // in case of http error
+              // this.errorMessage = err && err.message || 'Something goes wrong';
+            })
+          );
+        }
+
+        return of([]);
+      })
+    );
 
   }
 

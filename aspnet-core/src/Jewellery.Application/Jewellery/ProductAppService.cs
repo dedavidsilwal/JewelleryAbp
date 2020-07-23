@@ -79,7 +79,18 @@ namespace Jewellery.Jewellery
             .Select(x => ObjectMapper.Map<ProductDto>(x))
             .ToArrayAsync();
 
+        public async Task<ProductSearchResultDto[]> SearchProductQuery(string keyword) =>
+        await Repository.GetAll().Include(s => s.MetalType)
+                        .WhereIf(!keyword.IsNullOrWhiteSpace(), x => x.ProductName.Contains(keyword))
+                        .Select(x => new ProductSearchResultDto
+                        {
+                            Id = x.Id,
+                            ProductName = x.ProductName,
+                            MetalTypeId = x.MetalTypeId,
+                            MetalType = x.MetalType.Name,
+                            TodayMetalCost = x.MetalType.Price,
+                            EstimatedCost = x.EstimatedCost,
+                            EstimatedWeight = x.EstimatedWeight
+                        }).ToArrayAsync();
     }
-
-
 }
