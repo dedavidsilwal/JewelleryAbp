@@ -12,6 +12,7 @@ import { debug } from 'console';
 import { OrderDetailComponent } from '@app/orders/order-detail/order-detail.component';
 import { SaleDetailComponent } from '../sales/sale-detail/sale-detail.component';
 import { DueDto, DuesServiceProxy, DueDtoPagedResultDto } from '../../shared/service-proxies/service-proxies';
+import { SaleDueDetailComponent } from './sale-due-detail/sale-due-detail.component';
 
 class PagedDueRequestDto extends PagedRequestDto {
   keyword: string;
@@ -23,8 +24,6 @@ class PagedDueRequestDto extends PagedRequestDto {
 })
 
 export class SaleDuesComponent extends PagedListingComponentBase<DueDto> {
-
-
 
   dues: DueDto[] = [];
   keyword = '';
@@ -57,6 +56,20 @@ export class SaleDuesComponent extends PagedListingComponentBase<DueDto> {
         this.showPaging(result, pageNumber);
       });
 
+  }
+
+  duePaid(orderId: string): void {
+    const dialog = this._modalService.show(
+      SaleDueDetailComponent, {
+      class: 'modal-lg',
+      initialState: {
+        id: orderId,
+      },
+    });
+
+    dialog.content.onSave.subscribe(() => {
+      this.refresh();
+    });
   }
 
   protected delete(entity: DueDto): void {

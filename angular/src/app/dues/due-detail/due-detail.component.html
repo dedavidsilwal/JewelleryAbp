@@ -1,0 +1,77 @@
+<form
+  class="form-horizontal"
+  autocomplete="off"
+  [formGroup]="dueForm"
+  (ngSubmit)="save()"
+>
+  <abp-modal-header
+    [title]="'DuePaid' | localize"
+    (onCloseClick)="bsModalRef.hide()"
+  ></abp-modal-header>
+
+  <div class="modal-body">
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">{{
+        "customerName" | localize
+      }}</label>
+
+      <div class="col-sm-10">
+        <label>{{ orderDue?.customerName }}</label>
+      </div>
+    </div>
+
+    <div>
+      <table class="table table-responsive">
+        <thead>
+          <tr>
+            <td>
+              invoiceNumber
+            </td>
+            <td>
+              invoiceDate
+            </td>
+            <td>
+              paidAmount
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let invoice of orderDue?.invoices">
+            <td>{{ invoice.invoiceNumber }}</td>
+            <td>{{ invoice.invoiceDate }}</td>
+            <td>{{ invoice.paidAmount }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+<div>
+  <div class="row">
+    Total Amount : {{orderDue?.totalAmount}}
+  </div>
+  <div class="row">
+    Total Amount : {{orderDue?.totalPaid}}
+  </div>
+  <div class="row">
+    Due Amount : {{orderDue?.dueAmount}}
+  </div>
+</div>
+
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Paid Amount</label>
+      <div class="col-sm-10">
+        <input
+          type="number"
+          oninput="value == '' ? value = 0 : value < 0 ? value = value * -1 : false"
+          min="0"
+          formControlName="paidAmount"
+        />
+      </div>
+    </div>
+  </div>
+
+  <abp-modal-footer
+    [cancelDisabled]="saving"
+    [saveDisabled]="!dueForm.valid || saving"
+    (onCancelClick)="bsModalRef.hide()"
+  ></abp-modal-footer>
+</form>

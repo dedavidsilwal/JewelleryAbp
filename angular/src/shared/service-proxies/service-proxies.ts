@@ -1556,6 +1556,119 @@ export class OrderServiceProxy {
     }
 
     /**
+     * @param orderId (optional) 
+     * @return Success
+     */
+    getOrderDueDetail(orderId: string | undefined): Observable<OrderDueDetailDto> {
+        let url_ = this.baseUrl + "/api/services/app/Order/GetOrderDueDetail?";
+        if (orderId === null)
+            throw new Error("The parameter 'orderId' cannot be null.");
+        else if (orderId !== undefined)
+            url_ += "orderId=" + encodeURIComponent("" + orderId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetOrderDueDetail(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetOrderDueDetail(<any>response_);
+                } catch (e) {
+                    return <Observable<OrderDueDetailDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<OrderDueDetailDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetOrderDueDetail(response: HttpResponseBase): Observable<OrderDueDetailDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = OrderDueDetailDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<OrderDueDetailDto>(<any>null);
+    }
+
+    /**
+     * @param orderId (optional) 
+     * @param paidAmount (optional) 
+     * @return Success
+     */
+    duePaid(orderId: string | undefined, paidAmount: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Order/DuePaid?";
+        if (orderId === null)
+            throw new Error("The parameter 'orderId' cannot be null.");
+        else if (orderId !== undefined)
+            url_ += "orderId=" + encodeURIComponent("" + orderId) + "&";
+        if (paidAmount === null)
+            throw new Error("The parameter 'paidAmount' cannot be null.");
+        else if (paidAmount !== undefined)
+            url_ += "paidAmount=" + encodeURIComponent("" + paidAmount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDuePaid(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDuePaid(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDuePaid(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
      * @param file (optional) 
      * @return Success
      */
@@ -3367,6 +3480,119 @@ export class SaleServiceProxy {
             }));
         }
         return _observableOf<SaleDto>(<any>null);
+    }
+
+    /**
+     * @param saleId (optional) 
+     * @param paidAmount (optional) 
+     * @return Success
+     */
+    duePaid(saleId: string | undefined, paidAmount: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Sale/DuePaid?";
+        if (saleId === null)
+            throw new Error("The parameter 'saleId' cannot be null.");
+        else if (saleId !== undefined)
+            url_ += "saleId=" + encodeURIComponent("" + saleId) + "&";
+        if (paidAmount === null)
+            throw new Error("The parameter 'paidAmount' cannot be null.");
+        else if (paidAmount !== undefined)
+            url_ += "paidAmount=" + encodeURIComponent("" + paidAmount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDuePaid(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDuePaid(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDuePaid(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param saleId (optional) 
+     * @return Success
+     */
+    getSaleDueDetail(saleId: string | undefined): Observable<SaleDueDetailDto> {
+        let url_ = this.baseUrl + "/api/services/app/Sale/GetSaleDueDetail?";
+        if (saleId === null)
+            throw new Error("The parameter 'saleId' cannot be null.");
+        else if (saleId !== undefined)
+            url_ += "saleId=" + encodeURIComponent("" + saleId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSaleDueDetail(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSaleDueDetail(<any>response_);
+                } catch (e) {
+                    return <Observable<SaleDueDetailDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<SaleDueDetailDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetSaleDueDetail(response: HttpResponseBase): Observable<SaleDueDetailDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SaleDueDetailDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SaleDueDetailDto>(<any>null);
     }
 
     /**
@@ -5396,6 +5622,7 @@ export interface ICustomerDtoPagedResultDto {
 }
 
 export class DueDto implements IDueDto {
+    orderId: string;
     customerName: string | undefined;
     totalPaidAmount: number;
     totalAmount: number;
@@ -5412,6 +5639,7 @@ export class DueDto implements IDueDto {
 
     init(_data?: any) {
         if (_data) {
+            this.orderId = _data["orderId"];
             this.customerName = _data["customerName"];
             this.totalPaidAmount = _data["totalPaidAmount"];
             this.totalAmount = _data["totalAmount"];
@@ -5428,6 +5656,7 @@ export class DueDto implements IDueDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["orderId"] = this.orderId;
         data["customerName"] = this.customerName;
         data["totalPaidAmount"] = this.totalPaidAmount;
         data["totalAmount"] = this.totalAmount;
@@ -5444,6 +5673,7 @@ export class DueDto implements IDueDto {
 }
 
 export interface IDueDto {
+    orderId: string;
     customerName: string | undefined;
     totalPaidAmount: number;
     totalAmount: number;
@@ -6221,6 +6451,77 @@ export interface ICreateOrderDto {
     orderDetails: OrderDetailDto[] | undefined;
     advancePaid: number | undefined;
     id: string;
+}
+
+export class OrderDueDetailDto implements IOrderDueDetailDto {
+    orderId: string;
+    customerName: string | undefined;
+    invoices: InvoiceDto[] | undefined;
+    totalAmount: number | undefined;
+    readonly totalPaid: number | undefined;
+    readonly dueAmount: number | undefined;
+
+    constructor(data?: IOrderDueDetailDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.orderId = _data["orderId"];
+            this.customerName = _data["customerName"];
+            if (Array.isArray(_data["invoices"])) {
+                this.invoices = [] as any;
+                for (let item of _data["invoices"])
+                    this.invoices.push(InvoiceDto.fromJS(item));
+            }
+            this.totalAmount = _data["totalAmount"];
+            (<any>this).totalPaid = _data["totalPaid"];
+            (<any>this).dueAmount = _data["dueAmount"];
+        }
+    }
+
+    static fromJS(data: any): OrderDueDetailDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new OrderDueDetailDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["orderId"] = this.orderId;
+        data["customerName"] = this.customerName;
+        if (Array.isArray(this.invoices)) {
+            data["invoices"] = [];
+            for (let item of this.invoices)
+                data["invoices"].push(item.toJSON());
+        }
+        data["totalAmount"] = this.totalAmount;
+        data["totalPaid"] = this.totalPaid;
+        data["dueAmount"] = this.dueAmount;
+        return data; 
+    }
+
+    clone(): OrderDueDetailDto {
+        const json = this.toJSON();
+        let result = new OrderDueDetailDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IOrderDueDetailDto {
+    orderId: string;
+    customerName: string | undefined;
+    invoices: InvoiceDto[] | undefined;
+    totalAmount: number | undefined;
+    totalPaid: number | undefined;
+    dueAmount: number | undefined;
 }
 
 export class OrderDashboardDto implements IOrderDashboardDto {
@@ -7852,6 +8153,77 @@ export interface ISaleDto {
     paymentStatus: string | undefined;
     paidAmouunt: number | undefined;
     id: string;
+}
+
+export class SaleDueDetailDto implements ISaleDueDetailDto {
+    saleId: string;
+    customerName: string | undefined;
+    invoices: InvoiceDto[] | undefined;
+    totalAmount: number | undefined;
+    readonly totalPaid: number | undefined;
+    readonly dueAmount: number | undefined;
+
+    constructor(data?: ISaleDueDetailDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.saleId = _data["saleId"];
+            this.customerName = _data["customerName"];
+            if (Array.isArray(_data["invoices"])) {
+                this.invoices = [] as any;
+                for (let item of _data["invoices"])
+                    this.invoices.push(InvoiceDto.fromJS(item));
+            }
+            this.totalAmount = _data["totalAmount"];
+            (<any>this).totalPaid = _data["totalPaid"];
+            (<any>this).dueAmount = _data["dueAmount"];
+        }
+    }
+
+    static fromJS(data: any): SaleDueDetailDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new SaleDueDetailDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["saleId"] = this.saleId;
+        data["customerName"] = this.customerName;
+        if (Array.isArray(this.invoices)) {
+            data["invoices"] = [];
+            for (let item of this.invoices)
+                data["invoices"].push(item.toJSON());
+        }
+        data["totalAmount"] = this.totalAmount;
+        data["totalPaid"] = this.totalPaid;
+        data["dueAmount"] = this.dueAmount;
+        return data; 
+    }
+
+    clone(): SaleDueDetailDto {
+        const json = this.toJSON();
+        let result = new SaleDueDetailDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ISaleDueDetailDto {
+    saleId: string;
+    customerName: string | undefined;
+    invoices: InvoiceDto[] | undefined;
+    totalAmount: number | undefined;
+    totalPaid: number | undefined;
+    dueAmount: number | undefined;
 }
 
 export class SalesReportDashboard implements ISalesReportDashboard {

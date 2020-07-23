@@ -12,6 +12,7 @@ import { debug } from 'console';
 import { OrderDetailComponent } from '@app/orders/order-detail/order-detail.component';
 import { SaleDetailComponent } from '../sales/sale-detail/sale-detail.component';
 import { DueDto, DuesServiceProxy, DueDtoPagedResultDto } from '../../shared/service-proxies/service-proxies';
+import { DueDetailComponent } from './due-detail/due-detail.component';
 
 class PagedDueRequestDto extends PagedRequestDto {
   keyword: string;
@@ -59,7 +60,22 @@ export class DuesComponent extends PagedListingComponentBase<DueDto> {
 
   }
 
+  duePaid(orderId: string): void {
+    const dialog = this._modalService.show(
+      DueDetailComponent, {
+      class: 'modal-lg',
+      initialState: {
+        id: orderId,
+      },
+    });
+
+    dialog.content.onSave.subscribe(() => {
+      this.refresh();
+    });
+  }
+
   protected delete(entity: DueDto): void {
     throw new Error('Method not implemented.');
   }
+
 }

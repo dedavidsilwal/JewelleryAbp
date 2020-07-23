@@ -62,7 +62,15 @@ namespace Jewellery.Jewellery
 
             var result =
                 query.Skip(input.SkipCount)
-                .Select(s => new DueDto { CustomerName = s.Customer.DisplayName, Dues = s.Total - s.TotalPaidAmount, TotalAmount = s.Total, TotalPaidAmount = s.TotalPaidAmount })
+                .Select(s =>
+                new DueDto
+                {
+                    OrderId = s.Id,
+                    CustomerName = s.Customer.DisplayName,
+                    Dues = s.Total - s.TotalPaidAmount,
+                    TotalAmount = s.Total,
+                    TotalPaidAmount = s.TotalPaidAmount
+                })
                 .Take(input.MaxResultCount)
                 .ToList();
 
@@ -87,7 +95,14 @@ namespace Jewellery.Jewellery
 
             var result =
                 query.Skip(input.SkipCount)
-                .Select(s => new DueDto { CustomerName = s.Customer.DisplayName, Dues = s.TotalAmount - s.TotalPaidAmount, TotalAmount = s.TotalAmount, TotalPaidAmount = s.TotalPaidAmount })
+                .Select(s => new DueDto
+                {
+                    OrderId = s.Id,
+                    CustomerName = s.Customer.DisplayName,
+                    Dues = s.TotalAmount - s.TotalPaidAmount,
+                    TotalAmount = s.TotalAmount,
+                    TotalPaidAmount = s.TotalPaidAmount
+                })
                 .Take(input.MaxResultCount)
                 .ToList();
 

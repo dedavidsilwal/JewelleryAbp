@@ -68,6 +68,8 @@ import { SaleDetailComponent } from './sales/sale-detail/sale-detail.component';
 import { NumberToWordsPipePipe } from './number-to-words-pipe.pipe';
 import { DuesComponent } from './dues/dues.component';
 import { SaleDuesComponent } from './sale-dues/sale-dues.component';
+import { DueDetailComponent } from './dues/due-detail/due-detail.component';
+import { SaleDueDetailComponent } from './sale-dues/sale-due-detail/sale-due-detail.component';
 
 
 @NgModule({
@@ -121,7 +123,9 @@ import { SaleDuesComponent } from './sale-dues/sale-dues.component';
     SaleDetailComponent,
     NumberToWordsPipePipe,
     DuesComponent,
-    SaleDuesComponent
+    SaleDuesComponent,
+    DueDetailComponent,
+    SaleDueDetailComponent
   ],
   imports: [
     CommonModule,

@@ -85,6 +85,33 @@ namespace Jewellery.Jewellery
             return ObjectMapper.Map<OrderDto>(orderResult);
         }
 
+        public async Task<OrderDueDetailDto> GetOrderDueDetailAsync(Guid orderId)
+        {
+            return await _repository
+                .GetAllIncluding(p => p.Invoices, p => p.Invoices, c => c.Customer,d=>d.OrderDetails)
+                .Where(s => s.Id == orderId)
+                .Select(s => new OrderDueDetailDto
+                {
+                    OrderId = s.Id,
+                    CustomerName = s.Customer.DisplayName,
+                    Invoices = s.Invoices.Select(y => ObjectMapper.Map<InvoiceDto>(y)).ToList(),
+                    TotalAmount = s.Total
+
+                })
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task DuePaidAsync(Guid orderId, decimal paidAmount)
+        {
+            var invoice = new Invoice
+            {
+                OrderId = orderId,
+                PaidAmount = paidAmount
+            };
+
+            await _invoiceRepository.InsertAsync(invoice);
+        }
+
         public Task UploadFile([FromForm] IFormFile file)
         {
             // Checking if files are sent to this app service.

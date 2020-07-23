@@ -95,6 +95,35 @@ namespace Jewellery.Jewellery
 
         }
 
+
+        public async Task DuePaidAsync(Guid saleId, decimal paidAmount)
+        {
+            var invoice = new Invoice
+            {
+                SaleId = saleId,
+                PaidAmount = paidAmount
+            };
+
+            await _invoiceRepository.InsertAsync(invoice);
+        }
+
+        public async Task<SaleDueDetailDto> GetSaleDueDetailAsync(Guid saleId)
+        {
+            return await _saleRepository
+                .GetAllIncluding(p => p.Invoices, p => p.Invoices, c => c.Customer, d => d.SaleDetails)
+                .Where(s => s.Id == saleId)
+                .Select(s => new SaleDueDetailDto
+                {
+                    SaleId = s.Id,
+                    CustomerName = s.Customer.DisplayName,
+                    Invoices = s.Invoices.Select(y => ObjectMapper.Map<InvoiceDto>(y)).ToList(),
+                    TotalAmount = s.TotalAmount
+
+                })
+                .FirstOrDefaultAsync();
+        }
+
+
         public override async Task<SaleDto> UpdateAsync(CreateEditSaleDto input)
         {
             var builder = new DbContextOptionsBuilder<JewelleryDbContext>();
