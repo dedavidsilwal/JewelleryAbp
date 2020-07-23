@@ -19,5 +19,8 @@ namespace Jewellery.Jewellery.Dto
 
         public string Photo { get; set; }
 
+        public short? UnitsInStock { get; set; }
+
+
     }
 }

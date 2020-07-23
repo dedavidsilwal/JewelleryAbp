@@ -100,12 +100,12 @@ namespace Jewellery.Jewellery
             var query = _repository
                 .GetAll()
                 .Where(s => s.OrderStatus == OrderStatus.Active)
-                .Include(s=>s.OrderDetails)
+                .Include(s => s.OrderDetails)
                 .OrderBy(s => s.RequiredDate)
                 .Include(c => c.Customer)
                 .Select(x => new OrderDashboardDto
                 {
-                    OrderNumber =x.OrderNumber,
+                    OrderNumber = x.OrderNumber,
                     AdvancePaid = x.AdvancePaid,
                     CustomerName = x.Customer.DisplayName,
                     OrderDate = x.OrderDate,
@@ -153,7 +153,7 @@ namespace Jewellery.Jewellery
                 .Include(c => c.Customer)
                 .Skip(input.SkipCount)
                 .Take(input.MaxResultCount)
-                .OrderByDescending(s=>s.OrderDate)
+                .OrderByDescending(s => s.OrderDate)
                 .Select(s => ObjectMapper.Map<OrderDto>(s))
 
                 .ToListAsync();
@@ -164,7 +164,7 @@ namespace Jewellery.Jewellery
         public async Task<EditOrderDto> FetchOrderWithDetails(Guid orderId)
         {
             return await _repository.GetAll()
-                        .Include(p => p.OrderDetails).ThenInclude(p=>p.Product)
+                        .Include(p => p.OrderDetails).ThenInclude(p => p.Product)
                         .Where(x => x.Id == orderId)
                         .Select(x => new EditOrderDto
                         {
@@ -221,7 +221,11 @@ namespace Jewellery.Jewellery
             using var transaction = context.Database.BeginTransaction();
             var orderEntity = ObjectMapper.Map<Order>(input);
 
-            var existingOrder = await context.Orders.Include(s => s.OrderDetails).FirstOrDefaultAsync(x => x.Id == input.Id);
+            var existingOrder = await context.Orders
+                .Include(s => s.OrderDetails)
+                .ThenInclude(c => c.Product)
+                .Include(s => s.Customer)
+                .FirstOrDefaultAsync(x => x.Id == input.Id);
 
             orderEntity.OrderNumber = existingOrder.OrderNumber;
             orderEntity.OrderStatus = existingOrder.OrderStatus;

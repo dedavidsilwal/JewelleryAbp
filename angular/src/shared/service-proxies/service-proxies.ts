@@ -3370,6 +3370,62 @@ export class SaleServiceProxy {
     }
 
     /**
+     * @param body (optional) 
+     * @return Success
+     */
+    update(body: CreateEditSaleDto | undefined): Observable<SaleDto> {
+        let url_ = this.baseUrl + "/api/services/app/Sale/Update";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdate(<any>response_);
+                } catch (e) {
+                    return <Observable<SaleDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<SaleDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdate(response: HttpResponseBase): Observable<SaleDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SaleDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SaleDto>(<any>null);
+    }
+
+    /**
      * @return Success
      */
     recentSale(): Observable<SalesReportDashboard[]> {
@@ -3792,62 +3848,6 @@ export class SaleServiceProxy {
     }
 
     protected processGet(response: HttpResponseBase): Observable<SaleDto> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SaleDto.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<SaleDto>(<any>null);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    update(body: CreateEditSaleDto | undefined): Observable<SaleDto> {
-        let url_ = this.baseUrl + "/api/services/app/Sale/Update";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json-patch+json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdate(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processUpdate(<any>response_);
-                } catch (e) {
-                    return <Observable<SaleDto>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<SaleDto>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processUpdate(response: HttpResponseBase): Observable<SaleDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -6005,6 +6005,7 @@ export class ProductDto implements IProductDto {
     estimatedWeight: number | undefined;
     estimatedCost: number | undefined;
     photo: string | undefined;
+    unitsInStock: number | undefined;
     id: string;
 
     constructor(data?: IProductDto) {
@@ -6024,6 +6025,7 @@ export class ProductDto implements IProductDto {
             this.estimatedWeight = _data["estimatedWeight"];
             this.estimatedCost = _data["estimatedCost"];
             this.photo = _data["photo"];
+            this.unitsInStock = _data["unitsInStock"];
             this.id = _data["id"];
         }
     }
@@ -6043,6 +6045,7 @@ export class ProductDto implements IProductDto {
         data["estimatedWeight"] = this.estimatedWeight;
         data["estimatedCost"] = this.estimatedCost;
         data["photo"] = this.photo;
+        data["unitsInStock"] = this.unitsInStock;
         data["id"] = this.id;
         return data; 
     }
@@ -6062,6 +6065,7 @@ export interface IProductDto {
     estimatedWeight: number | undefined;
     estimatedCost: number | undefined;
     photo: string | undefined;
+    unitsInStock: number | undefined;
     id: string;
 }
 
@@ -6856,6 +6860,7 @@ export class CreateEditProductDto implements ICreateEditProductDto {
     estimatedWeight: number | undefined;
     estimatedCost: number | undefined;
     photo: string | undefined;
+    unitsInStock: number | undefined;
     id: string;
 
     constructor(data?: ICreateEditProductDto) {
@@ -6874,6 +6879,7 @@ export class CreateEditProductDto implements ICreateEditProductDto {
             this.estimatedWeight = _data["estimatedWeight"];
             this.estimatedCost = _data["estimatedCost"];
             this.photo = _data["photo"];
+            this.unitsInStock = _data["unitsInStock"];
             this.id = _data["id"];
         }
     }
@@ -6892,6 +6898,7 @@ export class CreateEditProductDto implements ICreateEditProductDto {
         data["estimatedWeight"] = this.estimatedWeight;
         data["estimatedCost"] = this.estimatedCost;
         data["photo"] = this.photo;
+        data["unitsInStock"] = this.unitsInStock;
         data["id"] = this.id;
         return data; 
     }
@@ -6910,6 +6917,7 @@ export interface ICreateEditProductDto {
     estimatedWeight: number | undefined;
     estimatedCost: number | undefined;
     photo: string | undefined;
+    unitsInStock: number | undefined;
     id: string;
 }
 

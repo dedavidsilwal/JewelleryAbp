@@ -293,7 +293,7 @@ export class EditSaleComponent extends AppComponentBase implements OnInit {
     this.saving = true;
 
     const sale: CreateEditSaleDto = this.form.value as CreateEditSaleDto;
-
+    sale.id = this.id;
     console.log('sale');
     console.log(sale);
 
@@ -302,7 +302,7 @@ export class EditSaleComponent extends AppComponentBase implements OnInit {
     }
 
     this._saleService
-      .create(sale)
+      .update(sale)
       .pipe(
         finalize(() => {
           this.saving = false;

@@ -23,6 +23,8 @@ namespace Jewellery.Jewellery
         public decimal? EstimatedWeight { get; set; }
         public decimal? EstimatedCost { get; set; }
 
+        public short? UnitsInStock { get; set; }
+
 
         public ICollection<OrderDetail> OrderDetails { get; private set; }
         public ICollection<SaleDetail> SaleDetails { get; private set; }

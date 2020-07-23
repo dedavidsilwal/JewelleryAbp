@@ -6,9 +6,11 @@ using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
 using Jewellery.Authorization;
+using Jewellery.EntityFrameworkCore;
 using Jewellery.Jewellery.Dto;
 using Jewellery.Users.Dto;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,16 +22,22 @@ namespace Jewellery.Jewellery
     public class SaleAppService : AsyncCrudAppService<Sale, SaleDto, Guid, PagedUserResultRequestDto, CreateEditSaleDto, CreateEditSaleDto>
     {
         private readonly IRepository<Sale, Guid> _saleRepository;
+        private readonly IRepository<Product, Guid> _productRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
+        private readonly IConfiguration _configuration;
         private readonly IRepository<Invoice, Guid> _invoiceRepository;
 
         public SaleAppService(
             IRepository<Sale, Guid> saleRepository,
+            IRepository<Product, Guid> productRepository,
             IUnitOfWorkManager unitOfWorkManager,
+            IConfiguration configuration,
             IRepository<Invoice, Guid> invoiceRepository) : base(saleRepository)
         {
             _saleRepository = saleRepository;
+            _productRepository = productRepository;
             _unitOfWorkManager = unitOfWorkManager;
+            _configuration = configuration;
             _invoiceRepository = invoiceRepository;
         }
 
@@ -57,6 +65,17 @@ namespace Jewellery.Jewellery
                 sale.PaymentStatus = PaymentStatus.Paid;
             }
 
+            foreach (var item in sale.SaleDetails)
+            {
+                var product = await _productRepository.FirstOrDefaultAsync(p => p.Id == item.ProductId);
+                if (product.UnitsInStock.HasValue)
+                {
+                    product.UnitsInStock = (short?)(product.UnitsInStock.Value - item.Quantity);
+                    await _productRepository.UpdateAsync(product);
+                }
+            }
+
+
             sale.SaleStatus = SaleStatus.Sold;
             var saleResult = await _saleRepository.InsertAsync(sale);
 
@@ -74,6 +93,63 @@ namespace Jewellery.Jewellery
 
             return ObjectMapper.Map<SaleDto>(saleResult);
 
+        }
+
+        public override async Task<SaleDto> UpdateAsync(CreateEditSaleDto input)
+        {
+            var builder = new DbContextOptionsBuilder<JewelleryDbContext>();
+            var conn = _configuration.GetConnectionString("Default");
+            builder.UseNpgsql(conn);
+
+            using var context = new JewelleryDbContext(builder.Options);
+            using var transaction = context.Database.BeginTransaction();
+            var SaleEntity = ObjectMapper.Map<Sale>(input);
+
+            var existingSale = await context
+                .Sales
+                .Include(s => s.SaleDetails)
+                .ThenInclude(c => c.Product)
+                .Include(s => s.Customer)
+                .FirstOrDefaultAsync(x => x.Id == input.Id);
+
+            SaleEntity.SaleNumber = existingSale.SaleNumber;
+            SaleEntity.SaleStatus = existingSale.SaleStatus;
+            SaleEntity.PaymentStatus = existingSale.PaymentStatus;
+
+            context.Entry(existingSale).CurrentValues.SetValues(SaleEntity);
+
+            foreach (var detail in existingSale.SaleDetails)
+            {
+                detail.SaleId = SaleEntity.Id;
+
+                var existingDetail = existingSale.SaleDetails.FirstOrDefault(s => s.ProductId == detail.ProductId);
+                if (existingDetail == null)
+                {
+                    existingSale.SaleDetails.Add(detail);
+                }
+                else
+                {
+                    context.Entry(existingDetail).CurrentValues.SetValues(detail);
+                }
+
+            }
+
+            foreach (var detail in existingSale.SaleDetails)
+            {
+                if (!SaleEntity.SaleDetails.Any(p => p.ProductId == detail.ProductId))
+                {
+                    context.Remove(detail);
+                }
+            }
+
+            await context.SaveChangesAsync();
+
+            // Commit transaction if all commands succeed, transaction will auto-rollback
+            // when disposed if either commands fails
+            transaction.Commit();
+
+            var result = await context.Sales.Include(s => s.SaleDetails).FirstOrDefaultAsync(x => x.Id == input.Id);
+            return ObjectMapper.Map<SaleDto>(result);
         }
 
         public async Task<SalesReportDashboard[]> RecentSale()

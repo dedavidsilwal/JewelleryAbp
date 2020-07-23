@@ -105,6 +105,29 @@
       </div>
     </div>
 
+    <div class="form-group row">
+      <label class="col-md-3 col-form-label" for="unitsInStock">
+        {{ "unitsInStock" | localize }}
+      </label>
+      <div class="col-md-9">
+        <input
+          type="text"
+          class="form-control"
+          name="unitsInStock"
+          id="unitsInStock"
+          required
+          minlength="2"
+          maxlength="32"
+          [(ngModel)]="product.unitsInStock"
+          #unitsInStock="ngModel"
+          #unitsInStockEl
+        />
+        <abp-validation-summary
+          [control]="unitsInStock"
+          [controlEl]="unitsInStockEl"
+        ></abp-validation-summary>
+      </div>
+    </div>
     <div class="form-group row required">
       <label class="col-md-3 col-form-label" for="photo">
         {{ "photo" | localize }}
